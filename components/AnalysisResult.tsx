@@ -1,7 +1,8 @@
 'use client';
 
 import { ContractAnalysis } from '@/lib/types';
-import { AlertTriangle, CheckCircle, XCircle, Info, Download } from 'lucide-react';
+import { AlertTriangle, CheckCircle, XCircle, Info, Download, TrendingUp, TrendingDown, Minus, Scale, FileText } from 'lucide-react';
+import { clauseAlternatives } from '@/lib/templates-data';
 
 interface AnalysisResultProps {
   analysis: ContractAnalysis;
@@ -197,6 +198,99 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                 </p>
               </div>
 
+              {/* Industry Benchmark Comparison */}
+              {clause.industryComparison && (
+                <div className="mb-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 p-6 rounded-sm">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Scale className="w-4 h-4 text-blue-600" />
+                    <p className="text-xs text-blue-900 uppercase tracking-wider font-bold">Industry Benchmark Analysis</p>
+                  </div>
+                  
+                  {/* Strictness Meter */}
+                  <div className="mb-5">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-blue-900 font-medium">Strictness Level</span>
+                      <span className="mono text-sm font-bold text-blue-900">{clause.industryComparison.averageStrictness}/100</span>
+                    </div>
+                    <div className="relative h-2 bg-blue-100 rounded-full overflow-hidden">
+                      <div 
+                        className={`absolute left-0 top-0 h-full transition-all duration-500 ${
+                          clause.industryComparison.averageStrictness > 70 ? 'bg-red-600' :
+                          clause.industryComparison.averageStrictness > 50 ? 'bg-orange-500' :
+                          'bg-green-500'
+                        }`}
+                        style={{ width: `${clause.industryComparison.averageStrictness}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      {clause.industryComparison.averageStrictness > 60 ? (
+                        <>
+                          <TrendingUp className="w-4 h-4 text-red-600" />
+                          <span className="text-xs text-red-700 font-medium">
+                            {clause.industryComparison.averageStrictness > 70 ? 
+                              `${Math.round((clause.industryComparison.averageStrictness - 50) / 25)}x stricter than industry average` :
+                              'Above industry average'}
+                          </span>
+                        </>
+                      ) : clause.industryComparison.averageStrictness < 40 ? (
+                        <>
+                          <TrendingDown className="w-4 h-4 text-green-600" />
+                          <span className="text-xs text-green-700 font-medium">More favorable than industry average</span>
+                        </>
+                      ) : (
+                        <>
+                          <Minus className="w-4 h-4 text-blue-600" />
+                          <span className="text-xs text-blue-700 font-medium">Within industry standard range</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Percentile Ranking */}
+                  <div className="mb-5 flex items-center gap-3 p-3 bg-white/60 rounded">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
+                        <span className="mono text-lg font-bold text-white">{clause.industryComparison.percentile}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-blue-700 uppercase tracking-wider font-semibold">Percentile Rank</p>
+                      <p className="text-sm text-blue-900">
+                        Stricter than <span className="font-bold">{clause.industryComparison.percentile}%</span> of similar contracts
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Fairer Alternative */}
+                  {clause.industryComparison.fairerVersion && (
+                    <div className="border-t border-blue-200 pt-4">
+                      <p className="text-xs text-blue-700 uppercase tracking-wider font-bold mb-2 flex items-center gap-2">
+                        <FileText className="w-3 h-3" />
+                        Recommended Balanced Alternative
+                      </p>
+                      <p className="text-sm text-blue-900 leading-relaxed bg-white/80 p-4 rounded italic border-l-2 border-blue-600">
+                        "{clause.industryComparison.fairerVersion}"
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Common Alternatives */}
+                  {clause.industryComparison.commonAlternatives && clause.industryComparison.commonAlternatives.length > 0 && (
+                    <div className="border-t border-blue-200 pt-4 mt-4">
+                      <p className="text-xs text-blue-700 uppercase tracking-wider font-bold mb-3">Common Industry Alternatives</p>
+                      <ul className="space-y-2">
+                        {clause.industryComparison.commonAlternatives.map((alt, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm text-blue-900">
+                            <span className="text-blue-400 mt-0.5">•</span>
+                            <span className="leading-relaxed">{alt}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {clause.concerns.length > 0 && (
                 <div>
                   <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-2">Strategic Considerations</p>
@@ -231,6 +325,76 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
           </ul>
         </div>
       )}
+
+      {/* Clause Marketplace - Community Alternatives */}
+      <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-300 p-10">
+        <div className="mb-8 pb-6 border-b border-purple-200">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="h-px w-8 bg-purple-600"></div>
+            <span className="mono text-xs text-purple-600 tracking-wider uppercase font-bold">Clause Marketplace</span>
+          </div>
+          <h3 className="text-4xl font-bold text-purple-900 mb-2">
+            Community-Vetted Fair Alternatives
+          </h3>
+          <p className="text-purple-700 font-light leading-relaxed">
+            See how others have negotiated fairer terms. These alternatives are ranked by legal experts and the community.
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          {clauseAlternatives.slice(0, 3).map((alternative) => (
+            <div key={alternative.id} className="bg-white border border-purple-200 p-6 rounded-sm hover:shadow-lg transition-shadow duration-300">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`px-3 py-1 text-xs uppercase font-bold tracking-wider rounded-full ${
+                    alternative.source === 'expert' ? 'bg-purple-600 text-white' :
+                    alternative.source === 'legal_standard' ? 'bg-blue-600 text-white' :
+                    'bg-green-600 text-white'
+                  }`}>
+                    {alternative.source === 'expert' ? '⚖️ Expert' : 
+                     alternative.source === 'legal_standard' ? '📚 Legal Standard' : 
+                     '👥 Community'}
+                  </div>
+                  <span className="text-sm text-purple-600 font-medium">
+                    {alternative.votes.toLocaleString()} upvotes
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs text-red-700 uppercase tracking-wider font-bold mb-2">❌ Original (Unfair)</p>
+                  <p className="text-sm text-stone-700 italic bg-red-50 border-l-4 border-red-400 p-3 leading-relaxed">
+                    "{alternative.originalClause}"
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-green-700 uppercase tracking-wider font-bold mb-2">✓ Fairer Alternative</p>
+                  <p className="text-sm text-stone-900 font-medium bg-green-50 border-l-4 border-green-500 p-3 leading-relaxed">
+                    "{alternative.fairerVersion}"
+                  </p>
+                </div>
+
+                <div className="bg-purple-50 border border-purple-200 p-4 rounded">
+                  <p className="text-xs text-purple-900 uppercase tracking-wider font-bold mb-2">Why This Is Better</p>
+                  <p className="text-sm text-purple-800 leading-relaxed">{alternative.explanation}</p>
+                  {alternative.contributor && (
+                    <p className="text-xs text-purple-600 mt-3 italic">— {alternative.contributor}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 text-center">
+          <button className="inline-flex items-center gap-2 px-8 py-4 bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-colors duration-300">
+            <FileText className="w-5 h-5" />
+            Browse All {clauseAlternatives.length} Fair Alternatives
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

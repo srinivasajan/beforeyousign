@@ -7,6 +7,8 @@ export interface ContractAnalysis {
   redFlags: RedFlag[];
   recommendations: string[];
   metadata: ContractMetadata;
+  industryBenchmark?: IndustryBenchmark;
+  comparativeInsights?: ComparativeInsight[];
 }
 
 export interface ClauseAnalysis {
@@ -20,6 +22,12 @@ export interface ClauseAnalysis {
   position: {
     start: number;
     end: number;
+  };
+  industryComparison?: {
+    averageStrictness: number; // 0-100, how strict this clause is compared to industry average
+    percentile: number; // where this clause falls (0-100)
+    commonAlternatives?: string[];
+    fairerVersion?: string;
   };
 }
 
@@ -82,4 +90,45 @@ export interface AnalysisResponse {
   success: boolean;
   analysis?: ContractAnalysis;
   error?: string;
+}
+
+export interface IndustryBenchmark {
+  industry: string;
+  averageRiskScore: number;
+  comparisonSummary: string;
+  keyDifferences: {
+    clause: string;
+    yourContract: string;
+    industryStandard: string;
+    multiplier?: number; // e.g., "3x stricter"
+  }[];
+}
+
+export interface ComparativeInsight {
+  id: string;
+  type: 'stricter' | 'fairer' | 'standard' | 'unusual';
+  title: string;
+  description: string;
+  severity: 'info' | 'warning' | 'critical';
+  clauseId?: string;
+}
+
+export interface ContractTemplate {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  riskScore: number;
+  useCase: string;
+  downloadUrl?: string;
+  preview?: string;
+}
+
+export interface ClauseAlternative {
+  originalClause: string;
+  fairerVersion: string;
+  explanation: string;
+  votes: number;
+  source: 'community' | 'expert' | 'legal_standard';
+  contributor?: string;
 }

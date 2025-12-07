@@ -66,6 +66,32 @@ const analysisSchema = {
             },
             required: ['start', 'end'],
           },
+          industryComparison: {
+            type: 'object',
+            properties: {
+              averageStrictness: {
+                type: 'integer',
+                description: 'How strict this clause is (0-100, 50 is average)',
+                minimum: 0,
+                maximum: 100,
+              },
+              percentile: {
+                type: 'integer',
+                description: 'Percentile rank (0-100)',
+                minimum: 0,
+                maximum: 100,
+              },
+              commonAlternatives: {
+                type: 'array',
+                items: { type: 'string' },
+                description: '2-3 examples of fairer wording',
+              },
+              fairerVersion: {
+                type: 'string',
+                description: 'Suggested balanced alternative wording',
+              },
+            },
+          },
         },
         required: [
           'id',
@@ -191,7 +217,7 @@ export class ContractAnalyzer {
   private static buildAnalysisPrompt(contractText: string): string {
     return `You are an expert contract lawyer specializing in identifying risks, unfair terms, and hidden dangers in legal agreements. Your goal is to help ordinary people understand contracts written in complex legal language. Be thorough, precise, and focus on protecting the weaker party's interests.
 
-Analyze the following contract and provide a comprehensive risk assessment. Focus on identifying terms that disadvantage the weaker party (typically the individual, freelancer, employee, or small business).
+Analyze the following contract and provide a comprehensive risk assessment with industry benchmarking. Focus on identifying terms that disadvantage the weaker party (typically the individual, freelancer, employee, or small business).
 
 CONTRACT TEXT:
 ${contractText}
@@ -203,7 +229,19 @@ IMPORTANT INSTRUCTIONS:
 - Be specific about WHY something is risky
 - Provide actionable recommendations
 - Give accurate character positions for each clause in the contract text
-- Calculate a risk score between 0-100 based on the severity and number of problematic clauses`;
+- Calculate a risk score between 0-100 based on the severity and number of problematic clauses
+
+INDUSTRY BENCHMARKING:
+For each significant clause, provide an industryComparison with:
+- averageStrictness: How strict this clause is (0-100, where 50 is industry average)
+- percentile: Where this falls compared to similar contracts (0-100)
+- commonAlternatives: 2-3 examples of fairer wording used in similar contracts
+- fairerVersion: Your suggested balanced alternative wording
+
+Example: If a termination clause requires 90 days notice when industry average is 30 days, note:
+- averageStrictness: 75 (3x stricter than average)
+- percentile: 85 (stricter than 85% of similar contracts)
+- Include alternatives like "30 days written notice by either party"`;
   }
 
   /**
@@ -226,6 +264,7 @@ IMPORTANT INSTRUCTIONS:
         category: clause.category || 'other',
         concerns: clause.concerns || [],
         position: clause.position || { start: 0, end: 0 },
+        industryComparison: clause.industryComparison || undefined,
       })) as ClauseAnalysis[],
       redFlags: (data.redFlags || []).map((flag: any, index: number) => ({
         id: flag.id || `flag_${index}`,
