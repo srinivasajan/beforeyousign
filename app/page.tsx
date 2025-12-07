@@ -1,165 +1,244 @@
 'use client';
 
-import { useState } from 'react';
-import FileUpload from '@/components/FileUpload';
-import AnalysisResult from '@/components/AnalysisResult';
-import { ContractAnalysis } from '@/lib/types';
-import { Shield, Loader2 } from 'lucide-react';
+import { ArrowRight, AlertTriangle, Scale, FileText, Shield } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<ContractAnalysis | null>(null);
-  const [error, setError] = useState<string>('');
-
-  const handleFileSelect = async (file: File) => {
-    setIsAnalyzing(true);
-    setError('');
-    setAnalysis(null);
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to analyze contract');
-      }
-
-      setAnalysis(data.analysis);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
-  const handleReset = () => {
-    setAnalysis(null);
-    setError('');
-  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-stone-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <header className="bg-white executive-header sticky top-0 z-50 backdrop-blur-sm bg-white/95">
+        <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Shield className="w-8 h-8 text-blue-600" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">BeforeYouSign</h1>
-                <p className="text-sm text-gray-600">Democratizing legal comprehension</p>
+            <div className="flex items-baseline gap-4">
+              <h1 className="text-4xl font-bold text-stone-900 tracking-tight">BeforeYouSign</h1>
+              <div className="hidden md:flex items-center gap-2">
+                <span className="text-stone-300">|</span>
+                <p className="text-stone-500 font-light tracking-wide uppercase text-xs">Legal Intelligence Platform</p>
               </div>
             </div>
-            {analysis && (
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Analyze Another Contract
-              </button>
-            )}
+            <Link 
+              href="/analyze"
+              className="group px-6 py-2.5 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 transition-all duration-300 flex items-center gap-2"
+            >
+              <span>Analyze Contract</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {!analysis && !isAnalyzing && (
-          <div className="max-w-3xl mx-auto">
-            {/* Hero Section */}
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Understand Your Contracts Before You Sign
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Most people participate in the modern economy while being legally illiterate by necessity.
-                We're here to change that. Upload any contract and get instant AI-powered analysis
-                that identifies risks, explains jargon, and protects your interests.
+      {/* Hero Section */}
+      <section className="relative bg-white border-b-2 border-stone-900">
+        <div className="max-w-7xl mx-auto px-8 py-20">
+          <div className="max-w-5xl">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="h-px w-12 bg-stone-900"></div>
+              <span className="mono text-xs text-stone-500 tracking-wider uppercase">The Unpriced Asymmetry</span>
+            </div>
+            
+            <h2 className="text-6xl font-bold text-stone-900 mb-8 leading-[1.1] tracking-tight">
+              Most people are legally illiterate by necessity, <span className="text-stone-600">not by choice</span>
+            </h2>
+
+            <div className="border-l-4 border-stone-900 pl-6 mb-8">
+              <p className="text-lg text-stone-700 leading-relaxed font-light mb-4">
+                They're expected to navigate contracts written in a technical language that was never designed for them, 
+                drafted to shift risk onto the weaker party while concealing those shifts behind jargon and structural opacity.
+              </p>
+              <p className="text-base text-stone-600 leading-relaxed font-light">
+                A single clause can quietly transfer IP, impose unlimited liability, lock you into auto-renewals, 
+                or expose you to penalties you don't even realize you've accepted.
               </p>
             </div>
 
-            {/* Upload Section */}
-            <FileUpload onFileSelect={handleFileSelect} isAnalyzing={false} />
+            <Link
+              href="/analyze"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-stone-900 text-white font-medium hover:bg-stone-800 transition-all duration-300 group"
+            >
+              <span>Start Analysis</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </div>
+      </section>
 
-            {/* Features */}
-            <div className="mt-16 grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-6 h-6 text-blue-600" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Risk Detection</h3>
-                <p className="text-sm text-gray-600">
-                  Automatically identify IP transfers, liability clauses, auto-renewals, and other red flags
-                </p>
+      {/* The Problem */}
+      <section className="bg-stone-50 py-16">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            <div>
+              <div className="mb-4 flex items-center gap-3">
+                <span className="mono text-xs text-stone-500 tracking-wider uppercase">The Problem</span>
+                <div className="h-px flex-1 bg-stone-300"></div>
               </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-6 h-6 text-purple-600" />
+              <h3 className="text-4xl font-bold text-stone-900 mb-6 leading-tight">
+                A Massive, Systemic Asymmetry
+              </h3>
+              <p className="text-base text-stone-700 leading-relaxed font-light mb-4">
+                Hiring a lawyer for every contract is economically impossible. The stronger party's lawyers 
+                understand every word; the weaker party understands almost none.
+              </p>
+              <p className="text-sm text-stone-600 leading-relaxed font-light">
+                Ordinary people rely on intuition, Google searches, or misplaced trust when making 
+                decisions that can fundamentally alter their economic position.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-white border-2 border-stone-900 p-6">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-6 h-6 text-stone-900 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-bold text-stone-900 mb-1">Trillions in Avoidable Costs</h4>
+                    <p className="text-sm text-stone-600 leading-relaxed">
+                      Global inefficiency from avoidable disputes, lost leverage, and compromised decisions.
+                    </p>
+                  </div>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Plain Language</h3>
-                <p className="text-sm text-gray-600">
-                  Complex legal jargon translated into simple explanations anyone can understand
-                </p>
               </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-6 h-6 text-green-600" />
+
+              <div className="bg-white border-2 border-stone-900 p-6">
+                <div className="flex items-start gap-3">
+                  <Scale className="w-6 h-6 text-stone-900 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-bold text-stone-900 mb-1">Unbalanced Negotiations</h4>
+                    <p className="text-sm text-stone-600 leading-relaxed">
+                      One party with institutional knowledge and counsel; the other with hope and a pen.
+                    </p>
+                  </div>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Actionable Advice</h3>
-                <p className="text-sm text-gray-600">
-                  Get specific recommendations on what to negotiate and how to protect yourself
-                </p>
+              </div>
+
+              <div className="bg-white border-2 border-stone-900 p-6">
+                <div className="flex items-start gap-3">
+                  <FileText className="w-6 h-6 text-stone-900 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-bold text-stone-900 mb-1">Hidden Consequences</h4>
+                    <p className="text-sm text-stone-600 leading-relaxed">
+                      Critical provisions buried in legalese that shift risk in ways most will never detect.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      </section>
 
-        {/* Loading State */}
-        {isAnalyzing && (
-          <div className="max-w-2xl mx-auto text-center py-24">
-            <Loader2 className="w-16 h-16 text-blue-600 animate-spin mx-auto mb-6" />
-            <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-              Analyzing Your Contract
+      {/* The Solution */}
+      <section className="bg-white py-16 border-t-2 border-stone-900">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="max-w-3xl mx-auto text-center mb-12">
+            <div className="mb-4 flex items-center justify-center gap-3">
+              <div className="h-px w-8 bg-stone-900"></div>
+              <span className="mono text-xs text-stone-500 tracking-wider uppercase">The Solution</span>
+              <div className="h-px w-8 bg-stone-900"></div>
+            </div>
+            <h3 className="text-4xl font-bold text-stone-900 mb-6 leading-tight">
+              Democratizing Legal Comprehension
             </h3>
-            <p className="text-gray-600">
-              Our AI is reading through every clause, identifying risks, and preparing your analysis...
+            <p className="text-lg text-stone-600 leading-relaxed font-light">
+              <strong className="text-stone-900">Legal comprehension has never been democratized</strong>. Until now.
             </p>
           </div>
-        )}
 
-        {/* Error State */}
-        {error && (
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-              <p className="text-red-700 font-medium mb-4">{error}</p>
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              >
-                Try Again
-              </button>
+          {/* Features Grid */}
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            <div className="border-t-2 border-stone-900 pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <Shield className="w-8 h-8 text-stone-900" />
+                <span className="mono text-xs text-stone-400">01</span>
+              </div>
+              <h4 className="text-xl font-bold text-stone-900 mb-3">Risk Detection</h4>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Automated identification of IP transfers, unlimited liability, auto-renewals, 
+                and hidden penalties.
+              </p>
+            </div>
+
+            <div className="border-t-2 border-stone-900 pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <FileText className="w-8 h-8 text-stone-900" />
+                <span className="mono text-xs text-stone-400">02</span>
+              </div>
+              <h4 className="text-xl font-bold text-stone-900 mb-3">Plain Language</h4>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Legal jargon decoded into clear explanations revealing what you're actually agreeing to.
+              </p>
+            </div>
+
+            <div className="border-t-2 border-stone-900 pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <Scale className="w-8 h-8 text-stone-900" />
+                <span className="mono text-xs text-stone-400">03</span>
+              </div>
+              <h4 className="text-xl font-bold text-stone-900 mb-3">Strategic Guidance</h4>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Specific negotiation points and protective measures to level the playing field.
+              </p>
             </div>
           </div>
-        )}
 
-        {/* Analysis Results */}
-        {analysis && <AnalysisResult analysis={analysis} />}
-      </main>
+          <div className="text-center">
+            <Link
+              href="/analyze"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-stone-900 text-white font-medium hover:bg-stone-800 transition-all duration-300 group"
+            >
+              <span>Analyze Your Contract</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-stone-900 text-white py-20">
+        <div className="max-w-3xl mx-auto px-8 text-center">
+          <h3 className="text-4xl font-bold mb-6 leading-tight">
+            Stop Signing Contracts You Don't Understand
+          </h3>
+          <p className="text-base text-stone-300 leading-relaxed font-light mb-8">
+            Every contract you sign without comprehension is a blind risk. 
+            Level the playing field with institutional-grade intelligence.
+          </p>
+          <Link
+            href="/analyze"
+            className="inline-flex items-center gap-2 px-10 py-4 bg-white text-stone-900 font-medium hover:bg-stone-100 transition-all duration-300 group"
+          >
+            <span>Start Free Analysis</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+          <p className="mt-4 text-xs text-stone-400">No account • Instant results • Free</p>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t mt-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <p className="text-center text-sm text-gray-600">
-            BeforeYouSign is an AI-powered tool designed to help you understand contracts.
-            It does not constitute legal advice. For legal matters, please consult a licensed attorney.
-          </p>
+      <footer className="bg-white border-t-2 border-stone-900">
+        <div className="max-w-7xl mx-auto px-8 py-10">
+          <div className="grid md:grid-cols-2 gap-10 mb-6">
+            <div>
+              <h3 className="text-xl font-bold text-stone-900 mb-3">BeforeYouSign</h3>
+              <p className="text-sm text-stone-600 leading-relaxed font-light">
+                Democratizing legal comprehension through institutional-grade contract intelligence.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-3">Legal Notice</h4>
+              <p className="text-xs text-stone-600 leading-relaxed font-light">
+                <span className="font-medium text-stone-900">Disclaimer:</span> This platform provides analytical intelligence 
+                and does not constitute legal counsel. Material matters should be reviewed by qualified legal counsel.
+              </p>
+            </div>
+          </div>
+          <div className="pt-6 border-t border-stone-200 flex items-center justify-between">
+            <p className="text-xs text-stone-500 mono">© 2025 BeforeYouSign</p>
+            <div className="flex items-center gap-4 text-xs text-stone-500">
+              <span className="hover:text-stone-900 transition-colors cursor-pointer">Privacy</span>
+              <span className="hover:text-stone-900 transition-colors cursor-pointer">Terms</span>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
