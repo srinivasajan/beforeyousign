@@ -4,7 +4,7 @@ import { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
 import AnalysisResult from '@/components/AnalysisResult';
 import { ContractAnalysis } from '@/lib/types';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AnalyzePage() {
@@ -12,7 +12,7 @@ export default function AnalyzePage() {
   const [analysis, setAnalysis] = useState<ContractAnalysis | null>(null);
   const [error, setError] = useState<string>('');
 
-  const handleFileSelect = async (file: File) => {
+  const handleFileSelect = async (file: File, jurisdiction: string) => {
     setIsAnalyzing(true);
     setError('');
     setAnalysis(null);
@@ -20,6 +20,7 @@ export default function AnalyzePage() {
     try {
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('jurisdiction', jurisdiction);
 
       const response = await fetch('/api/analyze', {
         method: 'POST',
@@ -89,18 +90,55 @@ export default function AnalyzePage() {
           </div>
         )}
 
-        {/* Loading State */}
+        {/* Loading State with Progress */}
         {isAnalyzing && (
-          <div className="max-w-2xl mx-auto py-24">
-            <div className="border-l-2 border-stone-900 pl-8">
-              <Loader2 className="w-12 h-12 text-stone-900 animate-spin mb-6" />
-              <h3 className="text-3xl font-bold text-stone-900 mb-3">
-                Analysis in Progress
-              </h3>
-              <p className="text-stone-600 text-lg leading-relaxed">
-                Conducting comprehensive review of contractual provisions, 
-                evaluating risk factors, and preparing executive summary...
-              </p>
+          <div className="max-w-3xl mx-auto py-12">
+            <div className="bg-white border-2 border-stone-900 p-10">
+              <div className="flex items-start gap-6 mb-8">
+                <Loader2 className="w-10 h-10 text-stone-900 animate-spin flex-shrink-0" />
+                <div className="flex-1">
+                  <h3 className="text-3xl font-bold text-stone-900 mb-3">
+                    Analyzing Your Contract
+                  </h3>
+                  <p className="text-stone-600 leading-relaxed mb-6">
+                    Our AI is conducting a comprehensive review. This typically takes 30-60 seconds.
+                  </p>
+
+                  {/* Progress Steps */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-stone-900 rounded-full animate-pulse"></div>
+                      <span className="text-sm text-stone-700">Parsing document structure...</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-stone-400 rounded-full animate-pulse pulse-delay-200"></div>
+                      <span className="text-sm text-stone-600">Identifying key clauses...</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-stone-300 rounded-full animate-pulse pulse-delay-400"></div>
+                      <span className="text-sm text-stone-500">Evaluating risk factors...</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-stone-200 rounded-full animate-pulse pulse-delay-600"></div>
+                      <span className="text-sm text-stone-400">Comparing to industry standards...</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-stone-100 rounded-full animate-pulse pulse-delay-800"></div>
+                      <span className="text-sm text-stone-300">Generating recommendations...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Trust Signal */}
+              <div className="border-t border-stone-200 pt-6 mt-6">
+                <div className="flex items-center gap-2 text-sm text-stone-500">
+                  <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-3 h-3 text-white" />
+                  </div>
+                  <span>Your contract is not stored. Analysis is private and secure.</span>
+                </div>
+              </div>
             </div>
           </div>
         )}

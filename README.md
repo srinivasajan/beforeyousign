@@ -19,8 +19,9 @@ Simply because hiring a lawyer for every contract is economically impossible.
 
 ## 💡 The Solution
 
-BeforeYouSign uses advanced AI (GPT-4) to analyze contracts and provide:
+BeforeYouSign uses advanced AI (Google Gemini) to analyze contracts and provide:
 
+### Core Analysis Features
 - **Risk Scoring**: Overall risk assessment (0-100 scale)
 - **Red Flag Detection**: Automatic identification of dangerous clauses
   - IP transfers
@@ -38,6 +39,21 @@ BeforeYouSign uses advanced AI (GPT-4) to analyze contracts and provide:
 - **Plain Language Translation**: Complex legal jargon explained simply
 - **Clause-by-Clause Analysis**: Detailed breakdown with risk levels
 - **Actionable Recommendations**: Specific advice on what to negotiate
+
+### Interactive Features ✨ NEW
+- **AI Chat Assistant** (Ctrl+M): Ask questions about any part of your contract
+- **Interactive Contract Map** (Ctrl+K): Visual navigation through all clauses
+- **Shareable Analysis Links**: Generate secure links to share with lawyers/advisors
+- **Keyboard Shortcuts** (Ctrl+/): Power user navigation for faster workflow
+- **Progressive Disclosure**: Quick View or Deep Dive modes
+- **Risk Filtering**: Focus on Critical, High, or view all risks
+- **Confidence Scores**: Transparency in AI analysis reliability
+
+### Collaboration & Action Features 🆕 BRAND NEW
+- **Clause Bookmarking**: Save important clauses with personal notes, export as JSON/Markdown
+- **Negotiation Scripts**: AI-generated email templates, talking points, and strategies for each risky clause
+- **Full Playbook Generator**: Comprehensive negotiation guide for all critical and high-risk clauses
+- **Quick Actions**: Bookmark and negotiate buttons on every clause
 
 ## 🚀 Tech Stack
 
@@ -98,6 +114,7 @@ NEXT_PUBLIC_MAX_FILE_SIZE=10485760  # 10MB default
 
 ## 📖 Usage
 
+### Basic Workflow
 1. **Upload a contract**: Drag and drop or click to upload PDF, DOCX, or TXT files
 2. **Wait for analysis**: The AI will analyze the contract (typically 30-60 seconds)
 3. **Review results**: 
@@ -107,14 +124,54 @@ NEXT_PUBLIC_MAX_FILE_SIZE=10485760  # 10MB default
    - Get specific recommendations
 4. **Export**: Print or save the analysis for your records
 
+### Advanced Features
+
+#### 🔗 Share Analysis
+1. Click **"Share"** button in the header
+2. Optional: Set password protection
+3. Choose expiration period (1-30 days)
+4. Click **"Generate Share Link"**
+5. Copy and share with lawyers, advisors, or colleagues
+
+#### ⌨️ Keyboard Shortcuts
+- `Ctrl+K` - Open Contract Map (visual navigation)
+- `Ctrl+M` - Toggle AI Chat Assistant
+- `Esc` - Close any open modal/sidebar
+- `Ctrl+/` - Show all keyboard shortcuts
+- `1` / `2` - Switch between Quick View and Deep Dive
+- `3` / `4` / `5` - Filter risk levels
+
+#### 💬 AI Chat Assistant
+- Click the purple chat bubble (or press `Ctrl+M`)
+- Ask questions like:
+  - "What are my biggest risks?"
+  - "Explain the termination clause"
+  - "Can I modify section 5?"
+  - "What should I negotiate?"
+
+#### 🗺️ Contract Map
+- Click the sparkle icon (or press `Ctrl+K`)
+- See all clauses organized by section
+- Click any clause to jump directly to it
+- Color-coded by risk level (Critical/High/Medium/Low)
+
 ## 🏗️ Project Structure
 
 ```
 beforeyousign/
 ├── app/
 │   ├── api/
-│   │   └── analyze/
-│   │       └── route.ts          # API endpoint for contract analysis
+│   │   ├── analyze/
+│   │   │   └── route.ts          # API endpoint for contract analysis
+│   │   ├── chat/
+│   │   │   └── route.ts          # AI chat assistant endpoint
+│   │   └── share/
+│   │       ├── route.ts          # Create shareable links
+│   │       └── [shareId]/
+│   │           └── route.ts      # Retrieve shared analysis
+│   ├── share/
+│   │   └── [shareId]/
+│   │       └── page.tsx          # Public share page
 │   ├── layout.tsx                # Root layout
 │   └── page.tsx                  # Main page
 ├── components/
@@ -123,9 +180,12 @@ beforeyousign/
 ├── lib/
 │   ├── types.ts                  # TypeScript type definitions
 │   ├── document-parser.ts        # Document parsing utilities
-│   └── contract-analyzer.ts      # AI-powered contract analysis
+│   ├── contract-analyzer.ts      # AI-powered contract analysis
+│   ├── share-links.ts            # Shareable links utilities
+│   └── keyboard-shortcuts.ts     # Keyboard shortcuts hook
 ├── public/                       # Static assets
 ├── .env.example                  # Environment variables template
+├── NEW_FEATURES.md               # Detailed feature documentation
 └── README.md                     # This file
 ```
 
@@ -146,27 +206,58 @@ beforeyousign/
 - ✅ Plain language translation
 - ✅ Clause categorization
 - ✅ Actionable recommendations
+- ✅ Confidence scoring for transparency
+
+### Interactive Features ✨ NEW
+- ✅ **AI Chat Assistant** - Gemini-powered Q&A about your contract
+- ✅ **Contract Map** - Interactive visual navigation through clauses
+- ✅ **Shareable Links** - Generate secure, time-limited share links
+- ✅ **Keyboard Shortcuts** - Power user navigation (Ctrl+K, Ctrl+M, etc.)
+- ✅ **Progressive Disclosure** - Quick View vs Deep Dive modes
+- ✅ **Risk Filtering** - Focus on specific risk levels
+- ✅ **Password Protection** - Secure shared analyses
+- ✅ **Auto-Expiry** - Time-limited access control
 
 ### User Interface
 - ✅ Responsive design
 - ✅ Drag-and-drop upload
-- ✅ Loading states
+- ✅ Loading states with progress indicators
 - ✅ Error handling
 - ✅ Print/export functionality
 - ✅ Clean, accessible UI
+- ✅ Modern AI aesthetic (ElevenLabs/ChatGPT inspired)
+- ✅ Floating action buttons
+- ✅ Keyboard navigation
 
-## 🚧 Future Enhancements
+## 🚧 Roadmap
 
+### Recently Completed ✅
+- [x] AI Chat Assistant with Gemini integration
+- [x] Interactive Contract Map navigation
+- [x] Shareable analysis links (password + expiry)
+- [x] Keyboard shortcuts system
+- [x] Progressive disclosure (Quick/Deep modes)
+- [x] Risk filtering and confidence scores
+- [x] **Clause bookmarking with notes** (NEW!)
+- [x] **AI negotiation script generator** (NEW!)
+- [x] **Full negotiation playbook** (NEW!)
+
+### Up Next 🔄
+- [ ] Contract version comparison (side-by-side diff)
+- [ ] Enhanced export (PDF with annotations, advanced Markdown)
+- [ ] Database migration for persistent bookmarks
+
+### Future Enhancements 💭
 - [ ] User authentication and contract history
-- [ ] Comparison mode (compare multiple contract versions)
 - [ ] Custom risk profiles (freelancer, tenant, employee, etc.)
-- [ ] PDF export with annotations
 - [ ] Multi-language support
 - [ ] Contract templates library
-- [ ] Negotiation scripts generation
 - [ ] Lawyer marketplace integration
 - [ ] Chrome extension for instant analysis
 - [ ] Mobile app
+- [ ] Database migration for share links (currently in-memory)
+
+> See [NEW_FEATURES.md](./NEW_FEATURES.md) for detailed documentation on recently added features.
 
 ## ⚖️ Legal Disclaimer
 

@@ -9,6 +9,7 @@ export interface ContractAnalysis {
   metadata: ContractMetadata;
   industryBenchmark?: IndustryBenchmark;
   comparativeInsights?: ComparativeInsight[];
+  confidence?: AnalysisConfidence;
 }
 
 export interface ClauseAnalysis {
@@ -19,6 +20,7 @@ export interface ClauseAnalysis {
   riskLevel: 'low' | 'medium' | 'high' | 'critical';
   category: ClauseCategory;
   concerns: string[];
+  recommendation?: string;
   position: {
     start: number;
     end: number;
@@ -30,6 +32,9 @@ export interface ClauseAnalysis {
     fairerVersion?: string;
   };
 }
+
+// Alias for compatibility
+export type ContractClause = ClauseAnalysis;
 
 export interface RedFlag {
   id: string;
@@ -131,4 +136,14 @@ export interface ClauseAlternative {
   votes: number;
   source: 'community' | 'expert' | 'legal_standard';
   contributor?: string;
+}
+
+export interface AnalysisConfidence {
+  overall: number; // 0-100
+  riskScoreConfidence: number;
+  clauseAnalysisConfidence: number;
+  model: string;
+  modelVersion: string;
+  analysisDate: string;
+  notes?: string[];
 }

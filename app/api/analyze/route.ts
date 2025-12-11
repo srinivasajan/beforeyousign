@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const jurisdiction = (formData.get('jurisdiction') as string) || 'US';
 
     if (!file) {
       return NextResponse.json(
@@ -60,7 +61,8 @@ export async function POST(request: NextRequest) {
     const analysis = await ContractAnalyzer.analyze(
       contractText,
       file.name,
-      file.size
+      file.size,
+      jurisdiction
     );
 
     const response: AnalysisResponse = {
