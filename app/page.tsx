@@ -7,49 +7,26 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* Header */}
-      <header className="bg-white executive-header sticky top-0 z-50 backdrop-blur-sm bg-white/95">
-        <div className="max-w-7xl mx-auto px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-baseline gap-4">
-              <h1 className="text-4xl font-bold text-stone-900 tracking-tight">BeforeYouSign</h1>
-              <div className="hidden md:flex items-center gap-2">
-                <span className="text-stone-300">|</span>
-                <p className="text-stone-500 font-light tracking-wide uppercase text-xs">Legal Intelligence Platform</p>
-              </div>
-            </div>
-            <Link 
-              href="/analyze"
-              className="group px-6 py-2.5 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 transition-all duration-300 flex items-center gap-2"
-            >
-              <span>Analyze Contract</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section className="relative bg-white border-b-2 border-stone-900">
         <div className="max-w-7xl mx-auto px-8 py-20">
           <div className="max-w-5xl">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="h-px w-12 bg-stone-900"></div>
-              <span className="mono text-xs text-stone-500 tracking-wider uppercase">The Unpriced Asymmetry</span>
+            <div className="mb-4">
+              <span className="mono text-xs text-stone-500 tracking-wider uppercase">Legal Intelligence Platform</span>
             </div>
             
             <h2 className="text-6xl font-bold text-stone-900 mb-8 leading-[1.1] tracking-tight">
-              Most people are legally illiterate by necessity, <span className="text-stone-600">not by choice</span>
+              From issues to answers, <span className="text-stone-600">your legal world made simple</span>
             </h2>
 
             <div className="border-l-4 border-stone-900 pl-6 mb-8">
               <p className="text-lg text-stone-700 leading-relaxed font-light mb-4">
-                They're expected to navigate contracts written in a technical language that was never designed for them, 
-                drafted to shift risk onto the weaker party while concealing those shifts behind jargon and structural opacity.
+                Most people face contracts they don't understand, written by lawyers for lawyers. 
+                We decode complex legal language into clear, actionable insights that protect your interests.
               </p>
               <p className="text-base text-stone-600 leading-relaxed font-light">
-                A single clause can quietly transfer IP, impose unlimited liability, lock you into auto-renewals, 
-                or expose you to penalties you don't even realize you've accepted.
+                Upload any contract and get instant analysis of risks, obligations, and hidden clauses. 
+                Know what you're signing before you sign it.
               </p>
             </div>
 
@@ -69,9 +46,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div>
-              <div className="mb-4 flex items-center gap-3">
+              <div className="mb-4">
                 <span className="mono text-xs text-stone-500 tracking-wider uppercase">The Problem</span>
-                <div className="h-px flex-1 bg-stone-300"></div>
               </div>
               <h3 className="text-4xl font-bold text-stone-900 mb-6 leading-tight">
                 A Massive, Systemic Asymmetry
@@ -131,10 +107,8 @@ export default function Home() {
       <section className="bg-white py-16 border-t-2 border-stone-900">
         <div className="max-w-7xl mx-auto px-8">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <div className="mb-4 flex items-center justify-center gap-3">
-              <div className="h-px w-8 bg-stone-900"></div>
+            <div className="mb-4">
               <span className="mono text-xs text-stone-500 tracking-wider uppercase">The Solution</span>
-              <div className="h-px w-8 bg-stone-900"></div>
             </div>
             <h3 className="text-4xl font-bold text-stone-900 mb-6 leading-tight">
               Democratizing Legal Comprehension
@@ -194,8 +168,19 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-stone-900 text-white py-20">
-        <div className="max-w-3xl mx-auto px-8 text-center">
+      <section className="text-white py-20" style={{
+        background: '#1c1917',
+        position: 'relative',
+        overflow: 'hidden',
+        isolation: 'isolate'
+      }}>
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: '#1c1917',
+          zIndex: 0
+        }} />
+        <div className="max-w-3xl mx-auto px-8 text-center" style={{position: 'relative', zIndex: 10}}>
           <h3 className="text-4xl font-bold mb-6 leading-tight">
             Stop Signing Contracts You Don't Understand
           </h3>

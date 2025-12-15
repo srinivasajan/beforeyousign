@@ -48,29 +48,21 @@ export default function AnalyzePage() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* Header */}
-      <header className="bg-white executive-header sticky top-0 z-50 backdrop-blur-sm bg-white/95">
-        <div className="max-w-7xl mx-auto px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <Link href="/" className="group flex items-center gap-2 text-stone-600 hover:text-stone-900 transition-colors">
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                <span className="text-sm font-medium">Back to Home</span>
-              </Link>
-              <span className="text-stone-300">|</span>
-              <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Contract Analysis</h1>
-            </div>
-            {analysis && (
+      {/* Page Actions */}
+      {analysis && (
+        <div className="bg-white border-b border-stone-200">
+          <div className="max-w-7xl mx-auto px-8 py-4">
+            <div className="flex justify-end">
               <button
                 onClick={handleReset}
-                className="group px-6 py-2.5 text-sm font-medium text-stone-900 bg-white border border-stone-300 hover:border-stone-900 hover:bg-stone-50 transition-all duration-300"
+                className="px-6 py-2.5 text-sm font-medium text-stone-900 bg-white border border-stone-300 hover:border-stone-900 hover:bg-stone-50 transition-all"
               >
-                <span className="underline-effect">New Analysis</span>
+                New Analysis
               </button>
-            )}
+            </div>
           </div>
         </div>
-      </header>
+      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-8 py-16">

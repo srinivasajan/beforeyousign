@@ -14,18 +14,16 @@ export default function TemplatesLibrary() {
   const categories = Array.from(new Set(contractTemplates.map(t => t.category)));
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full px-12 py-16">
       {/* Header */}
-      <div className="text-center mb-12">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="h-px w-12 bg-stone-900"></div>
+      <div className="mb-16">
+        <div className="mb-4">
           <span className="mono text-xs text-stone-500 tracking-wider uppercase">Contract Templates</span>
-          <div className="h-px w-12 bg-stone-900"></div>
         </div>
-        <h2 className="text-6xl font-bold text-stone-900 mb-4">Fair Contract Templates</h2>
-        <p className="text-xl text-stone-600 font-light max-w-2xl mx-auto leading-relaxed">
+        <h2 className="text-6xl font-bold text-stone-900 mb-6 leading-tight">Fair Contract Templates</h2>
+        <p className="text-xl text-stone-600 leading-relaxed max-w-3xl">
           Vetted, balanced contract templates that protect both parties. 
-          <span className="text-stone-900 font-medium"> No hidden traps. No one-sided terms.</span>
+          <span className="text-stone-900 font-medium"> No hidden traps. No one sided terms.</span>
         </p>
       </div>
 
@@ -35,7 +33,7 @@ export default function TemplatesLibrary() {
         
         return (
           <div key={category} className="mb-16">
-            <div className="mb-6 pb-4 border-b-2 border-stone-200">
+            <div className="mb-6 pb-4">
               <h3 className="text-3xl font-bold text-stone-900">{category}</h3>
               <p className="text-sm text-stone-500 mt-2">{templates.length} templates available</p>
             </div>
@@ -44,7 +42,7 @@ export default function TemplatesLibrary() {
               {templates.map((template) => (
                 <div 
                   key={template.id}
-                  className="group bg-white border-2 border-stone-900 p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+                  className="group bg-white border border-stone-300 p-8 hover:shadow-2xl hover:border-stone-900 transition-all duration-300"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -69,7 +67,7 @@ export default function TemplatesLibrary() {
 
                   <p className="text-stone-700 leading-relaxed mb-4">{template.description}</p>
 
-                  <div className="mb-4 p-4 bg-stone-50 border-l-2 border-stone-900">
+                  <div className="mb-4 p-4 bg-stone-50">
                     <p className="text-xs text-stone-500 uppercase tracking-wider font-bold mb-2">Best For</p>
                     <p className="text-sm text-stone-800">{template.useCase}</p>
                   </div>

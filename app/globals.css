@@ -32,6 +32,15 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  background-image: none !important;
+}
+
+html {
+  background: #FAFAF9;
+}
+
+* {
+  
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -286,4 +295,25 @@ h1, h2, h3, h4, h5, h6 {
   .metric-box {
     break-inside: avoid;
   }
+}
+
+/* Scrollbar utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ensure no pseudo-elements create unwanted decorative lines */
+.templates-page section::before,
+.templates-page section::after,
+.templates-page div::before,
+.templates-page div::after {
+  display: none !important;
+  content: none !important;
+  border: none !important;
+  background: none !important;
 }
