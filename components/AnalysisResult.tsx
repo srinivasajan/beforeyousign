@@ -36,10 +36,11 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
   const [playbookContent, setPlaybookContent] = useState('');
   const [isGeneratingPlaybook, setIsGeneratingPlaybook] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
-  const [exportFormat, setExportFormat] = useState<'markdown' | 'json' | 'html'>('markdown');
+  const [exportFormat, setExportFormat] = useState<'markdown' | 'json' | 'html' | 'pdf'>('pdf');
   const [exportOptions, setExportOptions] = useState({
     includeBookmarks: true,
     includeNotes: true,
+    includeAIRecommendations: true,
     clauseFilter: 'all' as 'all' | 'bookmarked' | 'high-risk',
   });
 
@@ -457,7 +458,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
 
   const handleEnhancedExport = async () => {
     try {
-      const { exportAsMarkdown, exportAsJSON, exportAsHTML } = await import('@/lib/enhanced-export');
+      const { exportAsMarkdown, exportAsJSON, exportAsHTML, exportAsPDFHTML } = await import('@/lib/enhanced-export');
       
       let content: string;
       let mimeType: string;
@@ -473,6 +474,10 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
         content = exportAsJSON(analysis, clauseNotes, fullOptions);
         mimeType = 'application/json';
         extension = 'json';
+      } else if (exportFormat === 'pdf') {
+        content = exportAsPDFHTML(analysis, clauseNotes, fullOptions);
+        mimeType = 'text/html';
+        extension = 'html';
       } else {
         content = exportAsHTML(analysis, clauseNotes, fullOptions);
         mimeType = 'text/html';
@@ -986,7 +991,17 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-semibold text-stone-700 mb-3">Export Format</label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-4 gap-3">
+                  <button
+                    onClick={() => setExportFormat('pdf')}
+                    className={`py-3 px-4 border-2 font-semibold transition-colors ${
+                      exportFormat === 'pdf'
+                        ? 'bg-stone-900 text-white border-stone-900'
+                        : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
+                    }`}
+                  >
+                    📄 PDF
+                  </button>
                   <button
                     onClick={() => setExportFormat('markdown')}
                     className={`py-3 px-4 border-2 font-semibold transition-colors ${
@@ -1097,6 +1112,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
               </button>
 
               <p className="text-xs text-stone-500 text-center">
+                {exportFormat === 'pdf' && 'Professional PDF report with AI recommendations - ready to print or share'}
                 {exportFormat === 'markdown' && 'Perfect for documentation and sharing with teams'}
                 {exportFormat === 'json' && 'Machine-readable format for integration and backup'}
                 {exportFormat === 'html' && 'Styled report ready for viewing in any browser'}

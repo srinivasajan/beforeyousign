@@ -4,7 +4,7 @@
 
 - Node.js 18.x or higher
 - npm or yarn
-- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+- Google Gemini API key ([Get one here](https://aistudio.google.com/app/apikey))
 
 ## Setup Instructions
 
@@ -22,13 +22,32 @@ Copy the example environment file:
 cp .env.example .env.local
 ```
 
-Edit `.env.local` and add your OpenAI API key:
+Edit `.env.local` and add your API keys:
 
 ```env
-OPENAI_API_KEY=sk-your-actual-openai-api-key-here
+# Required - AI Service
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Required - Authentication
+AUTH_SECRET=generate_random_secret_here
+
+# Optional - OAuth Providers
+AUTH_GITHUB_ID=your_github_client_id
+AUTH_GITHUB_SECRET=your_github_client_secret
+AUTH_GOOGLE_ID=your_google_client_id
+AUTH_GOOGLE_SECRET=your_google_client_secret
+
+# App Settings
 NEXT_PUBLIC_APP_NAME=BeforeYouSign
 NEXT_PUBLIC_MAX_FILE_SIZE=10485760
 ```
+
+**Generate AUTH_SECRET:**
+```bash
+openssl rand -base64 32
+```
+
+Or visit: https://generate-secret.vercel.app/32
 
 ### 3. Run Development Server
 
@@ -47,7 +66,18 @@ npm start
 
 ## Testing the Application
 
+### Contract Analysis
 1. Open `http://localhost:3000` in your browser
+2. Click "Start Analysis" or navigate to `/analyze`
+3. Upload a contract (PDF, DOCX, or TXT)
+4. View AI-powered analysis results
+
+### Authentication
+**Demo credentials** (for testing):
+- Email: `test@example.com`
+- Password: `password123`
+
+Or create a new account at `/auth/signup`
 2. Upload a test contract (you can use `public/sample-contract.txt`)
 3. Wait for the AI analysis (30-60 seconds)
 4. Review the results

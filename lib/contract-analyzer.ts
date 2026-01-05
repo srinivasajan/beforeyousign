@@ -59,7 +59,6 @@ export class ContractAnalyzer {
         if (isRateLimitError && attempt < maxRetries) {
           // Exponential backoff: wait longer between each retry
           const delay = baseDelay * Math.pow(2, attempt - 1);
-          console.log(`Waiting ${delay}ms before retry ${attempt + 1}...`);
           await new Promise(resolve => setTimeout(resolve, delay));
           continue;
         }

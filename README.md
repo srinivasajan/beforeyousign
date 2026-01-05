@@ -1,73 +1,57 @@
 # BeforeYouSign
 
-> **Democratizing legal comprehension — one contract at a time.**
+> **AI-Powered Contract Intelligence — Protect Your Interests Before You Sign**
 
-BeforeYouSign is an AI-powered contract analysis tool that helps ordinary people understand complex legal agreements before signing them. It identifies risks, explains legal jargon in plain language, and provides actionable recommendations to protect your interests.
+BeforeYouSign is an enterprise-grade contract analysis platform that uses advanced AI to identify risks, decode legal jargon, and provide actionable negotiation strategies. Built for freelancers, small businesses, and individuals who need professional-level contract review without the lawyer fees.
 
-## 🎯 The Problem
+## 🎯 Why BeforeYouSign?
 
-Most people participate in the modern economy while being legally illiterate by necessity, not by choice. They're expected to navigate contracts written in technical language that was never designed for them, drafted in ways that shift risk, obligations, and liability onto the weaker party while concealing those shifts behind jargon and opacity.
-
-Freelancers, small businesses, creators, tenants, and individuals engage in high-stakes agreements where a single clause can:
-- Quietly transfer intellectual property rights
+Every day, people sign contracts they don't fully understand because hiring a lawyer is too expensive. A single overlooked clause can:
+- Transfer your intellectual property rights
 - Impose unlimited liability
-- Lock them into auto-renewals
-- Restrict termination rights
-- Expose them to penalties they don't realize they've accepted
+- Lock you into auto-renewals
+- Restrict your ability to terminate
+- Expose you to hidden penalties
 
-Simply because hiring a lawyer for every contract is economically impossible.
+**BeforeYouSign levels the playing field** by giving you institutional-grade contract analysis powered by AI.
 
-## 💡 The Solution
+## ✨ Features
 
-BeforeYouSign uses advanced AI (Google Gemini) to analyze contracts and provide:
+### Core Analysis
+- **AI-Powered Review**: Google Gemini 2.5 Flash analyzes every clause
+- **Risk Scoring**: 0-100 risk assessment with detailed breakdown
+- **Red Flag Detection**: 12+ dangerous clause types automatically identified
+- **Plain Language**: Complex legal jargon translated to simple English
+- **Actionable Recommendations**: Specific negotiation points for each risk
 
-### Core Analysis Features
-- **Risk Scoring**: Overall risk assessment (0-100 scale)
-- **Red Flag Detection**: Automatic identification of dangerous clauses
-  - IP transfers
-  - Unlimited liability
-  - Auto-renewal clauses
-  - Restricted termination rights
-  - One-sided amendments
-  - Unfair venue/forum selection
-  - Waiver of rights
-  - Confidentiality overreach
-  - Harsh indemnification
-  - Non-compete restrictions
-  - Problematic payment terms
-  - Dispute resolution issues
-- **Plain Language Translation**: Complex legal jargon explained simply
-- **Clause-by-Clause Analysis**: Detailed breakdown with risk levels
-- **Actionable Recommendations**: Specific advice on what to negotiate
+### Interactive Tools
+- **AI Chat Assistant** (Ctrl+M): Ask questions about any contract clause
+- **Interactive Contract Map** (Ctrl+K): Visual navigation through document
+- **Shareable Links**: Generate secure analysis links for lawyers/advisors
+- **Clause Bookmarking**: Save important clauses with personal notes
+- **Version Comparison**: Side-by-side contract comparison tool
 
-### Interactive Features ✨ NEW
-- **AI Chat Assistant** (Ctrl+M): Ask questions about any part of your contract
-- **Interactive Contract Map** (Ctrl+K): Visual navigation through all clauses
-- **Shareable Analysis Links**: Generate secure links to share with lawyers/advisors
-- **Keyboard Shortcuts** (Ctrl+/): Power user navigation for faster workflow
-- **Progressive Disclosure**: Quick View or Deep Dive modes
-- **Risk Filtering**: Focus on Critical, High, or view all risks
-- **Confidence Scores**: Transparency in AI analysis reliability
+### Negotiation Support
+- **Email Templates**: Professional negotiation scripts for each risky clause
+- **Talking Points**: Strategic conversation guides
+- **Full Playbook**: Comprehensive negotiation strategy for entire contract
+- **Export Options**: PDF, JSON, Markdown export for all analyses
 
-### Collaboration & Action Features 🆕 BRAND NEW
-- **Clause Bookmarking**: Save important clauses with personal notes, export as JSON/Markdown
-- **Negotiation Scripts**: AI-generated email templates, talking points, and strategies for each risky clause
-- **Full Playbook Generator**: Comprehensive negotiation guide for all critical and high-risk clauses
-- **Quick Actions**: Bookmark and negotiate buttons on every clause
+### Professional Services
+- **Lawyer Marketplace**: Find vetted attorneys by specialty and location
+- **Template Library**: Balanced contract templates for common scenarios
+- **Team Collaboration**: Comments, mentions, and real-time collaboration
+- **E-Signature**: Built-in signing workflow (requires backend)
 
-## 🚀 Tech Stack
+### Technical Excellence
+- **Multi-Format Support**: PDF, DOCX, TXT file upload
+- **Mobile Responsive**: Full functionality on all devices
+- **Keyboard Navigation**: Complete keyboard shortcut support
+- **WCAG 2.1 AA**: Accessibility compliant
+- **Loading States**: Professional skeleton screens
+- **Error Handling**: Graceful error boundaries and recovery
 
-- **Frontend**: Next.js 14 (React) + TypeScript
-- **Styling**: Tailwind CSS
-- **AI**: Google Gemini 2.5 Flash (free tier available)
-- **Document Processing**: 
-  - pdf-parse (PDF files)
-  - mammoth (DOCX files)
-  - Native text parsing (TXT files)
-- **UI Components**: lucide-react icons, react-dropzone
-- **Deployment**: Vercel-ready
-
-## 📦 Installation
+## 🚀 Quick Start
 
 1. **Clone the repository**:
    ```bash
@@ -183,112 +167,50 @@ beforeyousign/
 │   ├── contract-analyzer.ts      # AI-powered contract analysis
 │   ├── share-links.ts            # Shareable links utilities
 │   └── keyboard-shortcuts.ts     # Keyboard shortcuts hook
-├── public/                       # Static assets
-├── .env.example                  # Environment variables template
-├── NEW_FEATURES.md               # Detailed feature documentation
-└── README.md                     # This file
 ```
 
-## 🧪 Features
+## 📚 Documentation
 
-### Document Processing
-- ✅ PDF parsing
-- ✅ DOCX parsing
-- ✅ Plain text parsing
-- ✅ File size validation (10MB default)
-- ✅ File type validation
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - Technical architecture and system design
+- [PRODUCTION-READY.md](./PRODUCTION-READY.md) - Deployment checklist and integration needs
+- [QUICKSTART.md](./QUICKSTART.md) - Quick start guide for developers
+- [ROADMAP.md](./ROADMAP.md) - Feature roadmap and future plans
 
-### AI Analysis
-- ✅ Gemini 2.5 Flash powered analysis (free tier available)
-- ✅ Structured JSON output with schema validation
-- ✅ Risk scoring algorithm
-- ✅ Red flag detection (12+ types)
-- ✅ Plain language translation
-- ✅ Clause categorization
-- ✅ Actionable recommendations
-- ✅ Confidence scoring for transparency
+## 🧪 Sample Contracts
 
-### Interactive Features ✨ NEW
-- ✅ **AI Chat Assistant** - Gemini-powered Q&A about your contract
-- ✅ **Contract Map** - Interactive visual navigation through clauses
-- ✅ **Shareable Links** - Generate secure, time-limited share links
-- ✅ **Keyboard Shortcuts** - Power user navigation (Ctrl+K, Ctrl+M, etc.)
-- ✅ **Progressive Disclosure** - Quick View vs Deep Dive modes
-- ✅ **Risk Filtering** - Focus on specific risk levels
-- ✅ **Password Protection** - Secure shared analyses
-- ✅ **Auto-Expiry** - Time-limited access control
-
-### User Interface
-- ✅ Responsive design
-- ✅ Drag-and-drop upload
-- ✅ Loading states with progress indicators
-- ✅ Error handling
-- ✅ Print/export functionality
-- ✅ Clean, accessible UI
-- ✅ Modern AI aesthetic (ElevenLabs/ChatGPT inspired)
-- ✅ Floating action buttons
-- ✅ Keyboard navigation
-
-## 🚧 Roadmap
-
-### Recently Completed ✅
-- [x] AI Chat Assistant with Gemini integration
-- [x] Interactive Contract Map navigation
-- [x] Shareable analysis links (password + expiry)
-- [x] Keyboard shortcuts system
-- [x] Progressive disclosure (Quick/Deep modes)
-- [x] Risk filtering and confidence scores
-- [x] **Clause bookmarking with notes** (NEW!)
-- [x] **AI negotiation script generator** (NEW!)
-- [x] **Full negotiation playbook** (NEW!)
-
-### Up Next 🔄
-- [ ] Contract version comparison (side-by-side diff)
-- [ ] Enhanced export (PDF with annotations, advanced Markdown)
-- [ ] Database migration for persistent bookmarks
-
-### Future Enhancements 💭
-- [ ] User authentication and contract history
-- [ ] Custom risk profiles (freelancer, tenant, employee, etc.)
-- [ ] Multi-language support
-- [ ] Contract templates library
-- [ ] Lawyer marketplace integration
-- [ ] Chrome extension for instant analysis
-- [ ] Mobile app
-- [ ] Database migration for share links (currently in-memory)
-
-> See [NEW_FEATURES.md](./NEW_FEATURES.md) for detailed documentation on recently added features.
+The `public/` folder includes sample contracts for testing:
+- **sample-employment-predatory.txt** - Employment agreement with red flags
+- **sample-freelance-balanced.txt** - Balanced freelance contract
+- **sample-lease-aggressive.txt** - Rental agreement with landlord-favoring terms
+- **sample-saas-unfair.txt** - SaaS agreement with problematic clauses
 
 ## ⚖️ Legal Disclaimer
 
-**BeforeYouSign is an AI-powered tool designed to help you understand contracts. It does not constitute legal advice.** For legal matters, please consult a licensed attorney in your jurisdiction.
+**BeforeYouSign is an AI tool for educational purposes. It does NOT provide legal advice.** 
 
-The analysis provided is based on AI interpretation and may not catch all risks or nuances. Always exercise your own judgment and seek professional legal counsel for important agreements.
+Always consult a licensed attorney for legal matters. The AI analysis may not catch all risks or nuances. Use as a starting point, not a substitute for professional legal counsel.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
+Contributions welcome! Please:
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create feature branch (`git checkout -b feature/Feature`)
+3. Commit changes (`git commit -m 'Add Feature'`)
+4. Push to branch (`git push origin feature/Feature`)
+5. Open Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License - see [LICENSE](./LICENSE) for details.
 
 ## 🙏 Acknowledgments
 
-- Built with [Next.js](https://nextjs.org/)
-- Powered by [Google Gemini](https://ai.google.dev/)
-- Inspired by the need to democratize legal comprehension
-
-## 📧 Contact
-
-For questions, suggestions, or feedback, please open an issue on GitHub.
+- [Next.js](https://nextjs.org/) - React framework
+- [Google Gemini](https://ai.google.dev/) - AI model
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Lucide](https://lucide.dev/) - Icons
 
 ---
 
-**Built with ❤️ to level the playing field in contract negotiations.**
+**Leveling the playing field in contract negotiations — one clause at a time.**
+```

@@ -20,17 +20,37 @@ import {
   Clock,
   TrendingUp,
   X,
-  Scale
+  Scale,
+  FolderOpen,
+  Calendar,
+  BarChart3,
+  Users,
+  FileSignature,
+  ChevronDown,
+  Menu,
+  Settings,
+  LogOut,
+  Bell
 } from 'lucide-react';
+import { useAuth, signOut as authSignOut, getUserInitials } from '@/lib/auth-utils';
 
-const services = [
-  { name: 'Analyze Contract', href: '/analyze', icon: FileSearch },
-  { name: 'Templates', href: '/templates', icon: BookTemplate },
-  { name: 'Compare Versions', href: '/compare', icon: ArrowLeftRight },
-  { name: 'Contract Chat', href: '/chat', icon: MessageSquare },
-  { name: 'Legal Library', href: '/library', icon: BookOpen, hasMegaMenu: true },
+// Primary navigation items (most important features)
+const primaryServices = [
+  { name: 'Analyze', href: '/analyze', icon: FileSearch },
+  { name: 'Contracts', href: '/contracts', icon: FolderOpen },
+  { name: 'Templates', href: '/templates-enhanced', icon: BookTemplate },
+  { name: 'E-Signature', href: '/esignature', icon: FileSignature },
+  { name: 'Library', href: '/library', icon: BookOpen, hasMegaMenu: true },
+];
+
+// Secondary navigation items
+const secondaryServices = [
+  { name: 'Renewals', href: '/renewals', icon: Calendar },
+  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+  { name: 'Team', href: '/team', icon: Users },
+  { name: 'Compare', href: '/compare', icon: ArrowLeftRight },
+  { name: 'Chat', href: '/chat', icon: MessageSquare },
   { name: 'Playbooks', href: '/playbooks', icon: FileText },
-  { name: 'Find Lawyers', href: '/lawyers', icon: Scale }
 ];
 
 const libraryMegaMenu = [
@@ -102,6 +122,36 @@ const libraryMegaMenu = [
   }
 ];
 
+const moreMegaMenu = [
+  {
+    title: 'Management',
+    icon: FolderOpen,
+    items: [
+      { name: 'My Contracts', href: '/contracts', icon: FolderOpen, description: 'Organize and manage all your contracts' },
+      { name: 'Renewals', href: '/renewals', icon: Calendar, description: 'Track contract renewals and deadlines' },
+      { name: 'Team Collaboration', href: '/team', icon: Users, description: 'Work together on contract reviews' }
+    ]
+  },
+  {
+    title: 'Analysis',
+    icon: BarChart3,
+    items: [
+      { name: 'Analytics Dashboard', href: '/analytics', icon: BarChart3, description: 'View insights and contract metrics' },
+      { name: 'Compare Versions', href: '/compare', icon: ArrowLeftRight, description: 'Side-by-side version comparison' },
+      { name: 'Playbooks', href: '/playbooks', icon: FileText, description: 'Contract review guidelines' }
+    ]
+  },
+  {
+    title: 'Support',
+    icon: MessageSquare,
+    items: [
+      { name: 'Legal Chat', href: '/chat', icon: MessageSquare, description: 'Ask questions about your contracts' },
+      { name: 'Find Lawyers', href: '/lawyers', icon: Scale, description: 'Connect with legal professionals' },
+      { name: 'Help Center', href: '/help', icon: BookOpen, description: 'Guides and documentation' }
+    ]
+  }
+];
+
 const allSearchableContent = [
   { name: 'Employment Contracts', category: 'Contract Types', href: '/library#contract-types' },
   { name: 'Service Agreements', category: 'Contract Types', href: '/library#contract-types' },
@@ -150,20 +200,57 @@ const trendingSearches = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [showMegaMenu, setShowMegaMenu] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const moreMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setShowSearchDropdown(false);
       }
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) {
+        setShowMoreMenu(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setShowUserMenu(false);
+      }
     };
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Close menus on Escape
+      if (e.key === 'Escape') {
+        setShowMegaMenu(false);
+        setShowMoreMenu(false);
+        setShowSearchDropdown(false);
+        setShowMobileMenu(false);
+        setShowUserMenu(false);
+      }
+      
+      // Focus search on "/" key
+      if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
+        e.preventDefault();
+        const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+        searchInput?.focus();
+      }
+    };
+    
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   const filteredResults = searchQuery.trim() 
@@ -187,8 +274,8 @@ export default function Navbar() {
     <div className="sticky top-0 z-50 bg-white shadow-sm">
       {/* Top Brand Bar */}
       <div className="border-b-2 border-stone-900">
-        <div className="">
-          <div className="flex items-center justify-between h-16 px-12">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="flex items-center justify-between h-16 gap-6">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3">
               <Shield className="w-6 h-6 text-stone-900" strokeWidth={2} />
@@ -198,7 +285,7 @@ export default function Navbar() {
             </Link>
 
             {/* Advanced Search Bar */}
-            <div ref={searchRef} className="flex-1 max-w-2xl mx-8 relative">
+            <div ref={searchRef} className="hidden md:flex flex-1 max-w-2xl mx-8 relative">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
                 <input
@@ -278,6 +365,7 @@ export default function Navbar() {
                             <button
                               onClick={() => clearRecentSearch(search)}
                               className="opacity-0 group-hover:opacity-100 p-1 hover:bg-stone-200 rounded transition-all"
+                              aria-label="Clear recent search"
                             >
                               <X className="w-3 h-3 text-stone-500" />
                             </button>
@@ -315,29 +403,162 @@ export default function Navbar() {
             {/* Auth Actions */}
             <div className="flex items-center gap-3">
               <Link
-                href="/login"
-                className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-700 hover:text-stone-900 transition-colors"
+                href="/lawyers"
+                className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold hover:from-blue-700 hover:to-purple-700 transition-all rounded-lg shadow-md"
               >
-                <LogIn className="w-4 h-4" strokeWidth={2} />
-                <span>Login</span>
+                <Scale className="w-4 h-4" strokeWidth={2.5} />
+                <span>Find Lawyers</span>
+                <div className="ml-1 px-1.5 py-0.5 bg-white/20 rounded text-[10px] font-bold uppercase">New</div>
               </Link>
-              <Link
-                href="/signup"
-                className="flex items-center gap-2 px-5 py-2 bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors"
+              
+              {isLoading ? (
+                <div className="hidden lg:flex items-center gap-2">
+                  <div className="w-8 h-8 bg-stone-200 rounded-full animate-pulse"></div>
+                </div>
+              ) : isAuthenticated && user ? (
+                <>
+                  {/* Notifications */}
+                  <Link
+                    href="/notifications"
+                    className="hidden lg:flex items-center justify-center w-10 h-10 hover:bg-stone-100 rounded-lg transition-colors relative"
+                    aria-label="Notifications"
+                  >
+                    <Bell className="w-5 h-5 text-stone-600" />
+                    {/* Notification badge */}
+                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                  </Link>
+
+                  {/* User Menu */}
+                  <div ref={userMenuRef} className="hidden lg:block relative">
+                    <button
+                      onClick={() => setShowUserMenu(!showUserMenu)}
+                      className="flex items-center gap-2 px-3 py-2 hover:bg-stone-100 rounded-lg transition-colors"
+                      aria-label="User menu"
+                    >
+                      {user.image ? (
+                        <img
+                          src={user.image}
+                          alt={user.name}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 bg-stone-900 rounded-full flex items-center justify-center">
+                          <span className="text-white text-sm font-semibold">
+                            {getUserInitials(user.name)}
+                          </span>
+                        </div>
+                      )}
+                      <ChevronDown className={`w-4 h-4 text-stone-600 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* User Dropdown */}
+                    {showUserMenu && (
+                      <div className="absolute right-0 mt-2 w-64 bg-white border border-stone-200 rounded-xl shadow-xl z-50">
+                        {/* User Info */}
+                        <div className="p-4 border-b border-stone-200">
+                          <div className="flex items-center gap-3">
+                            {user.image ? (
+                              <img
+                                src={user.image}
+                                alt={user.name}
+                                className="w-12 h-12 rounded-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center">
+                                <span className="text-white text-lg font-semibold">
+                                  {getUserInitials(user.name)}
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-stone-900 truncate">{user.name}</p>
+                              <p className="text-xs text-stone-500 truncate">{user.email}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Menu Items */}
+                        <div className="p-2">
+                          <Link
+                            href="/profile"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-3 px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-lg transition-colors"
+                          >
+                            <User className="w-4 h-4" />
+                            <span>Profile</span>
+                          </Link>
+                          <Link
+                            href="/contracts"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-3 px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-lg transition-colors"
+                          >
+                            <FolderOpen className="w-4 h-4" />
+                            <span>My Contracts</span>
+                          </Link>
+                          <Link
+                            href="/settings"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-3 px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-lg transition-colors"
+                          >
+                            <Settings className="w-4 h-4" />
+                            <span>Settings</span>
+                          </Link>
+                        </div>
+
+                        {/* Sign Out */}
+                        <div className="p-2 border-t border-stone-200">
+                          <button
+                            onClick={async () => {
+                              setShowUserMenu(false);
+                              await authSignOut();
+                            }}
+                            className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors w-full"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            <span>Sign Out</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/signin"
+                    className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-700 hover:text-stone-900 transition-colors"
+                  >
+                    <LogIn className="w-4 h-4" strokeWidth={2} />
+                    <span>Sign In</span>
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="hidden sm:flex items-center gap-2 px-5 py-2 bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors rounded-lg"
+                  >
+                    <User className="w-4 h-4" strokeWidth={2} />
+                    <span>Sign Up</span>
+                  </Link>
+                </>
+              )}
+              
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="md:hidden p-2 hover:bg-stone-100 rounded-lg transition-colors"
+                aria-label="Toggle mobile menu"
               >
-                <User className="w-4 h-4" strokeWidth={2} />
-                <span>Sign Up</span>
-              </Link>
+                {showMobileMenu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Services Navigation */}
-      <div className="bg-white shadow-md relative">
-        <div className="">
-          <nav className="flex items-center overflow-x-auto scrollbar-hide px-12" role="navigation">
-            {services.map((service) => {
+      {/* Services Navigation - Desktop */}
+      <div className="hidden md:block bg-white border-b border-stone-200 relative">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <nav className="flex items-center gap-1 overflow-x-auto py-1" role="navigation" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d6d3d1 transparent' }}>
+            {primaryServices.map((service) => {
               const Icon = service.icon;
               const isActive = pathname === service.href;
               
@@ -346,33 +567,61 @@ export default function Navbar() {
                   <div 
                     key={service.href} 
                     className="relative"
-                    onMouseEnter={() => setShowMegaMenu(true)}
-                    onMouseLeave={() => setShowMegaMenu(false)}
+                    onMouseEnter={() => {
+                      if (megaMenuTimeoutRef.current) {
+                        clearTimeout(megaMenuTimeoutRef.current);
+                      }
+                      setShowMegaMenu(true);
+                    }}
+                    onMouseLeave={() => {
+                      megaMenuTimeoutRef.current = setTimeout(() => {
+                        setShowMegaMenu(false);
+                      }, 100);
+                    }}
                   >
                     <Link
                       href={service.href}
-                      className={`group relative flex items-center gap-2 py-4 pr-4 text-sm font-medium transition-all whitespace-nowrap first:pl-0 ${
-                        isActive ? 'text-stone-900' : 'text-stone-600 hover:text-stone-900'
+                      className={`group relative flex items-center gap-2 px-4 py-3.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg ${
+                        isActive ? 'text-stone-900 bg-stone-100' : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
                       }`}
                     >
                       <Icon 
                         className={`w-4 h-4 transition-all ${
                           isActive ? 'text-stone-900' : 'text-stone-500 group-hover:text-stone-700'
                         }`}
-                        strokeWidth={2}
+                        strokeWidth={2.5}
                       />
                       <span className="tracking-wide">{service.name}</span>
-                      {isActive && (
-                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
-                      )}
                     </Link>
 
                     {/* Mega Menu Panel */}
                     {showMegaMenu && (
-                      <div
-                        className="absolute left-0 top-full bg-white border border-stone-200 shadow-2xl z-[100] mt-0"
-                        style={{ width: '900px', marginLeft: '-200px' }}
-                      >
+                      <>
+                        {/* Invisible bridge to prevent gap issues */}
+                        <div 
+                          className="absolute left-0 right-0 h-4" 
+                          style={{ top: '100%' }}
+                          onMouseEnter={() => {
+                            if (megaMenuTimeoutRef.current) {
+                              clearTimeout(megaMenuTimeoutRef.current);
+                            }
+                          }}
+                        />
+                        <div
+                          className="fixed left-1/2 -translate-x-1/2 bg-white border border-stone-200 rounded-xl shadow-2xl z-[9999]"
+                          style={{ width: '1200px', maxWidth: '95vw', top: '128px' }}
+                          onMouseEnter={() => {
+                            if (megaMenuTimeoutRef.current) {
+                              clearTimeout(megaMenuTimeoutRef.current);
+                            }
+                            setShowMegaMenu(true);
+                          }}
+                          onMouseLeave={() => {
+                            megaMenuTimeoutRef.current = setTimeout(() => {
+                              setShowMegaMenu(false);
+                            }, 100);
+                          }}
+                        >
                         <div className="p-8">
                           <div className="grid grid-cols-3 gap-6">
                             {libraryMegaMenu.map((category) => {
@@ -414,7 +663,8 @@ export default function Navbar() {
                             </Link>
                           </div>
                         </div>
-                      </div>
+                        </div>
+                      </>
                     )}
                   </div>
                 );
@@ -424,26 +674,303 @@ export default function Navbar() {
                 <Link
                   key={service.href}
                   href={service.href}
-                  className={`group relative flex items-center gap-2 py-4 pr-4 text-sm font-medium transition-all whitespace-nowrap first:pl-0 ${
-                    isActive ? 'text-stone-900' : 'text-stone-600 hover:text-stone-900'
+                  className={`group relative flex items-center gap-2 px-4 py-3.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg ${
+                    isActive 
+                      ? 'text-stone-900 bg-stone-100' 
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
                   }`}
                 >
                   <Icon 
                     className={`w-4 h-4 transition-all ${
                       isActive ? 'text-stone-900' : 'text-stone-500 group-hover:text-stone-700'
                     }`}
-                    strokeWidth={2}
+                    strokeWidth={2.5}
                   />
                   <span className="tracking-wide">{service.name}</span>
-                  {isActive && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
-                  )}
                 </Link>
               );
             })}
+
+            {/* More Menu for Secondary Services */}
+            <div 
+              ref={moreMenuRef} 
+              className="relative ml-2"
+              onMouseEnter={() => {
+                if (moreMenuTimeoutRef.current) {
+                  clearTimeout(moreMenuTimeoutRef.current);
+                }
+                setShowMoreMenu(true);
+              }}
+              onMouseLeave={() => {
+                moreMenuTimeoutRef.current = setTimeout(() => {
+                  setShowMoreMenu(false);
+                }, 100);
+              }}
+            >
+              <button
+                className="flex items-center gap-2 px-4 py-3.5 text-sm font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-lg transition-all whitespace-nowrap"
+                aria-label="More navigation options"
+                {...(showMoreMenu && { 'aria-expanded': true })}
+              >
+                <span>More</span>
+                <ChevronDown 
+                  className={`w-4 h-4 transition-transform ${showMoreMenu ? 'rotate-180' : ''}`}
+                  strokeWidth={2.5}
+                />
+              </button>
+
+              {/* More Mega Menu */}
+              {showMoreMenu && (
+                <>
+                  {/* Invisible bridge to prevent gap issues */}
+                  <div 
+                    className="absolute left-0 right-0 h-4" 
+                    style={{ top: '100%' }}
+                    onMouseEnter={() => {
+                      if (moreMenuTimeoutRef.current) {
+                        clearTimeout(moreMenuTimeoutRef.current);
+                      }
+                    }}
+                  />
+                  <div
+                    className="fixed right-6 bg-white border border-stone-200 rounded-xl shadow-2xl z-[9999]"
+                    style={{ width: '900px', maxWidth: '95vw', top: '128px' }}
+                    onMouseEnter={() => {
+                      if (moreMenuTimeoutRef.current) {
+                        clearTimeout(moreMenuTimeoutRef.current);
+                      }
+                      setShowMoreMenu(true);
+                    }}
+                    onMouseLeave={() => {
+                      moreMenuTimeoutRef.current = setTimeout(() => {
+                        setShowMoreMenu(false);
+                      }, 100);
+                    }}
+                  >
+                  <div className="p-8">
+                    <div className="grid grid-cols-3 gap-6">
+                      {moreMegaMenu.map((category) => {
+                        const CategoryIcon = category.icon;
+                        return (
+                          <div key={category.title}>
+                            <div className="flex items-center gap-2 mb-3 pb-2 border-b border-stone-200">
+                              <CategoryIcon className="w-5 h-5 text-stone-900" />
+                              <h3 className="font-bold text-stone-900 text-sm">{category.title}</h3>
+                            </div>
+                            <div className="space-y-2">
+                              {category.items.map((item) => {
+                                const ItemIcon = item.icon;
+                                return (
+                                  <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className="group block p-2 hover:bg-stone-50 rounded-lg transition-colors"
+                                  >
+                                    <div className="flex items-start gap-2">
+                                      <ItemIcon className="w-4 h-4 text-stone-500 group-hover:text-stone-900 mt-0.5 flex-shrink-0" strokeWidth={2} />
+                                      <div>
+                                        <div className="text-sm font-medium text-stone-700 group-hover:text-stone-900">
+                                          {item.name}
+                                        </div>
+                                        <div className="text-xs text-stone-500 mt-0.5">
+                                          {item.description}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* CTA Section */}
+                    <div className="mt-6 pt-6 border-t border-stone-200">
+                      <div className="flex items-center justify-between bg-gradient-to-r from-stone-50 to-stone-100 p-4 rounded-lg">
+                        <div>
+                          <h4 className="font-semibold text-stone-900 text-sm">Need expert legal help?</h4>
+                          <p className="text-xs text-stone-600 mt-1">Connect with verified lawyers for contract review</p>
+                        </div>
+                        <Link
+                          href="/lawyers"
+                          className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all rounded-lg shadow-md whitespace-nowrap"
+                        >
+                          Find Lawyers
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                </>
+              )}
+            </div>
           </nav>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {showMobileMenu && (
+        <div className="md:hidden bg-white border-b border-stone-200">
+          <div className="max-w-[1400px] mx-auto px-6 py-4">
+            {/* Mobile Search */}
+            <div className="mb-4">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+                <input
+                  type="text"
+                  placeholder="Search contracts, legal terms..."
+                  className="w-full pl-12 pr-4 py-2.5 border-2 border-stone-300 rounded-full focus:outline-none focus:border-stone-900 text-sm bg-stone-50 focus:bg-white transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Mobile Navigation Links */}
+            <div className="space-y-1">
+              {primaryServices.map((service) => {
+                const Icon = service.icon;
+                const isActive = pathname === service.href;
+                return (
+                  <Link
+                    key={service.href}
+                    href={service.href}
+                    onClick={() => setShowMobileMenu(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                      isActive 
+                        ? 'bg-stone-100 text-stone-900' 
+                        : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" strokeWidth={2} />
+                    <span className="font-medium">{service.name}</span>
+                  </Link>
+                );
+              })}
+
+              {/* Secondary Services in Mobile */}
+              <div className="pt-2 mt-2 border-t border-stone-200">
+                <div className="px-4 py-2 text-xs font-semibold text-stone-500 uppercase tracking-wide">
+                  More Tools
+                </div>
+                {secondaryServices.map((service) => {
+                  const Icon = service.icon;
+                  const isActive = pathname === service.href;
+                  return (
+                    <Link
+                      key={service.href}
+                      href={service.href}
+                      onClick={() => setShowMobileMenu(false)}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                        isActive 
+                          ? 'bg-stone-100 text-stone-900' 
+                          : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" strokeWidth={2} />
+                      <span className="font-medium">{service.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* Mobile Auth Links */}
+              <div className="pt-2 mt-2 border-t border-stone-200 space-y-2">
+                <Link
+                  href="/lawyers"
+                  onClick={() => setShowMobileMenu(false)}
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg shadow-md"
+                >
+                  <Scale className="w-5 h-5" />
+                  <span>Find Lawyers</span>
+                  <div className="ml-1 px-1.5 py-0.5 bg-white/20 rounded text-[10px] font-bold uppercase">New</div>
+                </Link>
+                
+                {isAuthenticated && user ? (
+                  <>
+                    {/* User Info */}
+                    <div className="flex items-center gap-3 px-4 py-3 bg-stone-100 rounded-lg">
+                      {user.image ? (
+                        <img
+                          src={user.image}
+                          alt={user.name}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-stone-900 rounded-full flex items-center justify-center">
+                          <span className="text-white font-semibold">
+                            {getUserInitials(user.name)}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-stone-900 truncate">{user.name}</p>
+                        <p className="text-xs text-stone-600 truncate">{user.email}</p>
+                      </div>
+                    </div>
+
+                    {/* User Menu Items */}
+                    <Link
+                      href="/profile"
+                      onClick={() => setShowMobileMenu(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
+                    >
+                      <User className="w-5 h-5" />
+                      <span className="font-medium">Profile</span>
+                    </Link>
+                    <Link
+                      href="/notifications"
+                      onClick={() => setShowMobileMenu(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
+                    >
+                      <Bell className="w-5 h-5" />
+                      <span className="font-medium">Notifications</span>
+                      <span className="ml-auto w-2 h-2 bg-red-500 rounded-full"></span>
+                    </Link>
+                    <Link
+                      href="/settings"
+                      onClick={() => setShowMobileMenu(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
+                    >
+                      <Settings className="w-5 h-5" />
+                      <span className="font-medium">Settings</span>
+                    </Link>
+                    <button
+                      onClick={async () => {
+                        setShowMobileMenu(false);
+                        await authSignOut();
+                      }}
+                      className="flex items-center gap-3 px-4 py-3 w-full text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      <span className="font-medium">Sign Out</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/signin"
+                      onClick={() => setShowMobileMenu(false)}
+                      className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-stone-300 text-stone-700 font-medium rounded-lg hover:border-stone-400"
+                    >
+                      <LogIn className="w-5 h-5" />
+                      <span>Sign In</span>
+                    </Link>
+                    <Link
+                      href="/auth/signup"
+                      onClick={() => setShowMobileMenu(false)}
+                      className="flex items-center justify-center gap-2 px-4 py-3 bg-stone-900 text-white font-medium rounded-lg"
+                    >
+                      <User className="w-5 h-5" />
+                      <span>Sign Up</span>
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

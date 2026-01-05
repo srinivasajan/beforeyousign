@@ -144,6 +144,7 @@ ${result.modified.map((line, i) => `${i + 1}. ${line}`).join('\n')}
                       setVersion1Text('');
                     }}
                     className="p-2 hover:bg-stone-100 rounded-lg transition-colors"
+                    aria-label="Remove original version"
                   >
                     <X className="w-4 h-4 text-stone-500" />
                   </button>
@@ -194,6 +195,7 @@ ${result.modified.map((line, i) => `${i + 1}. ${line}`).join('\n')}
                       setVersion2Text('');
                     }}
                     className="p-2 hover:bg-stone-100 rounded-lg transition-colors"
+                    aria-label="Remove updated version"
                   >
                     <X className="w-4 h-4 text-stone-500" />
                   </button>

@@ -158,6 +158,7 @@ export default function LawyerMarketplace() {
                   ? 'bg-stone-900 text-white border-stone-900'
                   : 'bg-white text-stone-600 border-stone-300 hover:border-stone-400'
               }`}
+              aria-label="Grid view"
             >
               <Grid3x3 className="w-5 h-5" />
             </button>
@@ -168,6 +169,7 @@ export default function LawyerMarketplace() {
                   ? 'bg-stone-900 text-white border-stone-900'
                   : 'bg-white text-stone-600 border-stone-300 hover:border-stone-400'
               }`}
+              aria-label="List view"
             >
               <List className="w-5 h-5" />
             </button>

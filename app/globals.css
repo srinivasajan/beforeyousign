@@ -1,6 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+@layer utilities {
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
 :root {
   --background: #FAFAF9;
   --foreground: #1C1917;
@@ -307,6 +315,150 @@ h1, h2, h3, h4, h5, h6 {
   display: none;
 }
 
+/* Custom animation delays for loading dots */
+.animate-bounce-delay-0 {
+  animation-delay: 0ms;
+}
+
+.animate-bounce-delay-150 {
+  animation-delay: 150ms;
+}
+
+.animate-bounce-delay-300 {
+  animation-delay: 300ms;
+}
+
+/* Progress bar widths */
+.progress-bar {
+  transition: width 0.5s ease-in-out;
+}
+
+/* CTA Section Styles */
+.cta-section {
+  background: #1c1917;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Premium diagonal crosshatch pattern overlay */
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(255, 255, 255, 0.015) 40px,
+      rgba(255, 255, 255, 0.015) 41px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 40px,
+      rgba(255, 255, 255, 0.015) 40px,
+      rgba(255, 255, 255, 0.015) 41px
+    );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cta-section-bg {
+  position: absolute;
+  inset: 0;
+  background: #1c1917;
+  z-index: 0;
+}
+
+.cta-section-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* Dark section with premium crosshatch pattern */
+.dark-section-pattern {
+  position: relative;
+  overflow: hidden;
+}
+
+.dark-section-pattern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(255, 255, 255, 0.015) 40px,
+      rgba(255, 255, 255, 0.015) 41px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 40px,
+      rgba(255, 255, 255, 0.015) 40px,
+      rgba(255, 255, 255, 0.015) 41px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dark-section-pattern > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Light section with premium crosshatch pattern */
+.light-section-pattern {
+  position: relative;
+  overflow: hidden;
+}
+
+.light-section-pattern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(0, 0, 0, 0.008) 40px,
+      rgba(0, 0, 0, 0.008) 41px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 40px,
+      rgba(0, 0, 0, 0.008) 40px,
+      rgba(0, 0, 0, 0.008) 41px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.light-section-pattern > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Chat Page Height */
+.chat-container {
+  height: calc(100vh - 113px);
+}
+
 /* Ensure no pseudo-elements create unwanted decorative lines */
 .templates-page section::before,
 .templates-page section::after,
@@ -317,3 +469,61 @@ h1, h2, h3, h4, h5, h6 {
   border: none !important;
   background: none !important;
 }
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus visible styles for accessibility */
+*:focus-visible {
+  outline: 2px solid #1c1917;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Button hover lift effect */
+button:not(:disabled):hover,
+a.group:hover {
+  transform: translateY(-1px);
+}
+
+button:not(:disabled):active,
+a.group:active {
+  transform: translateY(0);
+}
+
+/* Loading animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Selection styles */
+::selection {
+  background-color: #1c1917;
+  color: white;
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+

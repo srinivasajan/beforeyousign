@@ -165,6 +165,7 @@ export default function ContractChat() {
                 ref={fileInputRef}
                 type="file"
                 accept=".txt,.pdf,.doc,.docx"
+                aria-label="Upload contract file"
                 className="hidden"
                 onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
               />
@@ -200,6 +201,7 @@ export default function ContractChat() {
               </div>
               <button
                 onClick={() => setContract(null)}
+                aria-label="Remove contract"
                 className="p-1 hover:bg-green-100 rounded transition-colors"
               >
                 <X className="w-4 h-4 text-green-700" />
@@ -254,9 +256,9 @@ export default function ContractChat() {
                 <div className="inline-block bg-white border border-stone-200 rounded-lg px-4 py-2.5">
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                      <div className="w-2 h-2 bg-stone-400 rounded-full animate-bounce animate-bounce-delay-0"></div>
+                      <div className="w-2 h-2 bg-stone-400 rounded-full animate-bounce animate-bounce-delay-150"></div>
+                      <div className="w-2 h-2 bg-stone-400 rounded-full animate-bounce animate-bounce-delay-300"></div>
                     </div>
                     <span className="text-sm text-stone-600">Analyzing your question...</span>
                   </div>
@@ -305,6 +307,7 @@ export default function ContractChat() {
             <button
               onClick={handleSendMessage}
               disabled={!inputMessage.trim() || thinking}
+              aria-label="Send message"
               className="px-3 py-1.5 bg-stone-900 text-white text-xs rounded hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center gap-1"
             >
               <Send className="w-3 h-3" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, AlertTriangle, Scale, FileText, Shield } from 'lucide-react';
+import { ArrowRight, AlertTriangle, Scale, FileText, Shield, Zap, Eye, MessageSquare, Users, Lock, TrendingUp, Clock } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Home() {
@@ -167,20 +167,126 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Key Features */}
+      <section className="bg-stone-50 py-20">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="text-center mb-16">
+            <span className="mono text-xs text-stone-500 tracking-wider uppercase mb-4 block">Platform Capabilities</span>
+            <h3 className="text-4xl font-bold text-stone-900 mb-6">Everything You Need for Contract Confidence</h3>
+            <p className="text-lg text-stone-600 max-w-2xl mx-auto">
+              Professional-grade tools that protect your interests without legal fees
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+              <div className="mb-4">
+                <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
+                  <Zap className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
+                </div>
+              </div>
+              <h4 className="text-lg font-bold text-stone-900 mb-2">Instant Analysis</h4>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Upload any contract and receive comprehensive risk analysis within seconds, not days.
+              </p>
+            </div>
+
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+              <div className="mb-4">
+                <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
+                  <Eye className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
+                </div>
+              </div>
+              <h4 className="text-lg font-bold text-stone-900 mb-2">Hidden Clause Detection</h4>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                AI-powered scanning identifies buried risks that even experienced readers might miss.
+              </p>
+            </div>
+
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+              <div className="mb-4">
+                <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
+                  <MessageSquare className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
+                </div>
+              </div>
+              <h4 className="text-lg font-bold text-stone-900 mb-2">Ask Questions</h4>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Chat with your contracts to understand specific clauses and implications in plain language.
+              </p>
+            </div>
+
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+              <div className="mb-4">
+                <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
+                  <Scale className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
+                </div>
+              </div>
+              <h4 className="text-lg font-bold text-stone-900 mb-2">Lawyer Marketplace</h4>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Connect with verified lawyers for complex issues that need professional review.
+              </p>
+            </div>
+
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+              <div className="mb-4">
+                <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
+                  <Users className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
+                </div>
+              </div>
+              <h4 className="text-lg font-bold text-stone-900 mb-2">Team Collaboration</h4>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Share contracts with stakeholders, collect feedback, and make decisions together.
+              </p>
+            </div>
+
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+              <div className="mb-4">
+                <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
+                  <Lock className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
+                </div>
+              </div>
+              <h4 className="text-lg font-bold text-stone-900 mb-2">Secure & Private</h4>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Bank-level encryption ensures your sensitive contracts remain confidential and secure.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof */}
+      <section className="bg-white py-20 border-t-2 border-stone-900">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div className="p-6">
+              <div className="flex items-center justify-center mb-3">
+                <TrendingUp className="w-8 h-8 text-stone-900" />
+              </div>
+              <div className="text-4xl font-bold text-stone-900 mb-2">10,000+</div>
+              <div className="text-sm text-stone-600">Contracts Analyzed</div>
+            </div>
+            <div className="p-6">
+              <div className="flex items-center justify-center mb-3">
+                <Users className="w-8 h-8 text-stone-900" />
+              </div>
+              <div className="text-4xl font-bold text-stone-900 mb-2">5,000+</div>
+              <div className="text-sm text-stone-600">Protected Users</div>
+            </div>
+            <div className="p-6">
+              <div className="flex items-center justify-center mb-3">
+                <Clock className="w-8 h-8 text-stone-900" />
+              </div>
+              <div className="text-4xl font-bold text-stone-900 mb-2">&lt;30s</div>
+              <div className="text-sm text-stone-600">Average Analysis Time</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="text-white py-20" style={{
-        background: '#1c1917',
-        position: 'relative',
-        overflow: 'hidden',
-        isolation: 'isolate'
-      }}>
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: '#1c1917',
-          zIndex: 0
-        }} />
-        <div className="max-w-3xl mx-auto px-8 text-center" style={{position: 'relative', zIndex: 10}}>
+      <section className="text-white py-20 cta-section">
+        <div className="cta-section-bg" />
+        <div className="max-w-3xl mx-auto px-8 text-center cta-section-content">
           <h3 className="text-4xl font-bold mb-6 leading-tight">
             Stop Signing Contracts You Don't Understand
           </h3>

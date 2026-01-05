@@ -256,10 +256,11 @@ export default function BookingForm({ lawyer }: { lawyer: Lawyer }) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-stone-900 mb-2">
+                  <label htmlFor="contract-type-select" className="block text-sm font-semibold text-stone-900 mb-2">
                     Contract Type *
                   </label>
                   <select
+                    id="contract-type-select"
                     required
                     value={formData.contractType}
                     onChange={(e) => setFormData({ ...formData, contractType: e.target.value })}

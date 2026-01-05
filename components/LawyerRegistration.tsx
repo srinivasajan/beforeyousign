@@ -323,8 +323,7 @@ export default function LawyerRegistration() {
   const handleSubmit = () => {
     if (validateStep(6)) {
       setSubmitted(true);
-      // Here you would send formData to your backend API
-      console.log('Lawyer Registration Submitted:', formData);
+      // TODO: Send formData to backend API endpoint
     }
   };
 
@@ -390,9 +389,9 @@ export default function LawyerRegistration() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-stone-50 light-section-pattern">
       {/* Header */}
-      <div className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-white py-12">
+      <div className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-white py-12 dark-section-pattern">
         <div className="max-w-5xl mx-auto px-6">
           <h1 className="text-4xl font-bold mb-3">Join Our Lawyer Network</h1>
           <p className="text-xl text-stone-300">
@@ -542,10 +541,11 @@ export default function LawyerRegistration() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-stone-900 mb-2">
+                  <label htmlFor="primary-state-select" className="block text-sm font-semibold text-stone-900 mb-2">
                     Primary State *
                   </label>
                   <select
+                    id="primary-state-select"
                     value={formData.state}
                     onChange={(e) => updateFormData({ state: e.target.value })}
                     className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${
@@ -684,7 +684,7 @@ export default function LawyerRegistration() {
                       {uploadProgress.professionalHeadshot !== undefined && uploadProgress.professionalHeadshot < 100 && (
                         <div className="mt-3">
                           <div className="w-full bg-stone-200 rounded-full h-2">
-                            <div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${uploadProgress.professionalHeadshot}%` }} />
+                            <div className="bg-green-600 h-2 rounded-full progress-bar" style={{ width: `${uploadProgress.professionalHeadshot}%` }} />
                           </div>
                         </div>
                       )}
@@ -726,7 +726,7 @@ export default function LawyerRegistration() {
                       {uploadProgress.barLicense !== undefined && uploadProgress.barLicense < 100 && (
                         <div className="mt-3">
                           <div className="w-full bg-stone-200 rounded-full h-2">
-                            <div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${uploadProgress.barLicense}%` }} />
+                            <div className="bg-green-600 h-2 rounded-full progress-bar" style={{ width: `${uploadProgress.barLicense}%` }} />
                           </div>
                         </div>
                       )}
@@ -875,6 +875,7 @@ export default function LawyerRegistration() {
                         <button
                           type="button"
                           onClick={() => removeArrayItem('education', index)}
+                          aria-label="Remove education entry"
                           className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         >
                           <X className="w-4 h-4" />
@@ -920,6 +921,7 @@ export default function LawyerRegistration() {
                       <button
                         type="button"
                         onClick={() => removeArrayItem('certifications', index)}
+                        aria-label="Remove certification"
                         className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <X className="w-4 h-4" />
@@ -1045,6 +1047,7 @@ export default function LawyerRegistration() {
                           onClick={() => {
                             updateFormData({ expertise: formData.expertise.filter((_, i) => i !== index) });
                           }}
+                          aria-label="Remove expertise area"
                           className="px-3 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-5 h-5" />
@@ -1106,6 +1109,7 @@ export default function LawyerRegistration() {
                               updateFormData({ practiceAreas: formData.practiceAreas.filter((_, i) => i !== index) });
                             }}
                             className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            aria-label="Remove practice area"
                           >
                             <Trash2 className="w-5 h-5" />
                           </button>
@@ -1162,6 +1166,7 @@ export default function LawyerRegistration() {
                           onClick={() => {
                             updateFormData({ successStories: formData.successStories.filter((_, i) => i !== index) });
                           }}
+                          aria-label="Remove success story"
                           className="px-2 py-1 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -1237,9 +1242,10 @@ export default function LawyerRegistration() {
                       
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                         <div>
-                          <label className="text-xs font-semibold text-stone-700 block mb-2">Duration</label>
+                          <label htmlFor={`consultation-duration-${index}`} className="text-xs font-semibold text-stone-700 block mb-2">Duration</label>
                           <div className="relative">
                             <select
+                              id={`consultation-duration-${index}`}
                               value={consult.duration}
                               onChange={(e) => updateArrayItem('consultations', index, { duration: parseInt(e.target.value) })}
                               className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900 appearance-none bg-white"
@@ -1291,6 +1297,7 @@ export default function LawyerRegistration() {
                             <button
                               type="button"
                               onClick={() => removeArrayItem('consultations', index)}
+                              aria-label="Remove consultation option"
                               className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                             >
                               <Trash2 className="w-5 h-5" />
@@ -1326,11 +1333,12 @@ export default function LawyerRegistration() {
               {/* Response Time & Payment Methods */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-stone-900 mb-2">
+                  <label htmlFor="response-time-select" className="block text-sm font-semibold text-stone-900 mb-2">
                     <Clock className="w-4 h-4 inline mr-1" />
                     Typical Response Time
                   </label>
                   <select
+                    id="response-time-select"
                     value={formData.responseTime}
                     onChange={(e) => updateFormData({ responseTime: e.target.value })}
                     className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900 bg-white"
@@ -1344,11 +1352,12 @@ export default function LawyerRegistration() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-stone-900 mb-2">
+                  <label htmlFor="timezone-select" className="block text-sm font-semibold text-stone-900 mb-2">
                     <MapPin className="w-4 h-4 inline mr-1" />
                     Time Zone
                   </label>
                   <select
+                    id="timezone-select"
                     value={formData.timezone}
                     onChange={(e) => updateFormData({ timezone: e.target.value })}
                     className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900 bg-white"

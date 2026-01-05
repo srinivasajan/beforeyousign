@@ -210,7 +210,7 @@ export default function LegalLibrary() {
       })}
 
       {/* CTA */}
-      <div className="bg-stone-900 text-white p-12 mt-16">
+      <div className="bg-stone-900 text-white p-12 mt-16 dark-section-pattern">
         <div className="max-w-3xl mx-auto text-center">
           <Scale className="w-16 h-16 mx-auto mb-6 text-stone-300" />
           <h3 className="text-4xl font-bold mb-4">Ready to Analyze Your Contract?</h3>

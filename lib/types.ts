@@ -95,6 +95,7 @@ export interface AnalysisResponse {
   success: boolean;
   analysis?: ContractAnalysis;
   error?: string;
+  requestId?: string;
 }
 
 export interface IndustryBenchmark {
