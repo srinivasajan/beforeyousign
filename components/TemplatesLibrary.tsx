@@ -1,14 +1,55 @@
 'use client';
 
-import { contractTemplates } from '@/lib/templates-data';
-import { Download, FileText, Shield, TrendingDown } from 'lucide-react';
+import { contractTemplates, ContractTemplate } from '@/lib/templates-data';
+import { exportAsPDF, exportAsDOCX, exportAsMarkdown } from '@/lib/export-utils';
+import TemplateCustomizationWizard from './TemplateCustomizationWizard';
+import { Download, FileText, Shield, TrendingDown, Clock, DollarSign, Star, ChevronDown, Wand2 } from 'lucide-react';
+import { useState } from 'react';
 
 export default function TemplatesLibrary() {
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [downloadMenuOpen, setDownloadMenuOpen] = useState<string | null>(null);
+  const [customizingTemplate, setCustomizingTemplate] = useState<ContractTemplate | null>(null);
+
   const getRiskColor = (score: number) => {
     if (score >= 60) return 'text-red-600 bg-red-50';
     if (score >= 40) return 'text-orange-600 bg-orange-50';
     if (score >= 20) return 'text-yellow-600 bg-yellow-50';
     return 'text-green-600 bg-green-50';
+  };
+
+  const getComplexityColor = (complexity: string) => {
+    switch (complexity) {
+      case 'Simple': return 'text-green-700 bg-green-50';
+      case 'Moderate': return 'text-blue-700 bg-blue-50';
+      case 'Complex': return 'text-purple-700 bg-purple-50';
+      default: return 'text-stone-700 bg-stone-50';
+    }
+  };
+
+  const handleDownload = async (templateId: string, format: 'markdown' | 'pdf' | 'docx') => {
+    const template = contractTemplates.find(t => t.id === templateId);
+    if (!template) return;
+
+    setDownloadMenuOpen(null);
+
+    try {
+      switch (format) {
+        case 'pdf':
+          await exportAsPDF(template.name, template.fullContent);
+          break;
+        case 'docx':
+          await exportAsDOCX(template.name, template.fullContent);
+          break;
+        case 'markdown':
+        default:
+          exportAsMarkdown(template.name, template.fullContent);
+          break;
+      }
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
+    }
   };
 
   const categories = Array.from(new Set(contractTemplates.map(t => t.category)));
@@ -51,6 +92,12 @@ export default function TemplatesLibrary() {
                         <h4 className="text-2xl font-bold text-stone-900 group-hover:text-stone-700 transition-colors">
                           {template.name}
                         </h4>
+                        {template.isPremium && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                            <span className="text-xs text-amber-700 font-semibold">Premium</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -67,9 +114,44 @@ export default function TemplatesLibrary() {
 
                   <p className="text-stone-700 leading-relaxed mb-4">{template.description}</p>
 
+                  {/* Metadata Row */}
+                  <div className="flex items-center gap-4 mb-4 text-xs text-stone-500">
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      <span>{template.estimatedTime}</span>
+                    </div>
+                    <div className="w-px h-3 bg-stone-300"></div>
+                    <div className={`px-2 py-0.5 rounded font-semibold ${getComplexityColor(template.complexity)}`}>
+                      {template.complexity}
+                    </div>
+                    {template.price > 0 && (
+                      <>
+                        <div className="w-px h-3 bg-stone-300"></div>
+                        <div className="flex items-center gap-1 font-semibold text-stone-700">
+                          <DollarSign className="w-3 h-3" />
+                          <span>{template.price}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
                   <div className="mb-4 p-4 bg-stone-50">
                     <p className="text-xs text-stone-500 uppercase tracking-wider font-bold mb-2">Best For</p>
                     <p className="text-sm text-stone-800">{template.useCase}</p>
+                  </div>
+
+                  {/* Industries & Jurisdictions */}
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {template.industry.slice(0, 3).map((industry) => (
+                      <span key={industry} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded">
+                        {industry}
+                      </span>
+                    ))}
+                    {template.industry.length > 3 && (
+                      <span className="px-2 py-1 text-xs bg-stone-100 text-stone-600 rounded">
+                        +{template.industry.length - 3} more
+                      </span>
+                    )}
                   </div>
 
                   <div className="mb-6">
@@ -79,10 +161,81 @@ export default function TemplatesLibrary() {
                     </div>
                   </div>
 
-                  <button className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-stone-900 text-white font-semibold hover:bg-stone-800 transition-colors duration-300 group">
-                    <Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
-                    Download Template
-                  </button>
+                  <div className="flex gap-3">
+                    {/* Customize Button */}
+                    <button
+                      onClick={() => setCustomizingTemplate(template)}
+                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-amber-500 text-white font-semibold hover:bg-amber-600 transition-colors duration-300 group"
+                    >
+                      <Wand2 className="w-4 h-4" />
+                      Customize
+                    </button>
+                    
+                    {/* Download Menu */}
+                    <div className="relative">
+                      <button 
+                        onClick={() => setDownloadMenuOpen(downloadMenuOpen === template.id ? null : template.id)}
+                        className="flex items-center justify-center gap-2 px-6 py-3 bg-stone-900 text-white font-semibold hover:bg-stone-800 transition-colors duration-300 group"
+                        aria-label="Download template"
+                        title="Download template"
+                      >
+                        <Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                      
+                      {/* Download Format Menu */}
+                      {downloadMenuOpen === template.id && (
+                        <div className="absolute top-full right-0 mt-1 bg-white border-2 border-stone-900 shadow-xl z-10 min-w-[200px]">
+                          <button
+                            onClick={() => handleDownload(template.id, 'markdown')}
+                            className="w-full px-4 py-3 text-left hover:bg-stone-100 transition-colors text-sm font-semibold text-stone-900 border-b border-stone-200"
+                          >
+                            📄 Markdown
+                          </button>
+                          <button
+                            onClick={() => handleDownload(template.id, 'pdf')}
+                            className="w-full px-4 py-3 text-left hover:bg-stone-100 transition-colors text-sm font-semibold text-stone-900 border-b border-stone-200"
+                          >
+                            📕 PDF
+                          </button>
+                          <button
+                            onClick={() => handleDownload(template.id, 'docx')}
+                            className="w-full px-4 py-3 text-left hover:bg-stone-100 transition-colors text-sm font-semibold text-stone-900"
+                          >
+                            📘 Word
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <button
+                      onClick={() => setSelectedTemplate(selectedTemplate === template.id ? null : template.id)}
+                      className="px-6 py-3 border-2 border-stone-900 text-stone-900 font-semibold hover:bg-stone-900 hover:text-white transition-colors duration-300"
+                    >
+                      Preview
+                    </button>
+                  </div>
+
+                  {/* Preview Modal */}
+                  {selectedTemplate === template.id && (
+                    <div className="mt-4 p-4 bg-stone-50 border-2 border-stone-200 max-h-96 overflow-y-auto">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-xs text-stone-500 uppercase tracking-wider font-bold">Template Preview</p>
+                        <button
+                          onClick={() => setSelectedTemplate(null)}
+                          className="text-xs text-stone-500 hover:text-stone-900"
+                        >
+                          Close ×
+                        </button>
+                      </div>
+                      <div className="prose prose-sm prose-stone max-w-none">
+                        <pre className="text-xs whitespace-pre-wrap text-stone-700 font-mono">
+                          {template.fullContent.substring(0, 2000)}
+                          {template.fullContent.length > 2000 && '\n\n... (Download to see full template)'}
+                        </pre>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -107,6 +260,14 @@ export default function TemplatesLibrary() {
             <div className="w-px h-4 bg-stone-600"></div>
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
+      
+      {/* Customization Wizard Modal */}
+      {customizingTemplate && (
+        <TemplateCustomizationWizard
+          template={customizingTemplate}
+          onClose={() => setCustomizingTemplate(null)}
+        />
+      )}
               <span>Industry Standard</span>
             </div>
             <div className="w-px h-4 bg-stone-600"></div>

@@ -36,15 +36,18 @@ import { useAuth, signOut as authSignOut, getUserInitials } from '@/lib/auth-uti
 
 // Primary navigation items (most important features)
 const primaryServices = [
+  { name: 'AI Draft', href: '/drafting', icon: FileSearch, badge: 'NEW' },
   { name: 'Analyze', href: '/analyze', icon: FileSearch },
   { name: 'Contracts', href: '/contracts', icon: FolderOpen },
   { name: 'Templates', href: '/templates-enhanced', icon: BookTemplate },
+  { name: 'Builder', href: '/template-builder', icon: BookTemplate, badge: 'NEW' },
   { name: 'E-Signature', href: '/esignature', icon: FileSignature },
   { name: 'Library', href: '/library', icon: BookOpen, hasMegaMenu: true },
 ];
 
 // Secondary navigation items
 const secondaryServices = [
+  { name: 'Intelligence', href: '/intelligence', icon: TrendingUp, badge: 'NEW' },
   { name: 'Renewals', href: '/renewals', icon: Calendar },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Team', href: '/team', icon: Users },
@@ -687,6 +690,11 @@ export default function Navbar() {
                     strokeWidth={2.5}
                   />
                   <span className="tracking-wide">{service.name}</span>
+                  {service.badge && (
+                    <span className="ml-1 px-1.5 py-0.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded text-[10px] font-bold uppercase">
+                      {service.badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}

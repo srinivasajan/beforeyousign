@@ -2,102 +2,59 @@
 
 import { FileText, Star, Download, Copy, Eye, Search, Filter, TrendingUp, Users, Building, Briefcase, Lock, Code, Home, Handshake, DollarSign, Globe, Shield, Award, CheckCircle, X } from 'lucide-react';
 import { useState } from 'react';
+import { contractTemplates, searchTemplates, getTemplateCategories } from '@/lib/templates-data';
 
 export default function TemplatesEnhanced() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-  const [previewTemplate, setPreviewTemplate] = useState<number | null>(null);
+  const [selectedComplexity, setSelectedComplexity] = useState('all');
+  const [previewTemplate, setPreviewTemplate] = useState<string | null>(null);
 
-  const templates = [
-    // Employment Templates
-    { id: 1, name: 'Employment Offer Letter', category: 'Employment', difficulty: 'Beginner', description: 'Standard job offer with salary, benefits, and start date', downloads: 2847, rating: 4.9, icon: Briefcase },
-    { id: 2, name: 'Employment Contract - Full Time', category: 'Employment', difficulty: 'Intermediate', description: 'Comprehensive employment agreement with detailed terms', downloads: 2134, rating: 4.8, icon: Briefcase },
-    { id: 3, name: 'Independent Contractor Agreement', category: 'Employment', difficulty: 'Intermediate', description: 'For hiring contractors and 1099 workers', downloads: 1876, rating: 4.7, icon: Users },
-    { id: 4, name: 'Internship Agreement', category: 'Employment', difficulty: 'Beginner', description: 'Agreement for paid or unpaid internship programs', downloads: 945, rating: 4.6, icon: Award },
-    { id: 5, name: 'Employee Non-Compete Agreement', category: 'Employment', difficulty: 'Advanced', description: 'Restrict employees from competing post-employment', downloads: 1654, rating: 4.5, icon: Shield },
-    
-    // Confidentiality & IP
-    { id: 6, name: 'Mutual Non-Disclosure Agreement (NDA)', category: 'Confidentiality', difficulty: 'Beginner', description: 'Two-way confidentiality agreement for both parties', downloads: 3247, rating: 4.9, icon: Lock },
-    { id: 7, name: 'Unilateral NDA', category: 'Confidentiality', difficulty: 'Beginner', description: 'One-way NDA for disclosing party protection', downloads: 2856, rating: 4.8, icon: Lock },
-    { id: 8, name: 'Intellectual Property Assignment', category: 'Confidentiality', difficulty: 'Advanced', description: 'Transfer ownership of IP rights', downloads: 1234, rating: 4.7, icon: Code },
-    { id: 9, name: 'Work for Hire Agreement', category: 'Confidentiality', difficulty: 'Intermediate', description: 'Clarify IP ownership in creative work', downloads: 1567, rating: 4.6, icon: Code },
-    
-    // Freelance & Service
-    { id: 10, name: 'Freelance Service Agreement', category: 'Freelance', difficulty: 'Intermediate', description: 'Comprehensive freelance project agreement', downloads: 2892, rating: 4.9, icon: Users },
-    { id: 11, name: 'Consulting Services Agreement', category: 'Freelance', difficulty: 'Intermediate', description: 'Professional consulting engagement terms', downloads: 2145, rating: 4.8, icon: Briefcase },
-    { id: 12, name: 'Master Service Agreement (MSA)', category: 'Freelance', difficulty: 'Advanced', description: 'Framework for ongoing service relationships', downloads: 1876, rating: 4.7, icon: Handshake },
-    { id: 13, name: 'Statement of Work (SOW)', category: 'Freelance', difficulty: 'Intermediate', description: 'Detailed project scope and deliverables', downloads: 1654, rating: 4.6, icon: FileText },
-    { id: 14, name: 'Retainer Agreement', category: 'Freelance', difficulty: 'Intermediate', description: 'Ongoing services with monthly retainer', downloads: 1432, rating: 4.5, icon: DollarSign },
-    
-    // SaaS & Technology
-    { id: 15, name: 'SaaS Subscription Agreement', category: 'SaaS', difficulty: 'Advanced', description: 'Software-as-a-Service terms and conditions', downloads: 2634, rating: 4.8, icon: Code },
-    { id: 16, name: 'Software License Agreement', category: 'SaaS', difficulty: 'Advanced', description: 'License terms for software products', downloads: 2156, rating: 4.7, icon: Code },
-    { id: 17, name: 'API Terms of Service', category: 'SaaS', difficulty: 'Advanced', description: 'Terms for API access and usage', downloads: 1543, rating: 4.6, icon: Globe },
-    { id: 18, name: 'Data Processing Agreement (DPA)', category: 'SaaS', difficulty: 'Advanced', description: 'GDPR-compliant data processing terms', downloads: 1876, rating: 4.8, icon: Shield },
-    { id: 19, name: 'Website Terms of Service', category: 'SaaS', difficulty: 'Intermediate', description: 'Standard website user agreement', downloads: 2234, rating: 4.7, icon: Globe },
-    { id: 20, name: 'Privacy Policy Template', category: 'SaaS', difficulty: 'Intermediate', description: 'GDPR and CCPA compliant privacy policy', downloads: 2987, rating: 4.9, icon: Shield },
-    
-    // Real Estate & Lease
-    { id: 21, name: 'Residential Lease Agreement', category: 'Lease', difficulty: 'Intermediate', description: 'Standard apartment/house rental agreement', downloads: 3187, rating: 4.8, icon: Home },
-    { id: 22, name: 'Commercial Lease Agreement', category: 'Lease', difficulty: 'Advanced', description: 'Office or retail space lease', downloads: 1987, rating: 4.7, icon: Building },
-    { id: 23, name: 'Sublease Agreement', category: 'Lease', difficulty: 'Intermediate', description: 'Tenant subleasing to another party', downloads: 1234, rating: 4.6, icon: Home },
-    { id: 24, name: 'Month-to-Month Rental Agreement', category: 'Lease', difficulty: 'Beginner', description: 'Flexible short-term rental terms', downloads: 1876, rating: 4.7, icon: Home },
-    { id: 25, name: 'Roommate Agreement', category: 'Lease', difficulty: 'Beginner', description: 'Agreement between co-tenants', downloads: 1432, rating: 4.5, icon: Users },
-    
-    // Business & Partnership
-    { id: 26, name: 'Partnership Agreement', category: 'Business', difficulty: 'Advanced', description: 'General partnership formation and terms', downloads: 1765, rating: 4.8, icon: Handshake },
-    { id: 27, name: 'LLC Operating Agreement', category: 'Business', difficulty: 'Advanced', description: 'Limited liability company governance', downloads: 2134, rating: 4.9, icon: Building },
-    { id: 28, name: 'Buy-Sell Agreement', category: 'Business', difficulty: 'Advanced', description: 'Transfer of business ownership interests', downloads: 987, rating: 4.7, icon: DollarSign },
-    { id: 29, name: 'Joint Venture Agreement', category: 'Business', difficulty: 'Advanced', description: 'Collaboration between two businesses', downloads: 1234, rating: 4.6, icon: Handshake },
-    { id: 30, name: 'Shareholder Agreement', category: 'Business', difficulty: 'Advanced', description: 'Rights and obligations of shareholders', downloads: 1543, rating: 4.8, icon: TrendingUp },
-    
-    // Sales & Vendor
-    { id: 31, name: 'Sales Agreement', category: 'Sales', difficulty: 'Intermediate', description: 'General goods or services purchase', downloads: 2156, rating: 4.7, icon: DollarSign },
-    { id: 32, name: 'Vendor Agreement', category: 'Sales', difficulty: 'Intermediate', description: 'Terms for supplier relationships', downloads: 1876, rating: 4.6, icon: Briefcase },
-    { id: 33, name: 'Distribution Agreement', category: 'Sales', difficulty: 'Advanced', description: 'Authorize distributors to sell products', downloads: 1432, rating: 4.7, icon: Globe },
-    { id: 34, name: 'Reseller Agreement', category: 'Sales', difficulty: 'Intermediate', description: 'Terms for reselling products/services', downloads: 1654, rating: 4.6, icon: TrendingUp },
-    { id: 35, name: 'Purchase Order Template', category: 'Sales', difficulty: 'Beginner', description: 'Standard purchase order form', downloads: 2876, rating: 4.8, icon: FileText },
-    
-    // Specialized
-    { id: 36, name: 'Influencer Marketing Agreement', category: 'Marketing', difficulty: 'Intermediate', description: 'Terms for social media influencer campaigns', downloads: 1876, rating: 4.7, icon: TrendingUp },
-    { id: 37, name: 'Affiliate Agreement', category: 'Marketing', difficulty: 'Intermediate', description: 'Commission-based marketing partnership', downloads: 1543, rating: 4.6, icon: Globe },
-    { id: 38, name: 'Photography Services Contract', category: 'Creative', difficulty: 'Intermediate', description: 'Photo shoot terms and usage rights', downloads: 1234, rating: 4.7, icon: Award },
-    { id: 39, name: 'Video Production Agreement', category: 'Creative', difficulty: 'Intermediate', description: 'Video creation and licensing terms', downloads: 1098, rating: 4.6, icon: Code },
-    { id: 40, name: 'Website Development Agreement', category: 'Creative', difficulty: 'Advanced', description: 'Web design and development contract', downloads: 1765, rating: 4.8, icon: Code },
-    { id: 41, name: 'Loan Agreement', category: 'Financial', difficulty: 'Advanced', description: 'Personal or business loan terms', downloads: 1432, rating: 4.7, icon: DollarSign },
-    { id: 42, name: 'Promissory Note', category: 'Financial', difficulty: 'Intermediate', description: 'Written promise to repay debt', downloads: 1876, rating: 4.6, icon: FileText },
-    { id: 43, name: 'Settlement Agreement', category: 'Legal', difficulty: 'Advanced', description: 'Resolve disputes without litigation', downloads: 1234, rating: 4.8, icon: Handshake },
-    { id: 44, name: 'Release of Liability', category: 'Legal', difficulty: 'Intermediate', description: 'Waiver of legal claims', downloads: 1654, rating: 4.7, icon: Shield },
-    { id: 45, name: 'Power of Attorney', category: 'Legal', difficulty: 'Advanced', description: 'Authorize someone to act on your behalf', downloads: 1987, rating: 4.8, icon: Award },
-  ];
+  const categories = getTemplateCategories();
 
-  const categories = [
-    { name: 'all', label: 'All Templates', count: templates.length, icon: FileText },
-    { name: 'Employment', label: 'Employment', count: templates.filter(t => t.category === 'Employment').length, icon: Briefcase },
-    { name: 'Confidentiality', label: 'Confidentiality & IP', count: templates.filter(t => t.category === 'Confidentiality').length, icon: Lock },
-    { name: 'Freelance', label: 'Freelance & Service', count: templates.filter(t => t.category === 'Freelance').length, icon: Users },
-    { name: 'SaaS', label: 'SaaS & Tech', count: templates.filter(t => t.category === 'SaaS').length, icon: Code },
-    { name: 'Lease', label: 'Real Estate', count: templates.filter(t => t.category === 'Lease').length, icon: Home },
-    { name: 'Business', label: 'Business & Partnership', count: templates.filter(t => t.category === 'Business').length, icon: Building },
-    { name: 'Sales', label: 'Sales & Vendor', count: templates.filter(t => t.category === 'Sales').length, icon: DollarSign },
-  ];
-
-  const difficultyColors = {
-    Beginner: { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300' },
-    Intermediate: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
-    Advanced: { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300' },
+  const categoryIcons: Record<string, any> = {
+    'Software & Technology': Code,
+    'Employment & HR': Briefcase,
+    'Confidentiality': Lock,
+    'Freelance/Consulting': Users,
+    'Real Estate': Home,
+    'Business': Building,
+    'Sales': DollarSign,
+    'Marketing': TrendingUp,
+    'Creative': Award,
+    'Financial': DollarSign,
+    'Legal': Shield,
   };
 
-  const filteredTemplates = templates.filter(t => {
+  const complexityColors = {
+    Simple: { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300' },
+    Moderate: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
+    Complex: { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300' },
+  };
+
+  const filteredTemplates = contractTemplates.filter(t => {
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         t.description.toLowerCase().includes(searchQuery.toLowerCase());
+                         t.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         t.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory;
-    const matchesDifficulty = selectedDifficulty === 'all' || t.difficulty === selectedDifficulty;
-    return matchesSearch && matchesCategory && matchesDifficulty;
+    const matchesComplexity = selectedComplexity === 'all' || t.complexity === selectedComplexity;
+    return matchesSearch && matchesCategory && matchesComplexity;
   });
 
-  const handleDownload = (template: typeof templates[0]) => {
+  const handleDownload = (templateId: string) => {
+    const template = contractTemplates.find(t => t.id === templateId);
+    if (!template) return;
+
+    const blob = new Blob([template.fullContent], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${template.name.replace(/\s+/g, '-')}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
     // Generate template overview
     const content = `${template.name}\n\n${template.description}\n\nCategory: ${template.category}\nDifficulty: ${template.difficulty}\nRating: ${template.rating}/5 (${template.downloads.toLocaleString()} downloads)\n\nThis template provides a framework for ${template.name.toLowerCase()}. Customize based on your specific needs and have it reviewed by a legal professional.`;
     const blob = new Blob([content], { type: 'text/plain' });
