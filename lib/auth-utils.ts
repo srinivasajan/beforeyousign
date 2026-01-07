@@ -1,18 +1,22 @@
 /**
  * Client-side authentication utilities
- * Provides hooks and helpers for managing auth state
+ * Provides hooks and helpers for managing auth state via Supabase
  */
 
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { User as SupabaseUserType } from '@supabase/supabase-js';
 
 export interface User {
   id: string;
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
   image?: string;
 }
+
+export type { SupabaseUserType as SupabaseUser }; // Alias for clarity if needed, though we are hiding Supabase User
 
 export interface Session {
   user: User;
@@ -21,32 +25,49 @@ export interface Session {
 
 /**
  * Client-side hook to get current session
- * For server components, use auth() from @/auth instead
  */
 export function useSession() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const supabase = createClient();
+
+  const mapUser = (supabaseUser: SupabaseUserType): User => {
+    return {
+      id: supabaseUser.id,
+      email: supabaseUser.email,
+      name: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || undefined,
+      image: supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.image || undefined,
+    };
+  };
 
   useEffect(() => {
-    async function fetchSession() {
-      try {
-        const res = await fetch('/api/auth/session');
-        if (res.ok) {
-          const data = await res.json();
-          setSession(data);
-        } else {
-          setSession(null);
-        }
-      } catch (error) {
-        console.error('[Session Error]', error);
-        setSession(null);
-      } finally {
-        setLoading(false);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      if (initialSession) {
+        setSession({
+          user: mapUser(initialSession.user),
+          expires: initialSession.expires_at?.toString() || '',
+        });
       }
-    }
+      setLoading(false);
+    });
 
-    fetchSession();
-  }, []);
+    // Listen for changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      if (newSession) {
+        setSession({
+          user: mapUser(newSession.user),
+          expires: newSession.expires_at?.toString() || '',
+        });
+      } else {
+        setSession(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
 
   return { session, loading };
 }
@@ -56,7 +77,7 @@ export function useSession() {
  */
 export function useAuth() {
   const { session, loading } = useSession();
-  
+
   return {
     user: session?.user || null,
     isAuthenticated: !!session,
@@ -68,39 +89,9 @@ export function useAuth() {
  * Sign out helper
  */
 export async function signOut() {
-  try {
-    await fetch('/api/auth/signout', {
-      method: 'POST',
-    });
-    window.location.href = '/';
-  } catch (error) {
-    console.error('[Sign Out Error]', error);
-  }
-}
-
-/**
- * Sign in with credentials
- */
-export async function signInWithCredentials(email: string, password: string) {
-  try {
-    const res = await fetch('/api/auth/callback/credentials', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || 'Failed to sign in');
-    }
-
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to sign in',
-    };
-  }
+  const supabase = createClient();
+  await supabase.auth.signOut();
+  window.location.href = '/auth/signin';
 }
 
 /**
@@ -111,34 +102,39 @@ export async function register(data: {
   email: string;
   password: string;
 }) {
-  try {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+  const supabase = createClient();
+  const { data: result, error } = await supabase.auth.signUp({
+    email: data.email,
+    password: data.password,
+    options: {
+      data: {
+        full_name: data.name,
+      },
+    },
+  });
 
-    const json = await res.json();
-
-    if (!res.ok) {
-      throw new Error(json.error || 'Failed to register');
-    }
-
-    return { success: true, user: json.user };
-  } catch (error) {
+  if (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to register',
+      error: error.message,
     };
   }
+
+  return {
+    success: true, user: result.user ? {
+      id: result.user.id,
+      email: result.user.email,
+      name: result.user.user_metadata?.full_name,
+    } : null
+  };
 }
 
 /**
  * Get user initials for avatar
  */
-export function getUserInitials(name?: string): string {
+export function getUserInitials(name?: string | null): string {
   if (!name) return '?';
-  
+
   const parts = name.trim().split(' ');
   if (parts.length >= 2) {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
@@ -148,7 +144,6 @@ export function getUserInitials(name?: string): string {
 
 /**
  * Protected route wrapper - redirects to sign in if not authenticated
- * Note: For server components, use auth() from @/auth instead
  */
 export function useRequireAuth() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -161,3 +156,4 @@ export function useRequireAuth() {
 
   return { isAuthenticated, isLoading };
 }
+

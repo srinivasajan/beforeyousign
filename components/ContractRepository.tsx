@@ -34,8 +34,8 @@ export default function ContractRepository() {
   const filteredContracts = contracts
     .filter(c => {
       const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           c.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           c.party.toLowerCase().includes(searchQuery.toLowerCase());
+        c.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.party.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = filterStatus === 'all' || c.status === filterStatus;
       const matchesRisk = filterRisk === 'all' || c.risk === filterRisk;
       return matchesSearch && matchesStatus && matchesRisk;
@@ -131,11 +131,10 @@ export default function ContractRepository() {
                 />
               </div>
             </div>
-            <button 
+            <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-5 py-3 border-2 rounded-lg font-semibold transition-all ${
-                showFilters ? 'bg-stone-900 text-white border-stone-900' : 'border-stone-300 hover:bg-stone-50'
-              }`}
+              className={`flex items-center gap-2 px-5 py-3 border-2 rounded-lg font-semibold transition-all ${showFilters ? 'bg-stone-900 text-white border-stone-900' : 'border-stone-300 hover:bg-stone-50'
+                }`}
             >
               <Filter className="w-4 h-4" />
               Filters
@@ -185,7 +184,7 @@ export default function ContractRepository() {
                   <label className="block text-sm font-semibold text-stone-700 mb-2">Sort By</label>
                   <select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}                      aria-label="Sort contracts by"                    className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900"
+                    onChange={(e) => setSortBy(e.target.value)} aria-label="Sort contracts by" className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900"
                   >
                     <option value="date">Date Added</option>
                     <option value="value">Contract Value</option>
@@ -216,7 +215,7 @@ export default function ContractRepository() {
                 {filteredContracts.map((contract) => {
                   const StatusIcon = statusColors[contract.status as keyof typeof statusColors].icon;
                   const riskColor = riskColors[contract.risk as keyof typeof riskColors];
-                  
+
                   return (
                     <tr key={contract.id} className="hover:bg-stone-50 transition-colors group">
                       <td className="px-6 py-4">

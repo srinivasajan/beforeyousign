@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { UserPlus, Mail, Lock, User, Eye, EyeOff, AlertCircle, CheckCircle2, Github, Chrome } from 'lucide-react';
-import { register } from '@/lib/auth-utils';
+import { signup, signInWithGithub, signInWithGoogle } from '../actions';
 
 export default function SignUpPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -47,25 +47,46 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const result = await register({ name, email, password });
-      
-      if (result.success) {
-        setSuccess(true);
-        setTimeout(() => {
-          router.push(`/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`);
-        }, 2000);
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('password', password);
+      formData.append('name', name);
+
+      const result = await signup(formData);
+
+      if (result?.error) {
+        setError(result.error);
+        setLoading(false);
       } else {
-        setError(result.error || 'Failed to create account');
+        // If we get here without error and without redirect (unlikely for signup if it redirects), 
+        // it implies verified email flow or similar. 
+        // However, our action redirects to /auth/verify-email
+        setSuccess(true);
       }
     } catch (err) {
+      // Don't catch redirects
+      if ((err as Error).message === 'NEXT_REDIRECT') {
+        throw err;
+      }
       setError('An unexpected error occurred');
-    } finally {
       setLoading(false);
     }
   };
 
-  const handleOAuthSignIn = (provider: 'github' | 'google') => {
-    window.location.href = `/api/auth/signin/${provider}?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+  const handleOAuthSignIn = async (provider: 'github' | 'google') => {
+    try {
+      if (provider === 'github') {
+        await signInWithGithub();
+      } else {
+        await signInWithGoogle();
+      }
+    } catch (err) {
+      // Don't catch redirects
+      if ((err as Error).message === 'NEXT_REDIRECT') {
+        throw err;
+      }
+      console.error(err);
+    }
   };
 
   if (success) {
@@ -293,9 +314,8 @@ export default function SignUpPage() {
 function PasswordRequirement({ met, text }: { met: boolean; text: string }) {
   return (
     <div className="flex items-center gap-2">
-      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
-        met ? 'bg-green-100' : 'bg-stone-100'
-      }`}>
+      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${met ? 'bg-green-100' : 'bg-stone-100'
+        }`}>
         {met && <CheckCircle2 className="w-3 h-3 text-green-600" />}
       </div>
       <span className={`text-xs ${met ? 'text-green-700' : 'text-stone-500'}`}>

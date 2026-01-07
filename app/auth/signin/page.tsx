@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Lock, Mail, Eye, EyeOff, Github, Chrome, AlertCircle } from 'lucide-react';
-import { signInWithCredentials } from '@/lib/auth-utils';
+import { signInWithGoogle, signInWithGithub, login } from '../actions';
 
 export default function SignInPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,23 +23,41 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      const result = await signInWithCredentials(email, password);
-      
-      if (result.success) {
-        router.push(callbackUrl);
-        router.refresh();
-      } else {
-        setError(result.error || 'Failed to sign in');
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('password', password);
+
+      const result = await login(formData);
+
+      if (result?.error) {
+        setError(result.error);
+        setLoading(false);
       }
+      // Redirect is handled by the server action
     } catch (err) {
+      // Don't catch redirects
+      if ((err as Error).message === 'NEXT_REDIRECT') {
+        throw err;
+      }
       setError('An unexpected error occurred');
-    } finally {
       setLoading(false);
     }
   };
 
-  const handleOAuthSignIn = (provider: 'github' | 'google') => {
-    window.location.href = `/api/auth/signin/${provider}?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+  const handleOAuthSignIn = async (provider: 'github' | 'google') => {
+    try {
+      if (provider === 'github') {
+        await signInWithGithub();
+      } else {
+        await signInWithGoogle();
+      }
+    } catch (err) {
+      // Don't catch redirects
+      if ((err as Error).message === 'NEXT_REDIRECT') {
+        throw err;
+      }
+      console.error(err);
+    }
   };
 
   return (

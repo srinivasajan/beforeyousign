@@ -12,7 +12,7 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { auth } from './auth';
+import { updateSession } from '@/lib/supabase/middleware';
 
 // Rate limiting store (in-memory for demo, use Redis in production)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -48,7 +48,7 @@ function applyRateLimit(request: NextRequest, config: { maxRequests: number; win
 
   if (limit.count >= config.maxRequests) {
     const retryAfter = Math.ceil((limit.resetTime - now) / 1000);
-    
+
     return NextResponse.json(
       {
         error: 'Too Many Requests',
@@ -69,7 +69,7 @@ function applyRateLimit(request: NextRequest, config: { maxRequests: number; win
 
   limit.count++;
   rateLimitStore.set(key, limit);
-  
+
   return null; // Allow request
 }
 
@@ -111,22 +111,22 @@ const SECURITY_HEADERS = {
     "form-action 'self'",
     "upgrade-insecure-requests",
   ].join('; '),
-  
+
   // Prevent clickjacking
   'X-Frame-Options': 'DENY',
-  
+
   // Prevent MIME type sniffing
   'X-Content-Type-Options': 'nosniff',
-  
+
   // Enable XSS protection
   'X-XSS-Protection': '1; mode=block',
-  
+
   // Referrer policy
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  
+
   // Permissions policy
   'Permissions-Policy': 'geolocation=(), microphone=(), camera=(), payment=()',
-  
+
   // HSTS (HTTP Strict Transport Security)
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
 };
@@ -134,9 +134,11 @@ const SECURITY_HEADERS = {
 /**
  * Middleware function
  */
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const response = NextResponse.next();
+
+  // Initialize response with Supabase session handling
+  const response = await updateSession(request);
 
   // Apply security headers to all routes
   Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
@@ -155,7 +157,7 @@ export function middleware(request: NextRequest) {
   // Apply rate limiting to API routes
   if (pathname.startsWith('/api/')) {
     // Find matching rate limit config
-    const config = Object.entries(RATE_LIMITS).find(([path]) => 
+    const config = Object.entries(RATE_LIMITS).find(([path]) =>
       pathname.startsWith(path) && path !== 'default'
     )?.[1] || RATE_LIMITS.default;
 
