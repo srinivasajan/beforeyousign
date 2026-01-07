@@ -16,40 +16,40 @@ export interface ClauseLibraryItem {
   subcategory: string;
   title: string;
   shortName: string;
-  
+
   // Content
   text: string;
   variables: Variable[];
-  
+
   // Metadata
   industry: string[];
   contractTypes: string[];
   jurisdiction: string[];
   riskLevel: 'low' | 'medium' | 'high';
   favorability: 'buyer' | 'seller' | 'balanced';
-  
+
   // Usage stats
   popularity: number; // 0-100
   usageCount: number;
   successRate: number; // % of contracts that included this and were successful
   avgNegotiationChanges: number;
-  
+
   // Legal info
   legalBasis?: string;
   precedents: string[];
   citations: string[];
-  
+
   // Variations
   alternatives: string[]; // IDs of alternative clauses
   strengthenings: string[]; // IDs of stronger versions
   weakenings: string[]; // IDs of weaker versions
-  
+
   // Community
   author: 'system' | 'community' | 'user';
   rating: number; // 1-5 stars
   reviews: number;
   certifiedBy?: string[]; // Law firms or organizations
-  
+
   // AI insights
   aiRecommendation?: {
     score: number;
@@ -101,24 +101,24 @@ export interface TemplateBuilder {
   description: string;
   contractType: string;
   industry: string;
-  
+
   // Structure
   sections: TemplateSection[];
   variables: Variable[];
-  
+
   // Metadata
   createdBy: string;
   createdAt: Date;
   lastModified: Date;
   version: number;
   status: 'draft' | 'review' | 'published' | 'archived';
-  
+
   // Quality metrics
   completeness: number; // 0-100
   riskScore: number;
   missingRecommendedClauses: string[];
   incompatibilities: ClauseIncompatibility[];
-  
+
   // Collaboration
   collaborators: string[];
   comments: BuilderComment[];
@@ -210,6 +210,7 @@ export class SmartTemplateBuilder {
     contractType?: string;
     riskLevel?: string;
     minPopularity?: number;
+    minRating?: number;
   }): ClauseLibraryItem[] {
     let results = Array.from(this.clauseLibrary.values());
 
@@ -237,6 +238,9 @@ export class SmartTemplateBuilder {
     if (filters?.minPopularity) {
       results = results.filter(c => c.popularity >= filters.minPopularity!);
     }
+    if (filters?.minRating) {
+      results = results.filter(c => c.rating >= filters.minRating!);
+    }
 
     return results.sort((a, b) => b.popularity - a.popularity);
   }
@@ -254,18 +258,18 @@ export class SmartTemplateBuilder {
     }
   ): Promise<ClauseRecommendation[]> {
     const recommendations: ClauseRecommendation[] = [];
-    
+
     // Analyze current template
     const currentClauseIds = currentTemplate.sections
       .flatMap(s => s.clauses)
       .map(c => c.clauseLibraryId);
-    
+
     const missingCategories = this.findMissingCategories(currentClauseIds);
-    
+
     // Recommend clauses for missing categories
     for (const category of missingCategories) {
       const topClauses = this.getClausesByCategory(category as ClauseCategory)
-        .filter(c => 
+        .filter(c =>
           c.contractTypes.includes(context.contractType) ||
           c.industry.includes(context.industry)
         )
@@ -399,7 +403,7 @@ export class SmartTemplateBuilder {
    */
   async compileTemplate(template: TemplateBuilder): Promise<string> {
     let compiled = `# ${template.name}\n\n`;
-    
+
     // Add description if exists
     if (template.description) {
       compiled += `*${template.description}*\n\n`;
@@ -1578,12 +1582,12 @@ export function importClauseLibraryFromJSON(json: string): ClauseLibraryItem[] {
 
 export function generateClausePreview(clause: ClauseLibraryItem, sampleVariables?: Record<string, any>): string {
   let preview = clause.text;
-  
+
   if (sampleVariables) {
     for (const [key, value] of Object.entries(sampleVariables)) {
       preview = preview.replace(new RegExp(`\\[${key}\\]`, 'g'), String(value));
     }
   }
-  
+
   return preview;
 }
