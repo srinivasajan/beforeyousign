@@ -787,9 +787,9 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                         <div className="flex items-start justify-between mb-2">
                           <h4 className="font-bold text-stone-900">{clause.title}</h4>
                           <span className={`text-xs px-2 py-1 rounded ${clause.riskLevel === 'critical' ? 'bg-red-100 text-red-800' :
-                              clause.riskLevel === 'high' ? 'bg-orange-100 text-orange-800' :
-                                clause.riskLevel === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                                  'bg-green-100 text-green-800'
+                            clause.riskLevel === 'high' ? 'bg-orange-100 text-orange-800' :
+                              clause.riskLevel === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-green-100 text-green-800'
                             }`}>
                             {clause.riskLevel.toUpperCase()}
                           </span>
@@ -995,8 +995,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                       <button
                         onClick={() => setExportFormat('pdf')}
                         className={`py-3 px-4 border-2 font-semibold transition-colors ${exportFormat === 'pdf'
-                            ? 'bg-stone-900 text-white border-stone-900'
-                            : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
+                          ? 'bg-stone-900 text-white border-stone-900'
+                          : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
                           }`}
                       >
                         📄 PDF
@@ -1004,8 +1004,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                       <button
                         onClick={() => setExportFormat('markdown')}
                         className={`py-3 px-4 border-2 font-semibold transition-colors ${exportFormat === 'markdown'
-                            ? 'bg-stone-900 text-white border-stone-900'
-                            : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
+                          ? 'bg-stone-900 text-white border-stone-900'
+                          : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
                           }`}
                       >
                         📝 Markdown
@@ -1013,8 +1013,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                       <button
                         onClick={() => setExportFormat('json')}
                         className={`py-3 px-4 border-2 font-semibold transition-colors ${exportFormat === 'json'
-                            ? 'bg-stone-900 text-white border-stone-900'
-                            : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
+                          ? 'bg-stone-900 text-white border-stone-900'
+                          : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
                           }`}
                       >
                         📊 JSON
@@ -1022,8 +1022,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                       <button
                         onClick={() => setExportFormat('html')}
                         className={`py-3 px-4 border-2 font-semibold transition-colors ${exportFormat === 'html'
-                            ? 'bg-stone-900 text-white border-stone-900'
-                            : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
+                          ? 'bg-stone-900 text-white border-stone-900'
+                          : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
                           }`}
                       >
                         🌐 HTML
@@ -1067,8 +1067,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                       <button
                         onClick={() => setExportOptions(prev => ({ ...prev, clauseFilter: 'all' }))}
                         className={`py-3 px-4 border-2 font-semibold text-sm transition-colors ${exportOptions.clauseFilter === 'all'
-                            ? 'bg-stone-900 text-white border-stone-900'
-                            : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
+                          ? 'bg-stone-900 text-white border-stone-900'
+                          : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
                           }`}
                       >
                         All Clauses
@@ -1076,8 +1076,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                       <button
                         onClick={() => setExportOptions(prev => ({ ...prev, clauseFilter: 'bookmarked' }))}
                         className={`py-3 px-4 border-2 font-semibold text-sm transition-colors ${exportOptions.clauseFilter === 'bookmarked'
-                            ? 'bg-stone-900 text-white border-stone-900'
-                            : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
+                          ? 'bg-stone-900 text-white border-stone-900'
+                          : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
                           }`}
                       >
                         Bookmarked
@@ -1085,8 +1085,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                       <button
                         onClick={() => setExportOptions(prev => ({ ...prev, clauseFilter: 'high-risk' }))}
                         className={`py-3 px-4 border-2 font-semibold text-sm transition-colors ${exportOptions.clauseFilter === 'high-risk'
-                            ? 'bg-stone-900 text-white border-stone-900'
-                            : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
+                          ? 'bg-stone-900 text-white border-stone-900'
+                          : 'bg-white text-stone-900 border-stone-300 hover:border-stone-900'
                           }`}
                       >
                         High Risk
@@ -1197,8 +1197,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                   chatMessages.map((msg, idx) => (
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[85%] rounded-2xl px-4 py-3 ${msg.role === 'user'
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-white border border-stone-200 text-stone-800'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white border border-stone-200 text-stone-800'
                         }`}>
                         <p className="text-sm leading-relaxed">{msg.content}</p>
                       </div>
@@ -1362,8 +1362,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                 <button
                   onClick={() => scrollToSection('summary')}
                   className={`group w-full text-left px-4 py-3 rounded-lg transition-colors duration-150 ${activeSection === 'summary'
-                      ? 'bg-stone-900 text-white'
-                      : 'hover:bg-stone-100 text-stone-700'
+                    ? 'bg-stone-900 text-white'
+                    : 'hover:bg-stone-100 text-stone-700'
                     }`}
                 >
                   <div className="flex items-center gap-3">
@@ -1375,8 +1375,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                 <button
                   onClick={() => scrollToSection('red-flags')}
                   className={`group w-full text-left px-4 py-3 rounded-lg transition-colors duration-150 ${activeSection === 'red-flags'
-                      ? 'bg-stone-900 text-white'
-                      : 'hover:bg-red-50 text-stone-700'
+                    ? 'bg-stone-900 text-white'
+                    : 'hover:bg-red-50 text-stone-700'
                     }`}
                 >
                   <div className="flex items-center gap-3">
@@ -1393,8 +1393,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                 <button
                   onClick={() => scrollToSection('clauses')}
                   className={`group w-full text-left px-4 py-3 rounded-lg transition-colors duration-150 ${activeSection === 'clauses'
-                      ? 'bg-stone-900 text-white'
-                      : 'hover:bg-blue-50 text-stone-700'
+                    ? 'bg-stone-900 text-white'
+                    : 'hover:bg-blue-50 text-stone-700'
                     }`}
                 >
                   <div className="flex items-center gap-3">
@@ -1417,8 +1417,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                         scrollToSection(`clause-${idx}`);
                       }}
                       className={`w-full text-left px-3 py-2.5 text-xs rounded-md transition-all duration-200 ${activeSection === `clause-${idx}`
-                          ? 'bg-stone-800 text-white font-semibold shadow-sm'
-                          : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900 hover:pl-4'
+                        ? 'bg-stone-800 text-white font-semibold shadow-sm'
+                        : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900 hover:pl-4'
                         }`}
                       title={clause.title}
                     >
@@ -1441,8 +1441,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                 <button
                   onClick={() => scrollToSection('recommendations')}
                   className={`group w-full text-left px-4 py-3 rounded-lg transition-colors duration-150 ${activeSection === 'recommendations'
-                      ? 'bg-stone-900 text-white'
-                      : 'hover:bg-green-50 text-stone-700'
+                    ? 'bg-stone-900 text-white'
+                    : 'hover:bg-green-50 text-stone-700'
                     }`}
                 >
                   <div className="flex items-center gap-3">
@@ -1454,8 +1454,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                 <button
                   onClick={() => scrollToSection('alternatives')}
                   className={`group w-full text-left px-4 py-3 rounded-lg transition-colors duration-150 ${activeSection === 'alternatives'
-                      ? 'bg-stone-900 text-white'
-                      : 'hover:bg-purple-50 text-stone-700'
+                    ? 'bg-stone-900 text-white'
+                    : 'hover:bg-purple-50 text-stone-700'
                     }`}
                 >
                   <div className="flex items-center gap-3">
@@ -1503,8 +1503,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                 <button
                   onClick={() => setViewMode('quick')}
                   className={`px-4 py-2 text-sm font-medium transition-colors ${viewMode === 'quick'
-                      ? 'bg-stone-900 text-white'
-                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                    ? 'bg-stone-900 text-white'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                     }`}
                 >
                   <Eye className="w-4 h-4 inline mr-2" />
@@ -1513,8 +1513,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                 <button
                   onClick={() => setViewMode('deep')}
                   className={`px-4 py-2 text-sm font-medium transition-colors ${viewMode === 'deep'
-                      ? 'bg-stone-900 text-white'
-                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                    ? 'bg-stone-900 text-white'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                     }`}
                 >
                   <EyeOff className="w-4 h-4 inline mr-2" />
@@ -1600,9 +1600,9 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                 <p className="text-6xl font-bold text-stone-900 mb-2 tabular-nums">{analysis.riskScore}</p>
                 <div className="flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${analysis.riskScore >= 75 ? 'bg-stone-900' :
-                      analysis.riskScore >= 50 ? 'bg-stone-700' :
-                        analysis.riskScore >= 25 ? 'bg-stone-500' :
-                          'bg-stone-300'
+                    analysis.riskScore >= 50 ? 'bg-stone-700' :
+                      analysis.riskScore >= 25 ? 'bg-stone-500' :
+                        'bg-stone-300'
                     }`}></div>
                   <p className="text-sm text-stone-600 font-medium">{getRiskLabel(analysis.riskScore)}</p>
                 </div>
@@ -1717,8 +1717,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={`text-xs px-3 py-1.5 uppercase font-semibold tracking-wider ${flag.severity === 'critical' ? 'bg-stone-900 text-white' :
-                              flag.severity === 'danger' ? 'bg-stone-700 text-white' :
-                                'bg-stone-300 text-stone-900'
+                            flag.severity === 'danger' ? 'bg-stone-700 text-white' :
+                              'bg-stone-300 text-stone-900'
                             }`}>
                             {flag.severity}
                           </span>
@@ -1771,8 +1771,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                       <button
                         onClick={() => toggleBookmark(clause.title)}
                         className={`p-2 rounded transition-colors ${bookmarkedClauses.has(clause.title)
-                            ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                            : 'bg-stone-100 text-stone-400 hover:bg-stone-200 hover:text-stone-600'
+                          ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                          : 'bg-stone-100 text-stone-400 hover:bg-stone-200 hover:text-stone-600'
                           }`}
                         title={bookmarkedClauses.has(clause.title) ? 'Remove bookmark' : 'Bookmark this clause'}
                       >
@@ -1792,9 +1792,9 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                         </button>
                       )}
                       <span className={`text-xs px-3 py-1 uppercase font-semibold tracking-wider ${clause.riskLevel === 'critical' ? 'bg-stone-900 text-white' :
-                          clause.riskLevel === 'high' ? 'bg-stone-700 text-white' :
-                            clause.riskLevel === 'medium' ? 'bg-stone-400 text-white' :
-                              'bg-stone-200 text-stone-900'
+                        clause.riskLevel === 'high' ? 'bg-stone-700 text-white' :
+                          clause.riskLevel === 'medium' ? 'bg-stone-400 text-white' :
+                            'bg-stone-200 text-stone-900'
                         }`}>
                         {clause.riskLevel}
                       </span>
@@ -1832,8 +1832,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                         <div className="relative h-2 bg-blue-100 rounded-full overflow-hidden">
                           <div
                             className={`strictness-bar absolute left-0 top-0 h-full transition-all duration-500 ${clause.industryComparison.averageStrictness > 70 ? 'bg-red-600' :
-                                clause.industryComparison.averageStrictness > 50 ? 'bg-orange-500' :
-                                  'bg-green-500'
+                              clause.industryComparison.averageStrictness > 50 ? 'bg-orange-500' :
+                                'bg-green-500'
                               }`}
                             data-width={clause.industryComparison.averageStrictness}
                           />
@@ -1963,8 +1963,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className={`px-3 py-1 text-xs uppercase font-bold tracking-wider rounded-full ${alternative.source === 'expert' ? 'bg-purple-600 text-white' :
-                          alternative.source === 'legal_standard' ? 'bg-blue-600 text-white' :
-                            'bg-green-600 text-white'
+                        alternative.source === 'legal_standard' ? 'bg-blue-600 text-white' :
+                          'bg-green-600 text-white'
                         }`}>
                         {alternative.source === 'expert' ? '⚖️ Expert' :
                           alternative.source === 'legal_standard' ? '📚 Legal Standard' :
@@ -2110,8 +2110,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                         <div className="bg-stone-50 border-2 border-stone-200 p-4 rounded-lg text-center">
                           <p className="text-xs text-stone-600 uppercase tracking-wider mb-1">Risk Change</p>
                           <p className={`text-2xl font-bold ${comparisonResult.riskScoreChange.direction === 'improved' ? 'text-green-600' :
-                              comparisonResult.riskScoreChange.direction === 'worsened' ? 'text-red-600' :
-                                'text-stone-600'
+                            comparisonResult.riskScoreChange.direction === 'worsened' ? 'text-red-600' :
+                              'text-stone-600'
                             }`}>
                             {comparisonResult.riskScoreChange.direction === 'improved' && '↓ '}
                             {comparisonResult.riskScoreChange.direction === 'worsened' && '↑ '}
@@ -2167,8 +2167,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                           })
                           .map((change: any, idx: number) => (
                             <div key={idx} className={`border-2 rounded-lg p-4 ${change.type === 'added' ? 'bg-green-50 border-green-300' :
-                                change.type === 'removed' ? 'bg-red-50 border-red-300' :
-                                  'bg-blue-50 border-blue-300'
+                              change.type === 'removed' ? 'bg-red-50 border-red-300' :
+                                'bg-blue-50 border-blue-300'
                               }`}>
                               <div className="flex items-center justify-between mb-2">
                                 <h5 className="font-bold text-stone-900">
@@ -2178,9 +2178,9 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                                   {change.newClause?.title || change.oldClause?.title}
                                 </h5>
                                 <span className={`px-2 py-1 text-xs font-bold uppercase rounded ${change.significance === 'critical' ? 'bg-red-600 text-white' :
-                                    change.significance === 'high' ? 'bg-orange-600 text-white' :
-                                      change.significance === 'medium' ? 'bg-yellow-600 text-white' :
-                                        'bg-stone-400 text-white'
+                                  change.significance === 'high' ? 'bg-orange-600 text-white' :
+                                    change.significance === 'medium' ? 'bg-yellow-600 text-white' :
+                                      'bg-stone-400 text-white'
                                   }`}>
                                   {change.significance}
                                 </span>
@@ -2188,8 +2188,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
 
                               {change.type === 'modified' && change.riskChange && (
                                 <div className={`text-sm font-medium mb-2 ${change.riskChange.direction === 'improved' ? 'text-green-700' :
-                                    change.riskChange.direction === 'worsened' ? 'text-red-700' :
-                                      'text-stone-700'
+                                  change.riskChange.direction === 'worsened' ? 'text-red-700' :
+                                    'text-stone-700'
                                   }`}>
                                   Risk: {change.riskChange.old} → {change.riskChange.new}
                                   ({change.riskChange.direction})
@@ -2261,8 +2261,8 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
           {/* Toast Notification */}
           {toast && (
             <div className={`fixed bottom-6 right-6 z-[70] px-6 py-4 rounded-lg shadow-2xl border-2 animate-slide-up ${toast.type === 'success'
-                ? 'bg-green-50 border-green-500 text-green-900'
-                : 'bg-red-50 border-red-500 text-red-900'
+              ? 'bg-green-50 border-green-500 text-green-900'
+              : 'bg-red-50 border-red-500 text-red-900'
               }`}>
               <div className="flex items-center gap-3">
                 {toast.type === 'success' ? (

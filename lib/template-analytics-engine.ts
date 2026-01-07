@@ -35,22 +35,22 @@ interface AnalyticsEvent {
     customizations: number;
     completions: number; // Fully executed contracts
     abandonments: number;
-    
+
     // Time metrics
     avgCustomizationTime: number; // seconds
     avgTimeToExecution: number; // days
-    
+
     // Success metrics
     executionRate: number; // % of downloads that get executed
     disputeRate: number; // % that result in disputes
     renewalRate: number; // % that get renewed (for recurring contracts)
-    
+
     // User satisfaction
     rating: number;
     reviewCount: number;
     npsScore: number;
   };
-  
+
   // Demographic data
   byIndustry: Record<string, number>;
   byJurisdiction: Record<string, number>;
@@ -60,14 +60,14 @@ interface AnalyticsEvent {
     from100kTo1m: number;
     over1m: number;
   };
-  
+
   // Temporal trends
   weeklyTrend: {
     week: string;
     downloads: number;
     completions: number;
   }[];
-  
+
   // Clause analytics
   clausePerformance: ClausePerformanceMetrics[];
 }
@@ -83,19 +83,19 @@ interface AnalyticsEvent {
 export class TemplateAnalyticsEngine {
   private analytics: Map<string, TemplateUsageAnalytics> = new Map();
   private abTests: Map<string, ABTestResult> = new Map();
-  
+
   /**
    * Track template usage event
    */
   async trackEvent(event: {
-    type: 'view' | 'download' | 'customize' | 'execute' | 'abandon' | 'dispute' | 'renew' | 'rate';
+    type: 'view' | 'download' | 'customize' | 'execute' | 'abandon' | 'dispute' | 'renew' | 'rate' | 'ai-generation' | 'collaboration-started' | 'export' | 'purchase';
     templateId: string;
     userId: string;
     metadata?: any;
     timestamp?: Date;
   }): Promise<void> {
     const analytics = this.analytics.get(event.templateId) || this.initializeAnalytics(event.templateId);
-    
+
     switch (event.type) {
       case 'view':
         analytics.metrics.views++;
@@ -122,13 +122,13 @@ export class TemplateAnalyticsEngine {
         this.updateRating(analytics, event.metadata.rating, event.metadata.nps);
         break;
     }
-    
+
     // Update execution rate
-    analytics.metrics.executionRate = 
+    analytics.metrics.executionRate =
       (analytics.metrics.completions / analytics.metrics.downloads) * 100;
-    
+
     this.analytics.set(event.templateId, analytics);
-    
+
     // Trigger real-time insights
     await this.generateRealtimeInsights(event.templateId);
   }
@@ -145,7 +145,7 @@ export class TemplateAnalyticsEngine {
    */
   getTopTemplates(limit: number = 10, metric: 'downloads' | 'execution-rate' | 'nps' = 'downloads'): TemplateUsageAnalytics[] {
     const allAnalytics = Array.from(this.analytics.values());
-    
+
     switch (metric) {
       case 'downloads':
         return allAnalytics.sort((a, b) => b.metrics.downloads - a.metrics.downloads).slice(0, limit);
@@ -166,19 +166,19 @@ export class TemplateAnalyticsEngine {
     const mockData: ClausePerformanceMetrics = {
       clauseId,
       clauseTitle: 'Limitation of Liability',
-      
+
       inclusionRate: 94,
       modificationRate: 23,
       removalRate: 6,
-      
+
       disputeCausationScore: 15, // Low score = good
       negotiationImpact: 2.3, // Days added
       executionImpact: 0.95, // Slight positive impact
-      
+
       dealVelocity: -1.5, // Slows deals by 1.5 days avg
       dealSize: 1.12, // Correlates with 12% higher deal values
       customerSatisfaction: 8.5, // NPS score when included
-      
+
       aiRecommendation: 'always-include',
       reasoning: 'Essential risk management clause. Slightly slows negotiation but reduces disputes by 65% and increases deal value. High modification rate suggests need for better defaults.',
       alternatives: [
@@ -187,7 +187,7 @@ export class TemplateAnalyticsEngine {
         'Tiered liability (complex but optimal risk sharing)',
       ],
     };
-    
+
     return mockData;
   }
 
@@ -206,7 +206,7 @@ export class TemplateAnalyticsEngine {
     trafficAllocation: number[]; // % for each variant
   }): Promise<string> {
     const testId = `ab-${Date.now()}`;
-    
+
     const test: ABTestResult = {
       testId,
       templateId: params.templateId,
@@ -231,9 +231,9 @@ export class TemplateAnalyticsEngine {
       startDate: new Date().toISOString(),
       status: 'running',
     };
-    
+
     this.abTests.set(testId, test);
-    
+
     return testId;
   }
 
@@ -250,9 +250,9 @@ export class TemplateAnalyticsEngine {
   async generateOptimizationRecommendations(templateId: string): Promise<OptimizationRecommendation[]> {
     const analytics = this.analytics.get(templateId);
     if (!analytics) return [];
-    
+
     const recommendations: OptimizationRecommendation[] = [];
-    
+
     // Low execution rate
     if (analytics.metrics.executionRate < 50) {
       recommendations.push({
@@ -278,7 +278,7 @@ export class TemplateAnalyticsEngine {
         },
       });
     }
-    
+
     // High abandonment rate
     if (analytics.metrics.abandonments / analytics.metrics.downloads > 0.3) {
       recommendations.push({
@@ -303,7 +303,7 @@ export class TemplateAnalyticsEngine {
         },
       });
     }
-    
+
     // Clause performance issues
     for (const clause of analytics.clausePerformance) {
       if (clause.disputeCausationScore > 50) {
@@ -330,7 +330,7 @@ export class TemplateAnalyticsEngine {
           },
         });
       }
-      
+
       if (clause.removalRate > 40) {
         recommendations.push({
           type: 'remove-clause',
@@ -356,7 +356,7 @@ export class TemplateAnalyticsEngine {
         });
       }
     }
-    
+
     // Industry-specific recommendations
     const topIndustry = this.getTopIndustry(analytics);
     if (topIndustry.percentage > 60) {
@@ -383,7 +383,7 @@ export class TemplateAnalyticsEngine {
         },
       });
     }
-    
+
     return recommendations.sort((a, b) => {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
@@ -439,12 +439,12 @@ export class TemplateAnalyticsEngine {
         ranking: {},
       };
     });
-    
+
     // Rank each metric
     const metrics = ['executionRate', 'avgTimeToExecution', 'npsScore'];
     for (const metric of metrics) {
-      const sorted = [...results].sort((a, b) => 
-        (b.metrics?.[metric as keyof typeof b.metrics] || 0) - 
+      const sorted = [...results].sort((a, b) =>
+        (b.metrics?.[metric as keyof typeof b.metrics] || 0) -
         (a.metrics?.[metric as keyof typeof a.metrics] || 0)
       );
       sorted.forEach((item, idx) => {
@@ -454,7 +454,7 @@ export class TemplateAnalyticsEngine {
         }
       });
     }
-    
+
     return {
       comparison: results,
       recommendations: [
@@ -480,7 +480,7 @@ export class TemplateAnalyticsEngine {
     recommendations: OptimizationRecommendation[];
   }> {
     const allAnalytics = Array.from(this.analytics.values());
-    
+
     return {
       topTemplates: this.getTopTemplates(5, 'downloads'),
       trendingTemplates: this.getTrendingTemplates(5),
@@ -543,7 +543,7 @@ export class TemplateAnalyticsEngine {
     const total = analytics.metrics.rating * analytics.metrics.reviewCount;
     analytics.metrics.reviewCount++;
     analytics.metrics.rating = (total + rating) / analytics.metrics.reviewCount;
-    
+
     const npsTotal = analytics.metrics.npsScore * (analytics.metrics.reviewCount - 1);
     analytics.metrics.npsScore = (npsTotal + nps) / analytics.metrics.reviewCount;
   }
@@ -552,12 +552,12 @@ export class TemplateAnalyticsEngine {
     // Trigger background job for real-time insights
     const analytics = this.analytics.get(templateId);
     if (!analytics) return;
-    
+
     // Check for anomalies
     if (analytics.metrics.abandonments / analytics.metrics.downloads > 0.5) {
       console.log(`Alert: Template ${templateId} has high abandonment rate`);
     }
-    
+
     if (analytics.metrics.executionRate < 30) {
       console.log(`Alert: Template ${templateId} has low execution rate`);
     }
@@ -566,12 +566,12 @@ export class TemplateAnalyticsEngine {
   private getTopIndustry(analytics: TemplateUsageAnalytics): { name: string; percentage: number } {
     const entries = Object.entries(analytics.byIndustry);
     if (entries.length === 0) return { name: 'Unknown', percentage: 0 };
-    
+
     const total = entries.reduce((sum, [, count]) => sum + count, 0);
-    const [industry, count] = entries.reduce((max, entry) => 
+    const [industry, count] = entries.reduce((max, entry) =>
       entry[1] > max[1] ? entry : max
     );
-    
+
     return {
       name: industry,
       percentage: (count / total) * 100,
@@ -584,7 +584,7 @@ export class TemplateAnalyticsEngine {
       'Finance': ['SOX compliance', 'PCI-DSS', 'FINRA regulations'],
       'Technology': ['SOC 2', 'ISO 27001', 'GDPR for SaaS'],
     };
-    
+
     return mapping[industry] || [];
   }
 
@@ -595,7 +595,7 @@ export class TemplateAnalyticsEngine {
 
   private getTemplatesNeedingAttention(): any[] {
     return Array.from(this.analytics.values())
-      .filter(a => 
+      .filter(a =>
         a.metrics.executionRate < 40 ||
         a.metrics.npsScore < 6 ||
         a.metrics.disputeRate > 15

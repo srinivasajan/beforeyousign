@@ -1,15 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Lock, Mail, Eye, EyeOff, Github, Chrome, AlertCircle } from 'lucide-react';
-import { signInWithGoogle, signInWithGithub, login } from '../actions';
+import { signInWithCredentials } from '@/lib/auth-utils';
 
-export default function SignInPage() {
+function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,41 +23,23 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append('email', email);
-      formData.append('password', password);
+      const result = await signInWithCredentials(email, password);
 
-      const result = await login(formData);
-
-      if (result?.error) {
-        setError(result.error);
-        setLoading(false);
+      if (result.success) {
+        router.push(callbackUrl);
+        router.refresh();
+      } else {
+        setError(result.error || 'Failed to sign in');
       }
-      // Redirect is handled by the server action
     } catch (err) {
-      // Don't catch redirects
-      if ((err as Error).message === 'NEXT_REDIRECT') {
-        throw err;
-      }
       setError('An unexpected error occurred');
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleOAuthSignIn = async (provider: 'github' | 'google') => {
-    try {
-      if (provider === 'github') {
-        await signInWithGithub();
-      } else {
-        await signInWithGoogle();
-      }
-    } catch (err) {
-      // Don't catch redirects
-      if ((err as Error).message === 'NEXT_REDIRECT') {
-        throw err;
-      }
-      console.error(err);
-    }
+  const handleOAuthSignIn = (provider: 'github' | 'google') => {
+    window.location.href = `/api/auth/signin/${provider}?callbackUrl=${encodeURIComponent(callbackUrl)}`;
   };
 
   return (
@@ -211,5 +193,13 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-stone-50 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-900"></div></div>}>
+      <SignInContent />
+    </Suspense>
   );
 }

@@ -40,7 +40,7 @@ export interface ContractTemplate {
   reviewCount: number;
   lastUpdated: string;
   version: string;
-  
+
   // Legacy-specific fields
   useCase: string;
   variables: string[]; // Simplified from TemplateVariable[]
@@ -2802,7 +2802,7 @@ export async function generateContractFromTemplate(
 
   // Use smart template engine to generate customized version
   const result = await smartTemplateEngine.generateContract(templateId, context);
-  
+
   return result.content;
 }
 
@@ -2816,15 +2816,23 @@ export function searchTemplates(filters: {
   maxRiskScore?: number;
   isPremium?: boolean;
   tags?: string[];
+  query?: string;
 }): ContractTemplate[] {
   return contractTemplates.filter((template) => {
+    if (filters.query) {
+      const q = filters.query.toLowerCase();
+      const matches = template.name.toLowerCase().includes(q) ||
+        template.description.toLowerCase().includes(q) ||
+        template.tags.some(t => t.toLowerCase().includes(q));
+      if (!matches) return false;
+    }
     if (filters.category && template.category !== filters.category) return false;
     if (filters.industry && !template.industry.includes(filters.industry)) return false;
     if (filters.jurisdiction && !template.jurisdiction.includes(filters.jurisdiction)) return false;
     if (filters.maxRiskScore && template.riskScore > filters.maxRiskScore) return false;
     if (filters.isPremium !== undefined && template.isPremium !== filters.isPremium) return false;
     if (filters.tags && !filters.tags.some((tag) => template.tags.includes(tag))) return false;
-    
+
     return true;
   });
 }
@@ -2991,4 +2999,6 @@ export const clauseAlternatives: ClauseAlternative[] = [
     contributor: 'UCC Article 2 - Warranties',
   },
 ];
+
+
 

@@ -7,7 +7,7 @@ export interface ExportOptions {
   includeNotes?: boolean;
   includeNegotiationScripts?: boolean;
   clauseFilter?: 'all' | 'bookmarked' | 'high-risk';
-  format: 'markdown' | 'json' | 'html';
+  format: 'markdown' | 'json' | 'html' | 'pdf';
 }
 
 export interface EnhancedExportData {
@@ -29,11 +29,11 @@ export function exportAsMarkdown(
   md += `**Contract:** ${analysis.metadata.fileName}\n\n`;
   md += `**Analyzed:** ${new Date(analysis.metadata.uploadedAt).toLocaleString()}\n\n`;
   md += `**Exported:** ${new Date().toLocaleString()}\n\n`;
-  
+
   if (analysis.confidence) {
     md += `**Analysis Confidence:** ${analysis.confidence.overall}%\n\n`;
   }
-  
+
   md += `---\n\n`;
 
   // Executive Summary
@@ -41,20 +41,20 @@ export function exportAsMarkdown(
   md += `${analysis.summary}\n\n`;
   md += `### Risk Assessment\n\n`;
   md += `**Overall Risk Score:** ${analysis.riskScore}/100\n\n`;
-  
-  const riskLevel = 
+
+  const riskLevel =
     analysis.riskScore >= 75 ? '🔴 CRITICAL - High Risk' :
-    analysis.riskScore >= 50 ? '🟠 SIGNIFICANT - Moderate Risk' :
-    analysis.riskScore >= 25 ? '🟡 CAUTION - Low-Moderate Risk' :
-    '🟢 ACCEPTABLE - Low Risk';
-  
+      analysis.riskScore >= 50 ? '🟠 SIGNIFICANT - Moderate Risk' :
+        analysis.riskScore >= 25 ? '🟡 CAUTION - Low-Moderate Risk' :
+          '🟢 ACCEPTABLE - Low Risk';
+
   md += `**Assessment:** ${riskLevel}\n\n`;
   md += `---\n\n`;
 
   // Red Flags
   if (analysis.redFlags.length > 0) {
     md += `## 🚨 Red Flags (${analysis.redFlags.length})\n\n`;
-    
+
     const criticalFlags = analysis.redFlags.filter(f => f.severity === 'critical');
     const dangerFlags = analysis.redFlags.filter(f => f.severity === 'danger');
     const warningFlags = analysis.redFlags.filter(f => f.severity === 'warning');
@@ -102,20 +102,20 @@ export function exportAsMarkdown(
 
   // Clauses
   md += `## Clause Analysis (${clausesToExport.length})\n\n`;
-  
+
   clausesToExport.forEach((clause, i) => {
     const isBookmarked = bookmarks.has(clause.title);
     const bookmark = isBookmarked ? '📌 ' : '';
-    
+
     md += `### ${i + 1}. ${bookmark}${clause.title}\n\n`;
     md += `**Risk Level:** ${clause.riskLevel.toUpperCase()} | **Category:** ${clause.category}\n\n`;
-    
+
     md += `#### Original Contract Language\n\n`;
     md += `> ${clause.originalText}\n\n`;
-    
+
     md += `#### Plain Language Explanation\n\n`;
     md += `${clause.plainLanguage}\n\n`;
-    
+
     if (clause.concerns.length > 0) {
       md += `#### Concerns\n\n`;
       clause.concerns.forEach(concern => {
@@ -128,7 +128,7 @@ export function exportAsMarkdown(
       md += `#### Recommendation\n\n`;
       md += `${clause.recommendation}\n\n`;
     }
-    
+
     // Include notes if available
     if (options.includeNotes && isBookmarked) {
       const note = bookmarks.get(clause.title);
@@ -137,7 +137,7 @@ export function exportAsMarkdown(
         md += `${note}\n\n`;
       }
     }
-    
+
     md += `---\n\n`;
   });
 
@@ -214,11 +214,11 @@ export function exportAsHTML(
   bookmarks: Map<string, string> = new Map(),
   options: ExportOptions
 ): string {
-  const riskColor = 
+  const riskColor =
     analysis.riskScore >= 75 ? '#dc2626' :
-    analysis.riskScore >= 50 ? '#ea580c' :
-    analysis.riskScore >= 25 ? '#ca8a04' :
-    '#16a34a';
+      analysis.riskScore >= 50 ? '#ea580c' :
+        analysis.riskScore >= 25 ? '#ca8a04' :
+          '#16a34a';
 
   let html = `<!DOCTYPE html>
 <html lang="en">
@@ -351,10 +351,10 @@ export function exportAsHTML(
 
     <h2>Clause Analysis</h2>
     ${analysis.clauses.map((clause, i) => {
-      const isBookmarked = bookmarks.has(clause.title);
-      const note = bookmarks.get(clause.title);
-      
-      return `
+    const isBookmarked = bookmarks.has(clause.title);
+    const note = bookmarks.get(clause.title);
+
+    return `
       <div class="clause ${clause.riskLevel} ${isBookmarked ? 'bookmarked' : ''}">
         <div class="clause-header">
           <h3>${i + 1}. ${isBookmarked ? '📌 ' : ''}${clause.title}</h3>
@@ -387,7 +387,7 @@ export function exportAsHTML(
         ` : ''}
       </div>
       `;
-    }).join('')}
+  }).join('')}
 
     <h2>Overall Recommendations</h2>
     <ul>

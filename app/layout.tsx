@@ -35,7 +35,12 @@ export const metadata: Metadata = {
     title: "BeforeYouSign | Executive Contract Intelligence",
     description: "Institutional-grade contract analysis powered by AI",
   },
-  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
+};
+
+export const viewport: import("next").Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
   themeColor: "#0f172a",
 };
 
@@ -52,12 +57,12 @@ export default function RootLayout({
         <meta httpEquiv="X-Frame-Options" content="DENY" />
         <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
         <meta httpEquiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
-        
+
         {/* Preconnect to external domains for better performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://generativelanguage.googleapis.com" />
-        
+
         {/* DNS Prefetch for faster lookups */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com" />
