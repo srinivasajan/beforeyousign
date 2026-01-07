@@ -14,7 +14,7 @@
 import { aiTemplateEngine } from './ai-template-engine';
 import { templateAnalytics } from './template-analytics-engine';
 import { collaborationEngine } from './template-collaboration-engine';
-import { marketplaceEngine } from './template-marketplace';
+import { templateMarketplace } from './template-marketplace';
 import { ComprehensiveLibrary } from './comprehensive-template-library';
 import { exportManager } from './export-manager';
 import type {
@@ -267,14 +267,14 @@ export class TemplateOrchestrator {
     maxPrice?: number;
     limit?: number;
   } = {}): Promise<any[]> {
-    return marketplaceEngine.searchTemplates(options);
+    return templateMarketplace.searchTemplates(options);
   }
 
   /**
    * Purchase marketplace template
    */
   async purchaseTemplate(templateId: string, buyerId: string, buyerEmail: string): Promise<any> {
-    const purchase = await marketplaceEngine.purchaseTemplate(
+    const purchase = await templateMarketplace.purchaseTemplate(
       templateId,
       buyerId,
       buyerEmail

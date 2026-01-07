@@ -311,7 +311,7 @@ class AIRedliningEngine {
     
     const added: string[] = [];
     const deleted: string[] = [];
-    const modified: Array<{ from: string; to: string }> = [];
+    const modifiedSections: Array<{ from: string; to: string }> = [];
 
     // This is simplified - real implementation would use proper diff algorithm
     modifiedLines.forEach((line, idx) => {
@@ -326,7 +326,7 @@ class AIRedliningEngine {
       }
     });
 
-    return { addedText: added, deletedText: deleted, modifiedSections: modified };
+    return { addedText: added, deletedText: deleted, modifiedSections };
   }
 }
 

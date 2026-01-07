@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BusinessIntelligenceEngine } from '@/lib/business-intelligence';
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await auth();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

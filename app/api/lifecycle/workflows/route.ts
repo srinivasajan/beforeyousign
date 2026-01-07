@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ContractLifecycleManager, ApprovalWorkflow } from '@/lib/contract-lifecycle-automation';
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await auth();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -16,32 +16,34 @@ export async function POST(req: NextRequest) {
 
     switch (action) {
       case 'create': {
-        const { contractId, approvers, ...config } = data;
-        const workflow = manager.createDefaultApprovalWorkflow(contractId, approvers, config);
+        const { contractType, contractValue } = data;
+        const workflow = manager.createDefaultApprovalWorkflow(contractType, contractValue);
         return NextResponse.json(workflow);
       }
 
       case 'approve': {
-        const { workflowId, step, approverId, comments } = data;
-        const result = await manager.processApproval(
-          workflowId,
-          step,
+        const { lifecycle, stepId, approverId, comments } = data;
+        const response = {
           approverId,
-          'approved',
-          comments
-        );
+          approverName: data.approverName || 'Unknown',
+          decision: 'approved' as const,
+          timestamp: new Date(),
+          comments,
+        };
+        const result = await manager.processApproval(lifecycle, stepId, approverId, response);
         return NextResponse.json(result);
       }
 
       case 'reject': {
-        const { workflowId, step, approverId, comments } = data;
-        const result = await manager.processApproval(
-          workflowId,
-          step,
+        const { lifecycle, stepId, approverId, comments } = data;
+        const response = {
           approverId,
-          'rejected',
-          comments
-        );
+          approverName: data.approverName || 'Unknown',
+          decision: 'rejected' as const,
+          timestamp: new Date(),
+          comments,
+        };
+        const result = await manager.processApproval(lifecycle, stepId, approverId, response);
         return NextResponse.json(result);
       }
 

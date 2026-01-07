@@ -39,7 +39,7 @@ export interface ClauseNegotiationPoint {
   
   // Market intelligence
   benchmarks: {
-    industry standard: string;
+    industryStandard: string;
     favorability: 'highly-favorable' | 'favorable' | 'neutral' | 'unfavorable' | 'highly-unfavorable';
     commonVariations: string[];
     redFlags: string[];
@@ -47,7 +47,7 @@ export interface ClauseNegotiationPoint {
 }
 
 export interface NegotiationStrategy {
-  overall Approach: 'collaborative' | 'competitive' | 'compromise' | 'avoid-conflict';
+  overallApproach: 'collaborative' | 'competitive' | 'compromise' | 'avoid-conflict';
   priorityIssues: string[];
   tradablePoints: string[];
   walkAwayConditions: string[];

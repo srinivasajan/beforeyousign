@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { RealtimeCollaborationEngine, CollaborationOperation } from '@/lib/realtime-collaboration';
-import { getServerSession } from 'next-auth';
+import { RealtimeCollaborationEngine, Operation } from '@/lib/realtime-collaboration';
+import { auth } from '@/auth';
 
 const engine = new RealtimeCollaborationEngine();
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -16,14 +16,14 @@ export async function POST(req: NextRequest) {
 
     switch (action) {
       case 'join': {
-        const { documentId, userId, userName } = data;
-        const sessionData = await engine.joinSession(documentId, userId, userName);
+        const { documentId, userId, userName, role = 'editor' } = data;
+        const sessionData = await engine.joinSession(documentId, userId, userName, role);
         return NextResponse.json(sessionData);
       }
 
       case 'operation': {
-        const { sessionId, operation } = data;
-        const result = await engine.applyOperation(sessionId, operation as CollaborationOperation);
+        const { sessionId, userId, operation } = data;
+        const result = await engine.applyOperation(sessionId, userId, operation);
         return NextResponse.json(result);
       }
 
@@ -34,14 +34,14 @@ export async function POST(req: NextRequest) {
       }
 
       case 'comment': {
-        const { sessionId, userId, comment } = data;
-        const result = await engine.addComment(sessionId, userId, comment);
+        const { sessionId, userId, userName, text, anchorPosition, anchorText, parentId } = data;
+        const result = await engine.addComment(sessionId, userId, userName, text, anchorPosition, anchorText, parentId);
         return NextResponse.json(result);
       }
 
       case 'suggestion': {
-        const { sessionId, userId, suggestion } = data;
-        const result = await engine.createSuggestion(sessionId, userId, suggestion);
+        const { sessionId, userId, userName, type, position, originalText, suggestedText, reason } = data;
+        const result = await engine.createSuggestion(sessionId, userId, userName, type, position, originalText, suggestedText, reason);
         return NextResponse.json(result);
       }
 
@@ -89,8 +89,8 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({
-      documentId: session.documentId,
-      participants: Array.from(session.participants.values()),
+      documentId: session.contractId,
+      participants: session.participants,
       operations: session.operations.length,
       comments: session.comments.length,
       suggestions: session.suggestions.length,

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AIContractDrafter, DraftRequest } from '@/lib/ai-contract-drafter';
-import { getServerSession } from 'next-auth';
+import { AIContractDrafter, ContractDraftRequest } from '@/lib/ai-contract-drafter';
+import { auth } from '@/auth';
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await auth();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -12,18 +12,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { action, ...data } = body;
 
-    const drafter = new AIContractDrafter();
+    const drafter = new AIContractDrafter(process.env.GEMINI_API_KEY || '');
 
     switch (action) {
       case 'draft': {
-        const request: DraftRequest = data;
+        const request: ContractDraftRequest = data;
         const result = await drafter.draftContract(request);
         return NextResponse.json(result);
       }
 
       case 'refine': {
-        const { draftId, feedback, conversationHistory } = data;
-        const result = await drafter.refineDraft(draftId, feedback, conversationHistory);
+        const { currentDraft, refinements } = data;
+        const result = await drafter.refineDraft(currentDraft, refinements);
         return NextResponse.json(result);
       }
 
@@ -34,8 +34,8 @@ export async function POST(req: NextRequest) {
       }
 
       case 'recommendations': {
-        const { draftId } = data;
-        const result = await drafter.recommendClauses(draftId);
+        const { contractType, industry, parties, existingSections } = data;
+        const result = await drafter.recommendClauses(contractType, industry, parties, existingSections);
         return NextResponse.json(result);
       }
 

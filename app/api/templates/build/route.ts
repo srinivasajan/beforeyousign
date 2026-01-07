@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SmartTemplateBuilder, TemplateBuilder } from '@/lib/smart-template-builder';
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await auth();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -16,10 +16,10 @@ export async function POST(req: NextRequest) {
 
     switch (action) {
       case 'recommendations': {
+        const { contractType, industry, userRole, riskTolerance } = data;
         const result = await builder.getRecommendations(
-          template.sections,
-          template.contractType,
-          template.industry
+          template,
+          { contractType, industry, userRole, riskTolerance }
         );
         return NextResponse.json(result);
       }
@@ -36,8 +36,7 @@ export async function POST(req: NextRequest) {
       }
 
       case 'compile': {
-        const variables = data.variables || {};
-        const result = await builder.compileTemplate(template, variables);
+        const result = await builder.compileTemplate(template);
         return NextResponse.json(result);
       }
 

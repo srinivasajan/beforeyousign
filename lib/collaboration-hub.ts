@@ -40,7 +40,7 @@ export interface CollaborationSession {
   metrics: {
     totalComments: number;
     resolvedComments: number;
-    changes Made: number;
+    changesMade: number;
     timeSpent: number; // minutes
     consensusLevel: number; // 0-100
   };
@@ -65,7 +65,7 @@ export interface Participant {
   
   activity: {
     commentsPosted: number;
-    editsM ade: number;
+    editsMade: number;
     timeSpent: number;
     lastAction: string;
   };

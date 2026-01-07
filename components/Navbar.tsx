@@ -41,6 +41,7 @@ import { useAuth, signOut as authSignOut, getUserInitials } from '@/lib/auth-uti
 const primaryServices = [
   { name: 'AI Draft', href: '/drafting', icon: FileSearch, badge: 'NEW' },
   { name: 'Analyze', href: '/analyze', icon: FileSearch },
+  { name: 'PDF Tools', href: '/tools', icon: FileText, badge: 'NEW' },
   { name: 'Contracts', href: '/contracts', icon: FolderOpen },
   { name: 'Templates', href: '/templates-enhanced', icon: BookTemplate },
   { name: 'Builder', href: '/template-builder', icon: BookTemplate, badge: 'NEW' },

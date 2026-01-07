@@ -145,7 +145,7 @@ class ContractIntelligenceSearchEngine {
    */
   async findSimilar(
     contractId: string,
-    similarity Threshold: number = 0.7,
+    similarityThreshold: number = 0.7,
     limit: number = 10
   ): Promise<Array<{
     contractId: string;

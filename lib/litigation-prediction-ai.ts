@@ -324,7 +324,7 @@ class LitigationPredictionAI {
 
     // Adjust based on precedents
     if (precedents.length > 0) {
-      const favorablePreced ents = precedents.filter(p => 
+      const favorablePrecedents = precedents.filter(p => 
         (context.yourRole === 'plaintiff' && p.outcome.includes('Plaintiff')) ||
         (context.yourRole === 'defendant' && p.outcome.includes('Defendant'))
       );

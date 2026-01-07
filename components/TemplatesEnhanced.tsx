@@ -45,18 +45,8 @@ export default function TemplatesEnhanced() {
     const template = contractTemplates.find(t => t.id === templateId);
     if (!template) return;
 
-    const blob = new Blob([template.fullContent], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${template.name.replace(/\s+/g, '-')}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
     // Generate template overview
-    const content = `${template.name}\n\n${template.description}\n\nCategory: ${template.category}\nDifficulty: ${template.difficulty}\nRating: ${template.rating}/5 (${template.downloads.toLocaleString()} downloads)\n\nThis template provides a framework for ${template.name.toLowerCase()}. Customize based on your specific needs and have it reviewed by a legal professional.`;
+    const content = `${template.name}\n\n${template.description}\n\nCategory: ${template.category}\nComplexity: ${template.complexity}\nRating: ${template.rating}/5 (${template.downloadCount.toLocaleString()} downloads)\n\nThis template provides a framework for ${template.name.toLowerCase()}. Customize based on your specific needs and have it reviewed by a legal professional.`;
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -68,7 +58,9 @@ export default function TemplatesEnhanced() {
     URL.revokeObjectURL(url);
   };
 
-  const handleCopy = (template: typeof templates[0]) => {
+  const handleCopy = (templateId: string) => {
+    const template = contractTemplates.find(t => t.id === templateId);
+    if (!template) return;
     const content = `${template.name}\n\n${template.description}`;
     navigator.clipboard.writeText(content);
     alert('Template copied to clipboard!');
@@ -90,21 +82,21 @@ export default function TemplatesEnhanced() {
               <FileText className="w-5 h-5 text-blue-600" />
               <span className="text-sm font-semibold text-stone-700">Total Templates</span>
             </div>
-            <p className="text-3xl font-bold text-stone-900">{templates.length}</p>
+            <p className="text-3xl font-bold text-stone-900">{contractTemplates.length}</p>
           </div>
           <div className="bg-white border border-stone-200 rounded-xl p-4">
             <div className="flex items-center gap-3 mb-2">
               <Download className="w-5 h-5 text-green-600" />
               <span className="text-sm font-semibold text-stone-700">Total Downloads</span>
             </div>
-            <p className="text-3xl font-bold text-stone-900">{(templates.reduce((sum, t) => sum + t.downloads, 0) / 1000).toFixed(0)}K</p>
+            <p className="text-3xl font-bold text-stone-900">{(contractTemplates.reduce((sum, t) => sum + t.downloadCount, 0) / 1000).toFixed(0)}K</p>
           </div>
           <div className="bg-white border border-stone-200 rounded-xl p-4">
             <div className="flex items-center gap-3 mb-2">
               <Star className="w-5 h-5 text-amber-500" />
               <span className="text-sm font-semibold text-stone-700">Avg Rating</span>
             </div>
-            <p className="text-3xl font-bold text-stone-900">{(templates.reduce((sum, t) => sum + t.rating, 0) / templates.length).toFixed(1)}</p>
+            <p className="text-3xl font-bold text-stone-900">{(contractTemplates.reduce((sum, t) => sum + t.rating, 0) / contractTemplates.length).toFixed(1)}</p>
           </div>
           <div className="bg-white border border-stone-200 rounded-xl p-4">
             <div className="flex items-center gap-3 mb-2">
@@ -134,47 +126,58 @@ export default function TemplatesEnhanced() {
             <div>
               <label className="text-sm font-semibold text-stone-700 mb-2 block">Filter by Category</label>
               <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
+                    selectedCategory === 'all'
+                      ? 'bg-stone-900 text-white'
+                      : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                  }`}
+                >
+                  All ({contractTemplates.length})
+                </button>
                 {categories.map((cat) => {
-                  const Icon = cat.icon;
+                  const Icon = categoryIcons[cat] || FileText;
+                  const count = contractTemplates.filter(t => t.category === cat).length;
                   return (
                     <button
-                      key={cat.name}
-                      onClick={() => setSelectedCategory(cat.name)}
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
                       className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
-                        selectedCategory === cat.name
+                        selectedCategory === cat
                           ? 'bg-stone-900 text-white'
                           : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
-                      {cat.label} ({cat.count})
+                      {cat} ({count})
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Difficulty Filter */}
+            {/* Complexity Filter */}
             <div>
-              <label className="text-sm font-semibold text-stone-700 mb-2 block">Filter by Difficulty</label>
+              <label className="text-sm font-semibold text-stone-700 mb-2 block">Filter by Complexity</label>
               <div className="flex gap-2">
                 <button
-                  onClick={() => setSelectedDifficulty('all')}
+                  onClick={() => setSelectedComplexity('all')}
                   className={`px-4 py-2 rounded-lg font-semibold ${
-                    selectedDifficulty === 'all'
+                    selectedComplexity === 'all'
                       ? 'bg-stone-900 text-white'
                       : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                   }`}
                 >
                   All
                 </button>
-                {Object.keys(difficultyColors).map((diff) => (
+                {Object.keys(complexityColors).map((diff) => (
                   <button
                     key={diff}
-                    onClick={() => setSelectedDifficulty(diff)}
+                    onClick={() => setSelectedComplexity(diff)}
                     className={`px-4 py-2 rounded-lg font-semibold ${
-                      selectedDifficulty === diff
-                        ? `${difficultyColors[diff as keyof typeof difficultyColors].bg} ${difficultyColors[diff as keyof typeof difficultyColors].text} border-2 ${difficultyColors[diff as keyof typeof difficultyColors].border}`
+                      selectedComplexity === diff
+                        ? `${complexityColors[diff as keyof typeof complexityColors].bg} ${complexityColors[diff as keyof typeof complexityColors].text} border-2 ${complexityColors[diff as keyof typeof complexityColors].border}`
                         : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                     }`}
                   >
@@ -189,8 +192,8 @@ export default function TemplatesEnhanced() {
         {/* Templates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTemplates.map((template) => {
-            const Icon = template.icon;
-            const diffColor = difficultyColors[template.difficulty as keyof typeof difficultyColors];
+            const Icon = categoryIcons[template.category] || FileText;
+            const diffColor = complexityColors[template.complexity as keyof typeof complexityColors];
             
             return (
               <div key={template.id} className="bg-white border border-stone-200 rounded-xl p-6 hover:shadow-xl transition-all group">
@@ -199,7 +202,7 @@ export default function TemplatesEnhanced() {
                     <Icon className="w-6 h-6 text-blue-600" />
                   </div>
                   <span className={`px-3 py-1 text-xs font-bold rounded-lg border-2 ${diffColor.bg} ${diffColor.text} ${diffColor.border}`}>
-                    {template.difficulty}
+                    {template.complexity}
                   </span>
                 </div>
 
@@ -213,7 +216,7 @@ export default function TemplatesEnhanced() {
                   </div>
                   <div className="flex items-center gap-1 text-stone-600">
                     <Download className="w-4 h-4" />
-                    <span className="text-sm font-semibold">{template.downloads.toLocaleString()}</span>
+                    <span className="text-sm font-semibold">{template.downloadCount.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -226,7 +229,7 @@ export default function TemplatesEnhanced() {
                     Preview
                   </button>
                   <button 
-                    onClick={() => handleCopy(template)}
+                    onClick={() => handleCopy(template.id)}
                     aria-label="Copy template"
                     title="Copy template to clipboard"
                     className="p-2.5 border-2 border-stone-300 rounded-lg hover:bg-stone-50 transition-colors"
@@ -234,7 +237,7 @@ export default function TemplatesEnhanced() {
                     <Copy className="w-4 h-4 text-stone-600" />
                   </button>
                   <button 
-                    onClick={() => handleDownload(template)}
+                    onClick={() => handleDownload(template.id)}
                     aria-label="Download template"
                     className="p-2.5 border-2 border-green-300 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
                   >
@@ -258,7 +261,7 @@ export default function TemplatesEnhanced() {
         {/* Results Count */}
         {filteredTemplates.length > 0 && (
           <div className="mt-6 text-center text-sm text-stone-600">
-            Showing <span className="font-bold text-stone-900">{filteredTemplates.length}</span> of <span className="font-bold text-stone-900">{templates.length}</span> templates
+            Showing <span className="font-bold text-stone-900">{filteredTemplates.length}</span> of <span className="font-bold text-stone-900">{contractTemplates.length}</span> templates
           </div>
         )}
       </div>
@@ -268,9 +271,9 @@ export default function TemplatesEnhanced() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50" onClick={() => setPreviewTemplate(null)}>
           <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
             {(() => {
-              const template = templates.find(t => t.id === previewTemplate);
+              const template = contractTemplates.find((t: any) => t.id === previewTemplate);
               if (!template) return null;
-              const Icon = template.icon;
+              const Icon = categoryIcons[template.category] || FileText;
               
               return (
                 <>
@@ -281,7 +284,7 @@ export default function TemplatesEnhanced() {
                       </div>
                       <div>
                         <h2 className="text-2xl font-bold text-stone-900">{template.name}</h2>
-                        <p className="text-sm text-stone-600">{template.category} • {template.difficulty}</p>
+                        <p className="text-sm text-stone-600">{template.category} • {template.complexity}</p>
                       </div>
                     </div>
                     <button 
@@ -301,8 +304,8 @@ export default function TemplatesEnhanced() {
                         <p className="text-stone-700 mb-4">{template.description}</p>
                         <div className="space-y-4 text-sm">
                           <p><strong>Category:</strong> {template.category}</p>
-                          <p><strong>Difficulty Level:</strong> {template.difficulty}</p>
-                          <p><strong>Rating:</strong> {template.rating} ⭐ ({template.downloads.toLocaleString()} downloads)</p>
+                          <p><strong>Complexity Level:</strong> {template.complexity}</p>
+                          <p><strong>Rating:</strong> {template.rating} ⭐ ({template.downloadCount.toLocaleString()} downloads)</p>
                           <p><strong>Use Cases:</strong> This template is ideal for establishing clear terms and protecting both parties in {template.category.toLowerCase()} agreements.</p>
                         </div>
                       </div>
@@ -355,14 +358,14 @@ export default function TemplatesEnhanced() {
                   
                   <div className="p-6 border-t border-stone-200 flex gap-3">
                     <button 
-                      onClick={() => handleDownload(template)}
+                      onClick={() => handleDownload(template.id)}
                       className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-stone-900 text-white rounded-lg font-semibold hover:bg-stone-800 transition-all"
                     >
                       <Download className="w-5 h-5" />
                       Download Template
                     </button>
                     <button 
-                      onClick={() => handleCopy(template)}
+                      onClick={() => handleCopy(template.id)}
                       className="flex items-center gap-2 px-6 py-3 border-2 border-stone-300 rounded-lg font-semibold hover:bg-stone-50 transition-colors"
                     >
                       <Copy className="w-5 h-5" />
