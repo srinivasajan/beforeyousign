@@ -1,5 +1,5 @@
-import BusinessIntelligenceDashboard from '@/components/BusinessIntelligenceDashboard';
+import DocumentIntelligence from '@/components/DocumentIntelligence';
 
 export default function IntelligencePage() {
-  return <BusinessIntelligenceDashboard />;
+  return <DocumentIntelligence />;
 }

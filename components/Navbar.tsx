@@ -30,7 +30,10 @@ import {
   Menu,
   Settings,
   LogOut,
-  Bell
+  Bell,
+  Zap,
+  Lock,
+  Brain
 } from 'lucide-react';
 import { useAuth, signOut as authSignOut, getUserInitials } from '@/lib/auth-utils';
 
@@ -48,6 +51,16 @@ const primaryServices = [
 // Secondary navigation items
 const secondaryServices = [
   { name: 'Intelligence', href: '/intelligence', icon: TrendingUp, badge: 'NEW' },
+  { name: 'Negotiate', href: '/negotiate', icon: MessageSquare, badge: 'AI' },
+  { name: 'Smart Search', href: '/search', icon: Search, badge: 'AI' },
+  { name: 'Market Intel', href: '/market-intelligence', icon: BarChart3, badge: 'LIVE' },
+  { name: 'Risk Predict', href: '/risk', icon: Shield, badge: 'ML' },
+  { name: 'Benchmark', href: '/benchmark', icon: BarChart3, badge: 'LIVE' },
+  { name: 'Voice Contract', href: '/voice', icon: MessageSquare, badge: 'AI' },
+  { name: 'Blockchain', href: '/blockchain', icon: Shield, badge: 'NEW' },
+  { name: 'Clause Library', href: '/clauses', icon: BookOpen, badge: 'LIVE' },
+  { name: 'Obligations', href: '/obligations', icon: Clock, badge: 'AUTO' },
+  { name: 'Multi-Language', href: '/multi-language', icon: TrendingUp, badge: '50+' },
   { name: 'Renewals', href: '/renewals', icon: Calendar },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Team', href: '/team', icon: Users },
@@ -127,28 +140,38 @@ const libraryMegaMenu = [
 
 const moreMegaMenu = [
   {
-    title: 'Management',
-    icon: FolderOpen,
+    title: 'AI-Powered Tools',
+    icon: Zap,
     items: [
-      { name: 'My Contracts', href: '/contracts', icon: FolderOpen, description: 'Organize and manage all your contracts' },
-      { name: 'Renewals', href: '/renewals', icon: Calendar, description: 'Track contract renewals and deadlines' },
-      { name: 'Team Collaboration', href: '/team', icon: Users, description: 'Work together on contract reviews' }
+      { name: 'AI Negotiation Assistant', href: '/negotiate', icon: MessageSquare, description: 'Real-time counterproposals & tactics' },
+      { name: 'Document Intelligence', href: '/intelligence', icon: Brain, description: 'OCR & entity extraction' },
+      { name: 'Smart Search', href: '/search', icon: Search, description: 'Find anything with AI semantic search' },
+      { name: 'Market Intelligence', href: '/market-intelligence', icon: TrendingUp, description: 'Live pricing & competitor analysis' },
+      { name: 'Contract Automation', href: '/automation', icon: Zap, description: 'Automated workflows & smart triggers' },
+      { name: 'Blockchain Verification', href: '/blockchain', icon: Lock, description: 'Immutable contract registry' },
+      { name: 'AI Contract Chat', href: '/chat', icon: MessageSquare, description: 'Ask questions about your contracts' },
+      { name: 'Risk Prediction', href: '/risk', icon: Shield, description: 'ML-powered risk scoring' }
     ]
   },
   {
-    title: 'Analysis',
+    title: 'Management & Analytics',
     icon: BarChart3,
     items: [
-      { name: 'Analytics Dashboard', href: '/analytics', icon: BarChart3, description: 'View insights and contract metrics' },
-      { name: 'Compare Versions', href: '/compare', icon: ArrowLeftRight, description: 'Side-by-side version comparison' },
-      { name: 'Playbooks', href: '/playbooks', icon: FileText, description: 'Contract review guidelines' }
+      { name: 'My Contracts', href: '/contracts', icon: FolderOpen, description: 'Organize and manage all contracts' },
+      { name: 'Analytics Dashboard', href: '/analytics', icon: BarChart3, description: 'Contract insights & metrics' },
+      { name: 'Compliance Monitoring', href: '/compliance', icon: Shield, description: 'Real-time regulatory tracking' },
+      { name: 'Benchmarking', href: '/benchmark', icon: Target, description: 'Compare vs market standards' },
+      { name: 'Renewals Calendar', href: '/renewals', icon: Calendar, description: 'Track deadlines & auto-renewals' },
+      { name: 'Compare Versions', href: '/compare', icon: ArrowLeftRight, description: 'Side-by-side comparison' }
     ]
   },
   {
-    title: 'Support',
-    icon: MessageSquare,
+    title: 'Collaboration & Support',
+    icon: Users,
     items: [
-      { name: 'Legal Chat', href: '/chat', icon: MessageSquare, description: 'Ask questions about your contracts' },
+      { name: 'Team Collaboration', href: '/team', icon: Users, description: 'Real-time co-editing & comments' },
+      { name: 'Obligation Tracking', href: '/obligations', icon: Clock, description: 'Auto-extracted tasks & deadlines' },
+      { name: 'Playbooks', href: '/playbooks', icon: FileText, description: 'Contract review guidelines' },
       { name: 'Find Lawyers', href: '/lawyers', icon: Scale, description: 'Connect with legal professionals' },
       { name: 'Help Center', href: '/help', icon: BookOpen, description: 'Guides and documentation' }
     ]

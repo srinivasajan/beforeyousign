@@ -9,17 +9,17 @@
  */
 
 import { exportAsPDF as basicPDF, exportAsDOCX as basicDOCX, exportAsMarkdown as basicMarkdown } from './export-utils';
-import { AdvancedExporter } from './advanced-export-integrations';
+import { AdvancedExportEngine } from './advanced-export-integrations';
 import type { ExportOptions } from './template-types';
 
 export class ExportManager {
-  private advancedExporter = new AdvancedExporter();
+  private advancedExporter = new AdvancedExportEngine();
 
   /**
    * Unified export function
    * Automatically selects basic or advanced exporter based on options
    */
-  async export(content: string, options: Partial<ExportOptions> = {}): Promise<Buffer | string> {
+  async export(content: string, options: Partial<ExportOptions> = {}): Promise<void> {
     const format = options.format || 'pdf';
     
     // Use advanced exporter if any advanced options are specified
@@ -32,13 +32,13 @@ export class ExportManager {
     );
 
     if (useAdvanced) {
-      return this.advancedExporter.export(content, {
+      await this.advancedExporter.export(content, {
         format,
         ...options,
       } as ExportOptions);
     } else {
       // Use simple exporters for basic cases
-      return this.basicExport(content, format);
+      await this.basicExport(content, format);
     }
   }
 
@@ -46,21 +46,59 @@ export class ExportManager {
    * Basic export using legacy utilities
    * Fast and simple, no external dependencies
    */
-  private async basicExport(content: string, format: string): Promise<Buffer | string> {
+  private async basicExport(content: string, format: string): Promise<void> {
+    const templateName = 'Contract';
+    
     switch (format) {
       case 'pdf':
-        return basicPDF(content);
+        await basicPDF(templateName, content);
+        return;
       case 'docx':
-        return basicDOCX(content);
+        await basicDOCX(templateName, content);
+        return;
       case 'markdown':
-        return basicMarkdown(content);
+        basicMarkdown(templateName, content);
+        return;
       case 'html':
-        return this.convertToHTML(content);
+        this.downloadAsHTML(content, templateName);
+        return;
       case 'plain-text':
-        return content;
+        this.downloadAsText(content, templateName);
+        return;
       default:
         throw new Error(`Unsupported basic export format: ${format}. Use advanced exporter.`);
     }
+  }
+
+  /**
+   * Download HTML content
+   */
+  private downloadAsHTML(content: string, filename: string): void {
+    const html = this.convertToHTML(content);
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename.replace(/\s+/g, '-')}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Download plain text
+   */
+  private downloadAsText(content: string, filename: string): void {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename.replace(/\s+/g, '-')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
   /**
@@ -80,29 +118,29 @@ export class ExportManager {
   /**
    * Export to PDF with advanced options
    */
-  async exportToPDF(content: string, options: Partial<ExportOptions> = {}): Promise<Buffer> {
-    return this.export(content, { ...options, format: 'pdf' }) as Promise<Buffer>;
+  async exportToPDF(content: string, options: Partial<ExportOptions> = {}): Promise<void> {
+    return this.export(content, { ...options, format: 'pdf' });
   }
 
   /**
    * Export to DOCX with advanced options
    */
-  async exportToDOCX(content: string, options: Partial<ExportOptions> = {}): Promise<Buffer> {
-    return this.export(content, { ...options, format: 'docx' }) as Promise<Buffer>;
+  async exportToDOCX(content: string, options: Partial<ExportOptions> = {}): Promise<void> {
+    return this.export(content, { ...options, format: 'docx' });
   }
 
   /**
    * Export to HTML
    */
-  async exportToHTML(content: string, options: Partial<ExportOptions> = {}): Promise<string> {
-    return this.export(content, { ...options, format: 'html' }) as Promise<string>;
+  async exportToHTML(content: string, options: Partial<ExportOptions> = {}): Promise<void> {
+    return this.export(content, { ...options, format: 'html' });
   }
 
   /**
    * Export to Markdown
    */
-  async exportToMarkdown(content: string, options: Partial<ExportOptions> = {}): Promise<string> {
-    return this.export(content, { ...options, format: 'markdown' }) as Promise<string>;
+  async exportToMarkdown(content: string, options: Partial<ExportOptions> = {}): Promise<void> {
+    return this.export(content, { ...options, format: 'markdown' });
   }
 
   /**
@@ -124,13 +162,13 @@ export class ExportManager {
    * Upload to cloud storage
    */
   async uploadToCloud(content: string, provider: 'google-drive' | 'dropbox' | 'onedrive' | 's3' | 'box', filename: string): Promise<any> {
-    const pdfContent = await this.exportToPDF(content);
+    // Use advanced exporter to generate content and upload
     return this.advancedExporter.uploadToCloud({
       provider,
       action: 'upload',
       file: {
         name: filename,
-        content: pdfContent,
+        content, // Advanced exporter will handle conversion
         mimeType: 'application/pdf',
       },
     });
@@ -140,13 +178,13 @@ export class ExportManager {
    * Integrate with CRM
    */
   async integrateCRM(content: string, provider: 'salesforce' | 'hubspot' | 'pipedrive' | 'zoho', dealData: any): Promise<any> {
-    const pdfContent = await this.exportToPDF(content);
+    // Use advanced exporter to handle CRM integration
     return this.advancedExporter.integrateCRM({
       provider,
       action: 'attach-document',
       document: {
         name: `Contract_${Date.now()}.pdf`,
-        content: pdfContent,
+        content, // Advanced exporter will handle conversion
       },
       deal: dealData,
     });
@@ -157,19 +195,11 @@ export class ExportManager {
    */
   async bulkExport(templates: Array<{ templateId: string; variables: Record<string, any>; outputName: string }>, format: string, destination: any): Promise<any> {
     return this.advancedExporter.bulkExport({
-      id: `bulk-${Date.now()}`,
       name: `Bulk Export ${new Date().toISOString()}`,
       templates,
       format,
       options: { format } as ExportOptions,
       destination,
-      status: 'pending',
-      progress: {
-        total: templates.length,
-        completed: 0,
-        failed: 0,
-      },
-      createdAt: new Date(),
     });
   }
 }

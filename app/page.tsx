@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, AlertTriangle, Scale, FileText, Shield, Zap, Eye, MessageSquare, Users, Lock, TrendingUp, Clock } from 'lucide-react';
+import { ArrowRight, AlertTriangle, Scale, FileText, Shield, Zap, Eye, MessageSquare, Users, Lock, TrendingUp, Clock, BookOpen, Globe } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Home() {
@@ -163,6 +163,161 @@ export default function Home() {
               <span>Analyze Your Contract</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Revolutionary Features - AI Powered */}
+      <section className="bg-stone-900 text-white py-20">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="text-center mb-16">
+            <span className="mono text-xs text-stone-400 tracking-wider uppercase mb-4 block">AI-Powered Intelligence</span>
+            <h3 className="text-4xl font-bold mb-6">Next-Generation Contract Analysis</h3>
+            <p className="text-lg text-stone-300 max-w-2xl mx-auto font-light">
+              Industry-first AI features that give you negotiation power and risk prediction
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            <Link href="/negotiate" className="group">
+              <div className="bg-white text-stone-900 border-2 border-white p-6 hover:bg-stone-50 transition-all duration-300">
+                <div className="flex items-center justify-between mb-3">
+                  <MessageSquare className="w-6 h-6" />
+                  <span className="px-2 py-1 bg-amber-500 text-white text-xs font-bold mono">AI</span>
+                </div>
+                <h4 className="text-lg font-bold mb-2">AI Negotiation</h4>
+                <p className="text-xs text-stone-600 leading-relaxed mb-3">
+                  Clause-by-clause negotiation recommendations with counter-proposals.
+                </p>
+                <div className="flex items-center gap-2 text-xs font-medium group-hover:gap-3 transition-all">
+                  <span>Negotiate</span>
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/risk" className="group">
+              <div className="bg-white text-stone-900 border-2 border-white p-6 hover:bg-stone-50 transition-all duration-300">
+                <div className="flex items-center justify-between mb-3">
+                  <Shield className="w-6 h-6" />
+                  <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold mono">ML</span>
+                </div>
+                <h4 className="text-lg font-bold mb-2">Risk Predictor</h4>
+                <p className="text-xs text-stone-600 leading-relaxed mb-3">
+                  ML predicts dispute probability with 82-95% accuracy.
+                </p>
+                <div className="flex items-center gap-2 text-xs font-medium group-hover:gap-3 transition-all">
+                  <span>Predict</span>
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/benchmark" className="group">
+              <div className="bg-white text-stone-900 border-2 border-white p-6 hover:bg-stone-50 transition-all duration-300">
+                <div className="flex items-center justify-between mb-3">
+                  <TrendingUp className="w-6 h-6" />
+                  <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold mono">LIVE</span>
+                </div>
+                <h4 className="text-lg font-bold mb-2">Market Benchmark</h4>
+                <p className="text-xs text-stone-600 leading-relaxed mb-3">
+                  Compare terms against thousands of real contracts.
+                </p>
+                <div className="flex items-center gap-2 text-xs font-medium group-hover:gap-3 transition-all">
+                  <span>Compare</span>
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/voice" className="group">
+              <div className="bg-white text-stone-900 border-2 border-white p-6 hover:bg-stone-50 transition-all duration-300">
+                <div className="flex items-center justify-between mb-3">
+                  <MessageSquare className="w-6 h-6" />
+                  <span className="px-2 py-1 bg-purple-500 text-white text-xs font-bold mono">VOICE</span>
+                </div>
+                <h4 className="text-lg font-bold mb-2">Voice-to-Contract</h4>
+                <p className="text-xs text-stone-600 leading-relaxed mb-3">
+                  Speak to create production-ready legal contracts.
+                </p>
+                <div className="flex items-center gap-2 text-xs font-medium group-hover:gap-3 transition-all">
+                  <span>Create</span>
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/blockchain" className="group">
+              <div className="bg-white text-stone-900 border-2 border-white p-6 hover:bg-stone-50 transition-all duration-300">
+                <div className="flex items-center justify-between mb-3">
+                  <Shield className="w-6 h-6" />
+                  <span className="px-2 py-1 bg-indigo-500 text-white text-xs font-bold mono">WEB3</span>
+                </div>
+                <h4 className="text-lg font-bold mb-2">Blockchain Registry</h4>
+                <p className="text-xs text-stone-600 leading-relaxed mb-3">
+                  Immutable contract verification with cryptographic proof.
+                </p>
+                <div className="flex items-center gap-2 text-xs font-medium group-hover:gap-3 transition-all">
+                  <span>Verify</span>
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/clauses" className="group">
+              <div className="bg-white text-stone-900 border-2 border-white p-6 hover:bg-stone-50 transition-all duration-300">
+                <div className="flex items-center justify-between mb-3">
+                  <BookOpen className="w-6 h-6" />
+                  <span className="px-2 py-1 bg-amber-600 text-white text-xs font-bold mono">5K+</span>
+                </div>
+                <h4 className="text-lg font-bold mb-2">Clause Library</h4>
+                <p className="text-xs text-stone-600 leading-relaxed mb-3">
+                  5,000+ pre-vetted clauses with risk ratings.
+                </p>
+                <div className="flex items-center gap-2 text-xs font-medium group-hover:gap-3 transition-all">
+                  <span>Browse</span>
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/obligations" className="group">
+              <div className="bg-white text-stone-900 border-2 border-white p-6 hover:bg-stone-50 transition-all duration-300">
+                <div className="flex items-center justify-between mb-3">
+                  <Clock className="w-6 h-6" />
+                  <span className="px-2 py-1 bg-orange-500 text-white text-xs font-bold mono">AUTO</span>
+                </div>
+                <h4 className="text-lg font-bold mb-2">Obligation Tracker</h4>
+                <p className="text-xs text-stone-600 leading-relaxed mb-3">
+                  Auto-extract and track all obligations with deadlines.
+                </p>
+                <div className="flex items-center gap-2 text-xs font-medium group-hover:gap-3 transition-all">
+                  <span>Track</span>
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/multi-language" className="group">
+              <div className="bg-white text-stone-900 border-2 border-white p-6 hover:bg-stone-50 transition-all duration-300">
+                <div className="flex items-center justify-between mb-3">
+                  <Globe className="w-6 h-6" />
+                  <span className="px-2 py-1 bg-teal-500 text-white text-xs font-bold mono">50+</span>
+                </div>
+                <h4 className="text-lg font-bold mb-2">Multi-Language</h4>
+                <p className="text-xs text-stone-600 leading-relaxed mb-3">
+                  Analyze contracts in 50+ languages with full legal support.
+                </p>
+                <div className="flex items-center gap-2 text-xs font-medium group-hover:gap-3 transition-all">
+                  <span>Translate</span>
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-stone-400 mono">Industry-first capabilities • Zero competitors</p>
           </div>
         </div>
       </section>
