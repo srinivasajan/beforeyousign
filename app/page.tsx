@@ -9,17 +9,17 @@ export default function Home() {
     <div className="min-h-screen bg-stone-50">
       {/* Hero Section */}
       <section className="relative bg-white border-b-2 border-stone-900">
-        <div className="max-w-7xl mx-auto px-8 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20">
           <div className="max-w-5xl">
             <div className="mb-4">
               <span className="mono text-xs text-stone-500 tracking-wider uppercase">Legal Intelligence Platform</span>
             </div>
 
-            <h2 className="text-6xl font-bold text-stone-900 mb-8 leading-[1.1] tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 mb-6 sm:mb-8 leading-[1.1] tracking-tight">
               From issues to answers, <span className="text-stone-600">your legal world made simple</span>
             </h2>
 
-            <div className="border-l-4 border-stone-900 pl-6 mb-8">
+            <div className="border-l-4 border-stone-900 pl-4 sm:pl-6 mb-6 sm:mb-8">
               <p className="text-base text-stone-600 leading-relaxed font-light">
                 Upload any contract and get instant analysis of risks, obligations, and hidden clauses.
                 Know what you're signing before you sign it.
@@ -37,14 +37,14 @@ export default function Home() {
       </section>
 
       {/* The Problem */}
-      <section className="bg-stone-50 py-16">
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+      <section className="bg-stone-50 py-12 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-start">
             <div>
               <div className="mb-4">
                 <span className="mono text-xs text-stone-500 tracking-wider uppercase">The Problem</span>
               </div>
-              <h3 className="text-4xl font-bold text-stone-900 mb-6 leading-tight">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-4 sm:mb-6 leading-tight">
                 A Massive, Systemic Asymmetry
               </h3>
               <p className="text-base text-stone-700 leading-relaxed font-light mb-4">
@@ -58,7 +58,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-4">
-              <div className="bg-white border-2 border-stone-900 p-6">
+              <div className="bg-white border-2 border-stone-900 p-4 sm:p-6">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-6 h-6 text-stone-900 flex-shrink-0" />
                   <div>
@@ -70,7 +70,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="bg-white border-2 border-stone-900 p-6">
+              <div className="bg-white border-2 border-stone-900 p-4 sm:p-6">
                 <div className="flex items-start gap-3">
                   <Scale className="w-6 h-6 text-stone-900 flex-shrink-0" />
                   <div>
@@ -82,7 +82,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="bg-white border-2 border-stone-900 p-6">
+              <div className="bg-white border-2 border-stone-900 p-4 sm:p-6">
                 <div className="flex items-start gap-3">
                   <FileText className="w-6 h-6 text-stone-900 flex-shrink-0" />
                   <div>
@@ -99,13 +99,13 @@ export default function Home() {
       </section>
 
       {/* The Solution */}
-      <section className="bg-white py-16 border-t-2 border-stone-900">
-        <div className="max-w-7xl mx-auto px-8">
+      <section className="bg-white py-12 sm:py-16 border-t-2 border-stone-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <div className="mb-4">
               <span className="mono text-xs text-stone-500 tracking-wider uppercase">The Solution</span>
             </div>
-            <h3 className="text-4xl font-bold text-stone-900 mb-6 leading-tight">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-4 sm:mb-6 leading-tight">
               Democratizing Legal Comprehension
             </h3>
             <p className="text-lg text-stone-600 leading-relaxed font-light">
@@ -114,7 +114,7 @@ export default function Home() {
           </div>
 
           {/* Features Grid */}
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
+          <div className="grid md:grid-cols-3 gap-6 sm:gap-8 mb-12">
             <div className="border-t-2 border-stone-900 pt-6">
               <div className="flex items-center justify-between mb-4">
                 <Shield className="w-8 h-8 text-stone-900" />
@@ -163,17 +163,17 @@ export default function Home() {
       </section>
 
       {/* Revolutionary Features - AI Powered */}
-      <section className="bg-stone-900 text-white py-20">
-        <div className="max-w-7xl mx-auto px-8">
+      <section className="bg-stone-900 text-white py-12 sm:py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
           <div className="text-center mb-16">
             <span className="mono text-xs text-stone-400 tracking-wider uppercase mb-4 block">AI-Powered Intelligence</span>
-            <h3 className="text-4xl font-bold mb-6">Next-Generation Contract Analysis</h3>
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Next-Generation Contract Analysis</h3>
             <p className="text-lg text-stone-300 max-w-2xl mx-auto font-light">
               Industry-first AI features that give you negotiation power and risk prediction
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
             <Link href="/negotiate" className="group">
               <div className="bg-white text-stone-900 border-2 border-white p-6 hover:bg-stone-50 transition-all duration-300">
                 <div className="flex items-center justify-between mb-3">
