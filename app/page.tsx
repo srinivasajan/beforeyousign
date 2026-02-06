@@ -19,8 +19,12 @@ export default function Home() {
               From issues to answers, <span className="text-stone-600">your legal world made simple</span>
             </h2>
 
-
-
+            <div className="border-l-4 border-stone-900 pl-6 mb-8">
+              <p className="text-base text-stone-600 leading-relaxed font-light">
+                Upload any contract and get instant analysis of risks, obligations, and hidden clauses.
+                Know what you're signing before you sign it.
+              </p>
+            </div>
             <Link
               href="/analyze"
               className="inline-flex items-center gap-2 px-8 py-3.5 bg-stone-900 text-white font-medium hover:bg-stone-800 transition-all duration-300 group"
