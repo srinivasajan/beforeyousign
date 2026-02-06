@@ -4,6 +4,8 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ToastProvider } from "@/components/ToastProvider";
+import { ClerkProvider } from "@clerk/nextjs";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,16 +68,22 @@ export default function RootLayout({
         {/* DNS Prefetch for faster lookups */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com" />
+
+        {/* Clerk preconnect */}
+        <link rel="preconnect" href="https://clerk.clerk.services" />
+        <link rel="preconnect" href="https://*.clerk.accounts.dev" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ToastProvider>
-          <ErrorBoundary>
-            <Navbar />
-            {children}
-          </ErrorBoundary>
-        </ToastProvider>
+        <ClerkProvider>
+          <ToastProvider>
+            <ErrorBoundary>
+              <Navbar />
+              {children}
+            </ErrorBoundary>
+          </ToastProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

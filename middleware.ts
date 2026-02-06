@@ -1,18 +1,18 @@
 /**
- * Next.js Middleware for Security, Performance, and Authentication
+ * Next.js Middleware with Clerk Authentication + Security Features
  * 
  * Features:
+ * - Clerk authentication (integrated)
  * - Security headers (CSP, X-Frame-Options, etc.)
  * - Rate limiting on API routes
  * - Request logging
  * - CORS handling
  * - Request validation
- * - Authentication protection
  */
 
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { auth } from './auth';
 
 // Rate limiting store (in-memory for demo, use Redis in production)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -48,7 +48,7 @@ function applyRateLimit(request: NextRequest, config: { maxRequests: number; win
 
   if (limit.count >= config.maxRequests) {
     const retryAfter = Math.ceil((limit.resetTime - now) / 1000);
-    
+
     return NextResponse.json(
       {
         error: 'Too Many Requests',
@@ -69,7 +69,7 @@ function applyRateLimit(request: NextRequest, config: { maxRequests: number; win
 
   limit.count++;
   rateLimitStore.set(key, limit);
-  
+
   return null; // Allow request
 }
 
@@ -101,41 +101,62 @@ const SECURITY_HEADERS = {
   // Content Security Policy
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://*.clerk.accounts.dev",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://generativelanguage.googleapis.com",
-    "frame-ancestors 'none'",
+    "connect-src 'self' https://generativelanguage.googleapis.com https://*.clerk.accounts.dev https://clerk.clerk.services",
+    "frame-src 'self' https://*.clerk.accounts.dev",
     "base-uri 'self'",
     "form-action 'self'",
     "upgrade-insecure-requests",
   ].join('; '),
-  
+
   // Prevent clickjacking
   'X-Frame-Options': 'DENY',
-  
+
   // Prevent MIME type sniffing
   'X-Content-Type-Options': 'nosniff',
-  
+
   // Enable XSS protection
   'X-XSS-Protection': '1; mode=block',
-  
+
   // Referrer policy
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  
+
   // Permissions policy
   'Permissions-Policy': 'geolocation=(), microphone=(), camera=(), payment=()',
-  
+
   // HSTS (HTTP Strict Transport Security)
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
 };
 
-/**
- * Middleware function
- */
-export function middleware(request: NextRequest) {
+// Define protected routes that require authentication
+const isProtectedRoute = createRouteMatcher([
+  '/dashboard(.*)',
+  '/contracts(.*)',
+  '/analyze(.*)',
+  '/templates(.*)',
+  '/profile(.*)',
+  '/settings(.*)',
+]);
+
+// Define public routes that should be accessible without authentication
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/api/public(.*)',
+]);
+
+export default clerkMiddleware(async (auth, request) => {
   const pathname = request.nextUrl.pathname;
+
+  // Protect routes that require authentication
+  if (isProtectedRoute(request) && !isPublicRoute(request)) {
+    await auth.protect();
+  }
+
   const response = NextResponse.next();
 
   // Apply security headers to all routes
@@ -155,7 +176,7 @@ export function middleware(request: NextRequest) {
   // Apply rate limiting to API routes
   if (pathname.startsWith('/api/')) {
     // Find matching rate limit config
-    const config = Object.entries(RATE_LIMITS).find(([path]) => 
+    const config = Object.entries(RATE_LIMITS).find(([path]) =>
       pathname.startsWith(path) && path !== 'default'
     )?.[1] || RATE_LIMITS.default;
 
@@ -202,19 +223,16 @@ export function middleware(request: NextRequest) {
   }
 
   return response;
-}
+});
 
 /**
  * Middleware configuration
  */
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
   ],
 };

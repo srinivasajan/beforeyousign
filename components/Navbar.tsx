@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import { 
-  FileSearch, 
-  BookTemplate, 
-  ArrowLeftRight, 
-  MessageSquare, 
-  BookOpen, 
+import {
+  FileSearch,
+  BookTemplate,
+  ArrowLeftRight,
+  MessageSquare,
+  BookOpen,
   FileText,
   Shield,
   User,
@@ -35,7 +35,8 @@ import {
   Lock,
   Brain
 } from 'lucide-react';
-import { useAuth, signOut as authSignOut, getUserInitials } from '@/lib/auth-utils';
+import { useUser, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
+
 
 // Primary navigation items (most important features)
 const primaryServices = [
@@ -227,7 +228,7 @@ const trendingSearches = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { isLoaded, isSignedIn, user } = useUser();
   const [showMegaMenu, setShowMegaMenu] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -253,7 +254,7 @@ export default function Navbar() {
         setShowUserMenu(false);
       }
     };
-    
+
     const handleKeyDown = (e: KeyboardEvent) => {
       // Close menus on Escape
       if (e.key === 'Escape') {
@@ -263,7 +264,7 @@ export default function Navbar() {
         setShowMobileMenu(false);
         setShowUserMenu(false);
       }
-      
+
       // Focus search on "/" key
       if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
         e.preventDefault();
@@ -271,7 +272,7 @@ export default function Navbar() {
         searchInput?.focus();
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleKeyDown);
     return () => {
@@ -280,11 +281,11 @@ export default function Navbar() {
     };
   }, []);
 
-  const filteredResults = searchQuery.trim() 
+  const filteredResults = searchQuery.trim()
     ? allSearchableContent.filter(item =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, 8)
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.category.toLowerCase().includes(searchQuery.toLowerCase())
+    ).slice(0, 8)
     : [];
 
   const handleSearch = (query: string) => {
@@ -305,10 +306,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16 gap-6">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3">
-              <Shield className="w-6 h-6 text-stone-900" strokeWidth={2} />
-              <div className="flex items-center gap-4">
-                <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">BeforeYouSign</h1>
-              </div>
+              <h1 className="text-3xl font-semibold text-stone-900 tracking-tight">BeforeYouSign</h1>
             </Link>
 
             {/* Advanced Search Bar */}
@@ -437,12 +435,12 @@ export default function Navbar() {
                 <span>Find Lawyers</span>
                 <div className="ml-1 px-1.5 py-0.5 bg-white/20 rounded text-[10px] font-bold uppercase">New</div>
               </Link>
-              
-              {isLoading ? (
+
+              {!isLoaded ? (
                 <div className="hidden lg:flex items-center gap-2">
                   <div className="w-8 h-8 bg-stone-200 rounded-full animate-pulse"></div>
                 </div>
-              ) : isAuthenticated && user ? (
+              ) : isSignedIn ? (
                 <>
                   {/* Notifications */}
                   <Link
@@ -455,119 +453,40 @@ export default function Navbar() {
                     <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
                   </Link>
 
-                  {/* User Menu */}
-                  <div ref={userMenuRef} className="hidden lg:block relative">
-                    <button
-                      onClick={() => setShowUserMenu(!showUserMenu)}
-                      className="flex items-center gap-2 px-3 py-2 hover:bg-stone-100 rounded-lg transition-colors"
-                      aria-label="User menu"
-                    >
-                      {user.image ? (
-                        <img
-                          src={user.image}
-                          alt={user.name}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 bg-stone-900 rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm font-semibold">
-                            {getUserInitials(user.name)}
-                          </span>
-                        </div>
-                      )}
-                      <ChevronDown className={`w-4 h-4 text-stone-600 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
-                    </button>
-
-                    {/* User Dropdown */}
-                    {showUserMenu && (
-                      <div className="absolute right-0 mt-2 w-64 bg-white border border-stone-200 rounded-xl shadow-xl z-50">
-                        {/* User Info */}
-                        <div className="p-4 border-b border-stone-200">
-                          <div className="flex items-center gap-3">
-                            {user.image ? (
-                              <img
-                                src={user.image}
-                                alt={user.name}
-                                className="w-12 h-12 rounded-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center">
-                                <span className="text-white text-lg font-semibold">
-                                  {getUserInitials(user.name)}
-                                </span>
-                              </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-semibold text-stone-900 truncate">{user.name}</p>
-                              <p className="text-xs text-stone-500 truncate">{user.email}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Menu Items */}
-                        <div className="p-2">
-                          <Link
-                            href="/profile"
-                            onClick={() => setShowUserMenu(false)}
-                            className="flex items-center gap-3 px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-lg transition-colors"
-                          >
-                            <User className="w-4 h-4" />
-                            <span>Profile</span>
-                          </Link>
-                          <Link
-                            href="/contracts"
-                            onClick={() => setShowUserMenu(false)}
-                            className="flex items-center gap-3 px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-lg transition-colors"
-                          >
-                            <FolderOpen className="w-4 h-4" />
-                            <span>My Contracts</span>
-                          </Link>
-                          <Link
-                            href="/settings"
-                            onClick={() => setShowUserMenu(false)}
-                            className="flex items-center gap-3 px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-lg transition-colors"
-                          >
-                            <Settings className="w-4 h-4" />
-                            <span>Settings</span>
-                          </Link>
-                        </div>
-
-                        {/* Sign Out */}
-                        <div className="p-2 border-t border-stone-200">
-                          <button
-                            onClick={async () => {
-                              setShowUserMenu(false);
-                              await authSignOut();
-                            }}
-                            className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors w-full"
-                          >
-                            <LogOut className="w-4 h-4" />
-                            <span>Sign Out</span>
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                  {/* Clerk User Button */}
+                  <div className="hidden lg:block">
+                    <UserButton
+                      afterSignOutUrl="/"
+                      appearance={{
+                        elements: {
+                          avatarBox: "w-10 h-10",
+                          userButtonPopoverCard: "shadow-xl",
+                          userButtonPopoverActionButton: "hover:bg-stone-50",
+                        },
+                      }}
+                    />
                   </div>
                 </>
               ) : (
                 <>
-                  <Link
-                    href="/auth/signin"
-                    className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-700 hover:text-stone-900 transition-colors"
-                  >
-                    <LogIn className="w-4 h-4" strokeWidth={2} />
-                    <span>Sign In</span>
-                  </Link>
-                  <Link
-                    href="/auth/signup"
-                    className="hidden sm:flex items-center gap-2 px-5 py-2 bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors rounded-lg"
-                  >
-                    <User className="w-4 h-4" strokeWidth={2} />
-                    <span>Sign Up</span>
-                  </Link>
+                  <div className="hidden lg:flex items-center gap-2">
+                    <SignInButton mode="modal">
+                      <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-700 hover:text-stone-900 transition-colors">
+                        <LogIn className="w-4 h-4" strokeWidth={2} />
+                        <span>Sign In</span>
+                      </button>
+                    </SignInButton>
+                    <SignUpButton mode="modal">
+                      <button className="flex items-center gap-2 px-5 py-2 bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors rounded-lg">
+                        <User className="w-4 h-4" strokeWidth={2} />
+                        <span>Sign Up</span>
+                      </button>
+                    </SignUpButton>
+                  </div>
                 </>
               )}
-              
+
+
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
@@ -588,11 +507,11 @@ export default function Navbar() {
             {primaryServices.map((service) => {
               const Icon = service.icon;
               const isActive = pathname === service.href;
-              
+
               if (service.hasMegaMenu) {
                 return (
-                  <div 
-                    key={service.href} 
+                  <div
+                    key={service.href}
                     className="relative"
                     onMouseEnter={() => {
                       if (megaMenuTimeoutRef.current) {
@@ -608,14 +527,12 @@ export default function Navbar() {
                   >
                     <Link
                       href={service.href}
-                      className={`group relative flex items-center gap-2 px-4 py-3.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg ${
-                        isActive ? 'text-stone-900 bg-stone-100' : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
-                      }`}
-                    >
-                      <Icon 
-                        className={`w-4 h-4 transition-all ${
-                          isActive ? 'text-stone-900' : 'text-stone-500 group-hover:text-stone-700'
+                      className={`group relative flex items-center gap-2 px-4 py-3.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg ${isActive ? 'text-stone-900 bg-stone-100' : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
                         }`}
+                    >
+                      <Icon
+                        className={`w-4 h-4 transition-all ${isActive ? 'text-stone-900' : 'text-stone-500 group-hover:text-stone-700'
+                          }`}
                         strokeWidth={2.5}
                       />
                       <span className="tracking-wide">{service.name}</span>
@@ -625,8 +542,8 @@ export default function Navbar() {
                     {showMegaMenu && (
                       <>
                         {/* Invisible bridge to prevent gap issues */}
-                        <div 
-                          className="absolute left-0 right-0 h-4" 
+                        <div
+                          className="absolute left-0 right-0 h-4"
                           style={{ top: '100%' }}
                           onMouseEnter={() => {
                             if (megaMenuTimeoutRef.current) {
@@ -649,47 +566,47 @@ export default function Navbar() {
                             }, 100);
                           }}
                         >
-                        <div className="p-8">
-                          <div className="grid grid-cols-3 gap-6">
-                            {libraryMegaMenu.map((category) => {
-                              const CategoryIcon = category.icon;
-                              return (
-                                <div key={category.title}>
-                                  <div className="flex items-center gap-2 mb-3 pb-2 border-b border-stone-200">
-                                    <CategoryIcon className="w-5 h-5 text-stone-900" />
-                                    <h3 className="font-bold text-stone-900 text-sm">{category.title}</h3>
+                          <div className="p-8">
+                            <div className="grid grid-cols-3 gap-6">
+                              {libraryMegaMenu.map((category) => {
+                                const CategoryIcon = category.icon;
+                                return (
+                                  <div key={category.title}>
+                                    <div className="flex items-center gap-2 mb-3 pb-2 border-b border-stone-200">
+                                      <CategoryIcon className="w-5 h-5 text-stone-900" />
+                                      <h3 className="font-bold text-stone-900 text-sm">{category.title}</h3>
+                                    </div>
+                                    <ul className="space-y-2">
+                                      {category.items.map((item) => (
+                                        <li key={item.name}>
+                                          <Link
+                                            href={item.href}
+                                            className="text-xs text-stone-600 hover:text-stone-900 hover:translate-x-1 transition-all inline-block"
+                                          >
+                                            {item.name}
+                                          </Link>
+                                        </li>
+                                      ))}
+                                    </ul>
                                   </div>
-                                  <ul className="space-y-2">
-                                    {category.items.map((item) => (
-                                      <li key={item.name}>
-                                        <Link
-                                          href={item.href}
-                                          className="text-xs text-stone-600 hover:text-stone-900 hover:translate-x-1 transition-all inline-block"
-                                        >
-                                          {item.name}
-                                        </Link>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              );
-                            })}
-                          </div>
-
-                          {/* CTA */}
-                          <div className="mt-6 pt-4 border-t border-stone-200 flex items-center justify-between">
-                            <div>
-                              <p className="text-sm font-medium text-stone-900 mb-1">Need help understanding your contract?</p>
-                              <p className="text-xs text-stone-600">Get instant AI-powered analysis</p>
+                                );
+                              })}
                             </div>
-                            <Link
-                              href="/analyze"
-                              className="px-6 py-2 bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors whitespace-nowrap"
-                            >
-                              Analyze Now
-                            </Link>
+
+                            {/* CTA */}
+                            <div className="mt-6 pt-4 border-t border-stone-200 flex items-center justify-between">
+                              <div>
+                                <p className="text-sm font-medium text-stone-900 mb-1">Need help understanding your contract?</p>
+                                <p className="text-xs text-stone-600">Get instant AI-powered analysis</p>
+                              </div>
+                              <Link
+                                href="/analyze"
+                                className="px-6 py-2 bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors whitespace-nowrap"
+                              >
+                                Analyze Now
+                              </Link>
+                            </div>
                           </div>
-                        </div>
                         </div>
                       </>
                     )}
@@ -701,16 +618,14 @@ export default function Navbar() {
                 <Link
                   key={service.href}
                   href={service.href}
-                  className={`group relative flex items-center gap-2 px-4 py-3.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg ${
-                    isActive 
-                      ? 'text-stone-900 bg-stone-100' 
-                      : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
-                  }`}
-                >
-                  <Icon 
-                    className={`w-4 h-4 transition-all ${
-                      isActive ? 'text-stone-900' : 'text-stone-500 group-hover:text-stone-700'
+                  className={`group relative flex items-center gap-2 px-4 py-3.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg ${isActive
+                    ? 'text-stone-900 bg-stone-100'
+                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
                     }`}
+                >
+                  <Icon
+                    className={`w-4 h-4 transition-all ${isActive ? 'text-stone-900' : 'text-stone-500 group-hover:text-stone-700'
+                      }`}
                     strokeWidth={2.5}
                   />
                   <span className="tracking-wide">{service.name}</span>
@@ -724,8 +639,8 @@ export default function Navbar() {
             })}
 
             {/* More Menu for Secondary Services */}
-            <div 
-              ref={moreMenuRef} 
+            <div
+              ref={moreMenuRef}
               className="relative ml-2"
               onMouseEnter={() => {
                 if (moreMenuTimeoutRef.current) {
@@ -745,7 +660,7 @@ export default function Navbar() {
                 {...(showMoreMenu && { 'aria-expanded': true })}
               >
                 <span>More</span>
-                <ChevronDown 
+                <ChevronDown
                   className={`w-4 h-4 transition-transform ${showMoreMenu ? 'rotate-180' : ''}`}
                   strokeWidth={2.5}
                 />
@@ -755,8 +670,8 @@ export default function Navbar() {
               {showMoreMenu && (
                 <>
                   {/* Invisible bridge to prevent gap issues */}
-                  <div 
-                    className="absolute left-0 right-0 h-4" 
+                  <div
+                    className="absolute left-0 right-0 h-4"
                     style={{ top: '100%' }}
                     onMouseEnter={() => {
                       if (moreMenuTimeoutRef.current) {
@@ -779,61 +694,61 @@ export default function Navbar() {
                       }, 100);
                     }}
                   >
-                  <div className="p-8">
-                    <div className="grid grid-cols-3 gap-6">
-                      {moreMegaMenu.map((category) => {
-                        const CategoryIcon = category.icon;
-                        return (
-                          <div key={category.title}>
-                            <div className="flex items-center gap-2 mb-3 pb-2 border-b border-stone-200">
-                              <CategoryIcon className="w-5 h-5 text-stone-900" />
-                              <h3 className="font-bold text-stone-900 text-sm">{category.title}</h3>
-                            </div>
-                            <div className="space-y-2">
-                              {category.items.map((item) => {
-                                const ItemIcon = item.icon;
-                                return (
-                                  <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className="group block p-2 hover:bg-stone-50 rounded-lg transition-colors"
-                                  >
-                                    <div className="flex items-start gap-2">
-                                      <ItemIcon className="w-4 h-4 text-stone-500 group-hover:text-stone-900 mt-0.5 flex-shrink-0" strokeWidth={2} />
-                                      <div>
-                                        <div className="text-sm font-medium text-stone-700 group-hover:text-stone-900">
-                                          {item.name}
-                                        </div>
-                                        <div className="text-xs text-stone-500 mt-0.5">
-                                          {item.description}
+                    <div className="p-8">
+                      <div className="grid grid-cols-3 gap-6">
+                        {moreMegaMenu.map((category) => {
+                          const CategoryIcon = category.icon;
+                          return (
+                            <div key={category.title}>
+                              <div className="flex items-center gap-2 mb-3 pb-2 border-b border-stone-200">
+                                <CategoryIcon className="w-5 h-5 text-stone-900" />
+                                <h3 className="font-bold text-stone-900 text-sm">{category.title}</h3>
+                              </div>
+                              <div className="space-y-2">
+                                {category.items.map((item) => {
+                                  const ItemIcon = item.icon;
+                                  return (
+                                    <Link
+                                      key={item.href}
+                                      href={item.href}
+                                      className="group block p-2 hover:bg-stone-50 rounded-lg transition-colors"
+                                    >
+                                      <div className="flex items-start gap-2">
+                                        <ItemIcon className="w-4 h-4 text-stone-500 group-hover:text-stone-900 mt-0.5 flex-shrink-0" strokeWidth={2} />
+                                        <div>
+                                          <div className="text-sm font-medium text-stone-700 group-hover:text-stone-900">
+                                            {item.name}
+                                          </div>
+                                          <div className="text-xs text-stone-500 mt-0.5">
+                                            {item.description}
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  </Link>
-                                );
-                              })}
+                                    </Link>
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                          );
+                        })}
+                      </div>
 
-                    {/* CTA Section */}
-                    <div className="mt-6 pt-6 border-t border-stone-200">
-                      <div className="flex items-center justify-between bg-gradient-to-r from-stone-50 to-stone-100 p-4 rounded-lg">
-                        <div>
-                          <h4 className="font-semibold text-stone-900 text-sm">Need expert legal help?</h4>
-                          <p className="text-xs text-stone-600 mt-1">Connect with verified lawyers for contract review</p>
+                      {/* CTA Section */}
+                      <div className="mt-6 pt-6 border-t border-stone-200">
+                        <div className="flex items-center justify-between bg-gradient-to-r from-stone-50 to-stone-100 p-4 rounded-lg">
+                          <div>
+                            <h4 className="font-semibold text-stone-900 text-sm">Need expert legal help?</h4>
+                            <p className="text-xs text-stone-600 mt-1">Connect with verified lawyers for contract review</p>
+                          </div>
+                          <Link
+                            href="/lawyers"
+                            className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all rounded-lg shadow-md whitespace-nowrap"
+                          >
+                            Find Lawyers
+                          </Link>
                         </div>
-                        <Link
-                          href="/lawyers"
-                          className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all rounded-lg shadow-md whitespace-nowrap"
-                        >
-                          Find Lawyers
-                        </Link>
                       </div>
                     </div>
-                  </div>
                   </div>
                 </>
               )}
@@ -868,11 +783,10 @@ export default function Navbar() {
                     key={service.href}
                     href={service.href}
                     onClick={() => setShowMobileMenu(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                      isActive 
-                        ? 'bg-stone-100 text-stone-900' 
-                        : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
-                    }`}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive
+                      ? 'bg-stone-100 text-stone-900'
+                      : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
+                      }`}
                   >
                     <Icon className="w-5 h-5" strokeWidth={2} />
                     <span className="font-medium">{service.name}</span>
@@ -893,11 +807,10 @@ export default function Navbar() {
                       key={service.href}
                       href={service.href}
                       onClick={() => setShowMobileMenu(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                        isActive 
-                          ? 'bg-stone-100 text-stone-900' 
-                          : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
-                      }`}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive
+                        ? 'bg-stone-100 text-stone-900'
+                        : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
+                        }`}
                     >
                       <Icon className="w-5 h-5" strokeWidth={2} />
                       <span className="font-medium">{service.name}</span>
@@ -917,27 +830,23 @@ export default function Navbar() {
                   <span>Find Lawyers</span>
                   <div className="ml-1 px-1.5 py-0.5 bg-white/20 rounded text-[10px] font-bold uppercase">New</div>
                 </Link>
-                
-                {isAuthenticated && user ? (
+
+                {isSignedIn ? (
                   <>
                     {/* User Info */}
                     <div className="flex items-center gap-3 px-4 py-3 bg-stone-100 rounded-lg">
-                      {user.image ? (
-                        <img
-                          src={user.image}
-                          alt={user.name}
-                          className="w-10 h-10 rounded-full object-cover"
+                      <div className="w-10 h-10">
+                        <UserButton
+                          appearance={{
+                            elements: {
+                              avatarBox: "w-10 h-10",
+                            },
+                          }}
                         />
-                      ) : (
-                        <div className="w-10 h-10 bg-stone-900 rounded-full flex items-center justify-center">
-                          <span className="text-white font-semibold">
-                            {getUserInitials(user.name)}
-                          </span>
-                        </div>
-                      )}
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-stone-900 truncate">{user.name}</p>
-                        <p className="text-xs text-stone-600 truncate">{user.email}</p>
+                        <p className="text-sm font-semibold text-stone-900 truncate">{user?.fullName || user?.firstName || 'User'}</p>
+                        <p className="text-xs text-stone-600 truncate">{user?.emailAddresses?.[0]?.emailAddress}</p>
                       </div>
                     </div>
 
@@ -967,35 +876,27 @@ export default function Navbar() {
                       <Settings className="w-5 h-5" />
                       <span className="font-medium">Settings</span>
                     </Link>
-                    <button
-                      onClick={async () => {
-                        setShowMobileMenu(false);
-                        await authSignOut();
-                      }}
-                      className="flex items-center gap-3 px-4 py-3 w-full text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <LogOut className="w-5 h-5" />
-                      <span className="font-medium">Sign Out</span>
-                    </button>
                   </>
                 ) : (
                   <>
-                    <Link
-                      href="/auth/signin"
-                      onClick={() => setShowMobileMenu(false)}
-                      className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-stone-300 text-stone-700 font-medium rounded-lg hover:border-stone-400"
-                    >
-                      <LogIn className="w-5 h-5" />
-                      <span>Sign In</span>
-                    </Link>
-                    <Link
-                      href="/auth/signup"
-                      onClick={() => setShowMobileMenu(false)}
-                      className="flex items-center justify-center gap-2 px-4 py-3 bg-stone-900 text-white font-medium rounded-lg"
-                    >
-                      <User className="w-5 h-5" />
-                      <span>Sign Up</span>
-                    </Link>
+                    <SignInButton mode="modal">
+                      <button
+                        onClick={() => setShowMobileMenu(false)}
+                        className="flex items-center justify-center gap-2 px-4 py-3 w-full border-2 border-stone-300 text-stone-700 font-medium rounded-lg hover:border-stone-400"
+                      >
+                        <LogIn className="w-5 h-5" />
+                        <span>Sign In</span>
+                      </button>
+                    </SignInButton>
+                    <SignUpButton mode="modal">
+                      <button
+                        onClick={() => setShowMobileMenu(false)}
+                        className="flex items-center justify-center gap-2 px-4 py-3 w-full bg-stone-900 text-white font-medium rounded-lg"
+                      >
+                        <User className="w-5 h-5" />
+                        <span>Sign Up</span>
+                      </button>
+                    </SignUpButton>
                   </>
                 )}
               </div>
