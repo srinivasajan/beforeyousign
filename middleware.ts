@@ -144,8 +144,6 @@ const isProtectedRoute = createRouteMatcher([
 // Define public routes that should be accessible without authentication
 const isPublicRoute = createRouteMatcher([
   '/',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
   '/api/public(.*)',
 ]);
 
