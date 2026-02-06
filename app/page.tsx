@@ -318,18 +318,18 @@ export default function Home() {
       </section>
 
       {/* Key Features */}
-      <section className="bg-stone-50 py-20">
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="text-center mb-16">
+      <section className="bg-stone-50 py-12 sm:py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+          <div className="text-center mb-12 sm:mb-16">
             <span className="mono text-xs text-stone-500 tracking-wider uppercase mb-4 block">Platform Capabilities</span>
-            <h3 className="text-4xl font-bold text-stone-900 mb-6">Everything You Need for Contract Confidence</h3>
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-4 sm:mb-6">Everything You Need for Contract Confidence</h3>
             <p className="text-lg text-stone-600 max-w-2xl mx-auto">
               Professional-grade tools that protect your interests without legal fees
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-4 sm:p-6 hover:border-stone-900 transition-all duration-300 group">
               <div className="mb-4">
                 <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
                   <Zap className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
@@ -341,7 +341,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-4 sm:p-6 hover:border-stone-900 transition-all duration-300 group">
               <div className="mb-4">
                 <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
                   <Eye className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
@@ -353,7 +353,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-4 sm:p-6 hover:border-stone-900 transition-all duration-300 group">
               <div className="mb-4">
                 <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
                   <MessageSquare className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
@@ -365,7 +365,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-4 sm:p-6 hover:border-stone-900 transition-all duration-300 group">
               <div className="mb-4">
                 <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
                   <Scale className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
@@ -377,7 +377,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-4 sm:p-6 hover:border-stone-900 transition-all duration-300 group">
               <div className="mb-4">
                 <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
                   <Users className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
@@ -389,7 +389,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all duration-300 group">
+            <div className="bg-white border-2 border-stone-200 rounded-xl p-4 sm:p-6 hover:border-stone-900 transition-all duration-300 group">
               <div className="mb-4">
                 <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-900 transition-colors">
                   <Lock className="w-6 h-6 text-stone-900 group-hover:text-white transition-colors" />
@@ -405,9 +405,9 @@ export default function Home() {
       </section>
 
       {/* Social Proof */}
-      <section className="bg-white py-20 border-t-2 border-stone-900">
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="grid md:grid-cols-3 gap-8 text-center">
+      <section className="bg-white py-12 sm:py-16 md:py-20 border-t-2 border-stone-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+          <div className="grid md:grid-cols-3 gap-6 sm:gap-8 text-center">
             <div className="p-6">
               <div className="flex items-center justify-center mb-3">
                 <TrendingUp className="w-8 h-8 text-stone-900" />
@@ -434,10 +434,10 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="text-white py-20 cta-section">
+      <section className="text-white py-12 sm:py-16 md:py-20 cta-section">
         <div className="cta-section-bg" />
-        <div className="max-w-3xl mx-auto px-8 text-center cta-section-content">
-          <h3 className="text-4xl font-bold mb-6 leading-tight">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 text-center cta-section-content">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 leading-tight">
             Stop Signing Contracts You Don't Understand
           </h3>
           <p className="text-base text-stone-300 leading-relaxed font-light mb-8">
@@ -446,7 +446,7 @@ export default function Home() {
           </p>
           <Link
             href="/analyze"
-            className="inline-flex items-center gap-2 px-10 py-4 bg-white text-stone-900 font-medium hover:bg-stone-100 transition-all duration-300 group"
+            className="inline-flex items-center gap-2 px-8 sm:px-10 py-3.5 sm:py-4 bg-white text-stone-900 font-medium hover:bg-stone-100 transition-all duration-300 group w-full sm:w-auto justify-center"
           >
             <span>Start Free Analysis</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -457,7 +457,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-white border-t-2 border-stone-900">
-        <div className="max-w-7xl mx-auto px-8 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-10">
           <div className="grid md:grid-cols-2 gap-10 mb-6">
             <div>
               <h3 className="text-xl font-bold text-stone-900 mb-3">BeforeYouSign</h3>
