@@ -14,21 +14,12 @@ export default function Home() {
             <div className="mb-4">
               <span className="mono text-xs text-stone-500 tracking-wider uppercase">Legal Intelligence Platform</span>
             </div>
-            
+
             <h2 className="text-6xl font-bold text-stone-900 mb-8 leading-[1.1] tracking-tight">
               From issues to answers, <span className="text-stone-600">your legal world made simple</span>
             </h2>
 
-            <div className="border-l-4 border-stone-900 pl-6 mb-8">
-              <p className="text-lg text-stone-700 leading-relaxed font-light mb-4">
-                Most people face contracts they don't understand, written by lawyers for lawyers. 
-                We decode complex legal language into clear, actionable insights that protect your interests.
-              </p>
-              <p className="text-base text-stone-600 leading-relaxed font-light">
-                Upload any contract and get instant analysis of risks, obligations, and hidden clauses. 
-                Know what you're signing before you sign it.
-              </p>
-            </div>
+
 
             <Link
               href="/analyze"
@@ -53,11 +44,11 @@ export default function Home() {
                 A Massive, Systemic Asymmetry
               </h3>
               <p className="text-base text-stone-700 leading-relaxed font-light mb-4">
-                Hiring a lawyer for every contract is economically impossible. The stronger party's lawyers 
+                Hiring a lawyer for every contract is economically impossible. The stronger party's lawyers
                 understand every word; the weaker party understands almost none.
               </p>
               <p className="text-sm text-stone-600 leading-relaxed font-light">
-                Ordinary people rely on intuition, Google searches, or misplaced trust when making 
+                Ordinary people rely on intuition, Google searches, or misplaced trust when making
                 decisions that can fundamentally alter their economic position.
               </p>
             </div>
@@ -127,7 +118,7 @@ export default function Home() {
               </div>
               <h4 className="text-xl font-bold text-stone-900 mb-3">Risk Detection</h4>
               <p className="text-sm text-stone-600 leading-relaxed">
-                Automated identification of IP transfers, unlimited liability, auto-renewals, 
+                Automated identification of IP transfers, unlimited liability, auto-renewals,
                 and hidden penalties.
               </p>
             </div>
@@ -446,7 +437,7 @@ export default function Home() {
             Stop Signing Contracts You Don't Understand
           </h3>
           <p className="text-base text-stone-300 leading-relaxed font-light mb-8">
-            Every contract you sign without comprehension is a blind risk. 
+            Every contract you sign without comprehension is a blind risk.
             Level the playing field with institutional-grade intelligence.
           </p>
           <Link
@@ -473,7 +464,7 @@ export default function Home() {
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-3">Legal Notice</h4>
               <p className="text-xs text-stone-600 leading-relaxed font-light">
-                <span className="font-medium text-stone-900">Disclaimer:</span> This platform provides analytical intelligence 
+                <span className="font-medium text-stone-900">Disclaimer:</span> This platform provides analytical intelligence
                 and does not constitute legal counsel. Material matters should be reviewed by qualified legal counsel.
               </p>
             </div>
