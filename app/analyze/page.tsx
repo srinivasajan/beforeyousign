@@ -4,7 +4,7 @@ import { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
 import AnalysisResult from '@/components/AnalysisResult';
 import { ContractAnalysis } from '@/lib/types';
-import { Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, CheckCircle, Shield, Lock } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AnalyzePage() {
@@ -73,9 +73,27 @@ export default function AnalyzePage() {
                 Upload Your Contract
               </h2>
               <p className="text-lg text-stone-600 font-light leading-relaxed max-w-2xl mx-auto">
-                Submit your contract for comprehensive analysis. Our AI will identify risks, 
+                Submit your contract for comprehensive analysis. Our AI will identify risks,
                 translate complex provisions, and provide strategic recommendations.
               </p>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="flex items-center justify-center gap-6 mb-10">
+              <div className="flex items-center gap-2 text-stone-500">
+                <Shield className="w-4 h-4 text-stone-700" />
+                <span className="text-sm">Privacy Protected</span>
+              </div>
+              <div className="flex items-center gap-2 text-stone-500">
+                <Lock className="w-4 h-4 text-stone-700" />
+                <span className="text-sm">Data Not Stored</span>
+              </div>
+              <div className="flex items-center gap-2 text-stone-500">
+                <div className="w-4 h-4 bg-stone-900 rounded-full flex items-center justify-center">
+                  <span className="text-[8px] text-white font-bold">AI</span>
+                </div>
+                <span className="text-sm">NVIDIA Nemotron-70B</span>
+              </div>
             </div>
 
             <FileUpload onFileSelect={handleFileSelect} isAnalyzing={false} />
@@ -125,7 +143,7 @@ export default function AnalyzePage() {
               {/* Trust Signal */}
               <div className="border-t border-stone-200 pt-6 mt-6">
                 <div className="flex items-center gap-2 text-sm text-stone-500">
-                  <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                  <div className="w-4 h-4 bg-stone-900 rounded-full flex items-center justify-center">
                     <CheckCircle className="w-3 h-3 text-white" />
                   </div>
                   <span>Your contract is not stored. Analysis is private and secure.</span>

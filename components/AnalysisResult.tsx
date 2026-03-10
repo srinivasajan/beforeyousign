@@ -1,9 +1,9 @@
 'use client';
 
 import { ContractAnalysis } from '@/lib/types';
-import { AlertTriangle, CheckCircle, XCircle, Info, Download, TrendingUp, TrendingDown, Minus, Scale, FileText, MessageSquare, Send, X, Filter, Eye, EyeOff, Sparkles, Share2, Copy, Check, Link2, HelpCircle, Command, Bookmark, BookmarkCheck, StickyNote, Briefcase, Mail, Lightbulb, Loader2, Upload } from 'lucide-react';
+import { AlertTriangle, CheckCircle, XCircle, Info, Download, TrendingUp, TrendingDown, Minus, Scale, FileText, MessageSquare, Send, X, Filter, Eye, EyeOff, Sparkles, Share2, Copy, Check, Link2, HelpCircle, Command, Bookmark, BookmarkCheck, StickyNote, Briefcase, Mail, Lightbulb, Loader2, Upload, Search, Printer, Clock, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { clauseAlternatives } from '@/lib/templates-data';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useKeyboardShortcuts } from '@/lib/keyboard-shortcuts';
 
 interface AnalysisResultProps {
@@ -54,11 +54,37 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
   // Toast notification state
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  // Table of contents (sticky sidebar)
   const [showTOC, setShowTOC] = useState(true);
   const [activeSection, setActiveSection] = useState<string>('summary');
   const [isScrolling, setIsScrolling] = useState(false);
   const [showAllClauses, setShowAllClauses] = useState(false);
+
+  // NEW FEATURES: Search, sort, print, reading time
+  const [clauseSearchQuery, setClauseSearchQuery] = useState('');
+  const [clauseSortBy, setClauseSortBy] = useState<'order' | 'risk' | 'title'>('order');
+  const [clauseSortDir, setClauseSortDir] = useState<'asc' | 'desc'>('asc');
+  const [showPrintView, setShowPrintView] = useState(false);
+  
+  // NEW: Category filtering and grouping
+  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [groupByCategory, setGroupByCategory] = useState(false);
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  
+  // NEW: Clause annotations and highlights
+  const [highlightedClauses, setHighlightedClauses] = useState<Map<string, string>>(new Map()); // clause.id -> color
+  const [clauseComments, setClauseComments] = useState<Map<string, Array<{text: string, timestamp: number}>>>(new Map());
+  
+  // NEW: Analytics view
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  
+  // NEW: Clause comparison
+  const [compareMode, setCompareMode] = useState(false);
+  const [selectedClausesForCompare, setSelectedClausesForCompare] = useState<Set<string>>(new Set());
+  
+  // NEW: Playbook generator
+  const [showPlaybookGenerator, setShowPlaybookGenerator] = useState(false);
+  const [isGeneratingPlaybookFull, setIsGeneratingPlaybookFull] = useState(false);
+  const [generatedPlaybook, setGeneratedPlaybook] = useState<any>(null);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -140,6 +166,12 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
       action: () => setShowChat(prev => !prev),
     },
     {
+      key: 'q',
+      ctrl: true,
+      description: 'Toggle Analytics',
+      action: () => setShowAnalytics(prev => !prev),
+    },
+    {
       key: 'Escape',
       description: 'Close Overlays',
       action: () => {
@@ -186,7 +218,203 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
       description: 'High & Critical',
       action: () => setRiskFilter('high'),
     },
+    {
+      key: 'f',
+      ctrl: true,
+      description: 'Search Clauses',
+      action: () => {
+        const searchInput = document.getElementById('clause-search-input');
+        searchInput?.focus();
+      },
+    },
+    {
+      key: 'p',
+      ctrl: true,
+      description: 'Print View',
+      action: () => window.print(),
+    },
+    {
+      key: 'ArrowDown',
+      ctrl: true,
+      description: 'Next Clause',
+      action: () => {
+        const currentIndex = filteredAndSortedClauses.findIndex(c => `clause-${c.id}` === activeSection);
+        if (currentIndex < filteredAndSortedClauses.length - 1) {
+          scrollToSection(`clause-${filteredAndSortedClauses[currentIndex + 1].id}`);
+        }
+      },
+    },
+    {
+      key: 'ArrowUp',
+      ctrl: true,
+      description: 'Previous Clause',
+      action: () => {
+        const currentIndex = filteredAndSortedClauses.findIndex(c => `clause-${c.id}` === activeSection);
+        if (currentIndex > 0) {
+          scrollToSection(`clause-${filteredAndSortedClauses[currentIndex - 1].id}`);
+        }
+      },
+    },
   ]);
+
+  // Calculate reading time estimate (average 200 words per minute)
+  const readingTimeMinutes = useMemo(() => {
+    const totalText = analysis.clauses.reduce((acc, clause) =>
+      acc + clause.originalText + clause.plainLanguage, ''
+    );
+    const wordCount = totalText.split(/\s+/).length;
+    return Math.ceil(wordCount / 200);
+  }, [analysis.clauses]);
+
+  // Calculate word count
+  const totalWordCount = useMemo(() => {
+    const totalText = analysis.clauses.reduce((acc, clause) =>
+      acc + clause.originalText, ''
+    );
+    return totalText.split(/\s+/).length;
+  }, [analysis.clauses]);
+  
+  // Extract unique categories
+  const categories = useMemo(() => {
+    const cats = new Set(analysis.clauses.map(c => c.category));
+    return Array.from(cats).sort();
+  }, [analysis.clauses]);
+  
+  // Category statistics
+  const categoryStats = useMemo(() => {
+    const stats: Record<string, {count: number, critical: number, high: number, medium: number, low: number}> = {};
+    analysis.clauses.forEach(clause => {
+      if (!stats[clause.category]) {
+        stats[clause.category] = {count: 0, critical: 0, high: 0, medium: 0, low: 0};
+      }
+      stats[clause.category].count++;
+      stats[clause.category][clause.riskLevel]++;
+    });
+    return stats;
+  }, [analysis.clauses]);
+  
+  // Risk level priority for sorting
+  const riskPriority = { critical: 4, high: 3, medium: 2, low: 1 };
+
+  // Calculate clause complexity scores
+  const clauseComplexity = useMemo(() => {
+    return analysis.clauses.map(clause => ({
+      id: clause.id,
+      score: Math.min(100, Math.round(
+        (clause.originalText.split(/\s+/).length / 50) * 30 + // word count factor
+        (clause.concerns.length * 15) + // concerns factor  
+        (riskPriority[clause.riskLevel] * 10) // risk factor
+      ))
+    }));
+  }, [analysis.clauses]);
+
+  // Filtered and sorted clauses
+  const filteredAndSortedClauses = useMemo(() => {
+    let clauses = [...analysis.clauses];
+
+    // Apply search filter
+    if (clauseSearchQuery.trim()) {
+      const query = clauseSearchQuery.toLowerCase();
+      clauses = clauses.filter(clause =>
+        clause.title.toLowerCase().includes(query) ||
+        clause.plainLanguage.toLowerCase().includes(query) ||
+        clause.originalText.toLowerCase().includes(query) ||
+        clause.category.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply category filter
+    if (selectedCategories.size > 0) {
+      clauses = clauses.filter(c => selectedCategories.has(c.category));
+    }
+
+    // Apply risk filter
+    if (riskFilter === 'critical') {
+      clauses = clauses.filter(c => c.riskLevel === 'critical');
+    } else if (riskFilter === 'high') {
+      clauses = clauses.filter(c => c.riskLevel === 'critical' || c.riskLevel === 'high');
+    }
+
+    // Apply sorting
+    clauses.sort((a, b) => {
+      let comparison = 0;
+      if (clauseSortBy === 'risk') {
+        comparison = riskPriority[b.riskLevel] - riskPriority[a.riskLevel];
+      } else if (clauseSortBy === 'title') {
+        comparison = a.title.localeCompare(b.title);
+      } else {
+        // Default: original order (by position)
+        comparison = a.position.start - b.position.start;
+      }
+      return clauseSortDir === 'desc' ? -comparison : comparison;
+    });
+
+    return clauses;
+  }, [analysis.clauses, clauseSearchQuery, selectedCategories, riskFilter, clauseSortBy, clauseSortDir]);
+  
+  // Group clauses by category
+  const groupedClauses = useMemo(() => {
+    if (!groupByCategory) return null;
+    const grouped: Record<string, typeof analysis.clauses> = {};
+    filteredAndSortedClauses.forEach(clause => {
+      if (!grouped[clause.category]) {
+        grouped[clause.category] = [];
+      }
+      grouped[clause.category].push(clause);
+    });
+    return grouped;
+  }, [filteredAndSortedClauses, groupByCategory]);
+  
+  // AI-Powered: Detect similar clauses (simple text similarity)
+  const similarClauses = useMemo(() => {
+    const similar: Map<string, string[]> = new Map();
+    
+    const getKeywords = (text: string) => {
+      return text.toLowerCase()
+        .replace(/[^\w\s]/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length > 4) // Only meaningful words
+        .slice(0, 20); // Top 20 keywords
+    };
+    
+    analysis.clauses.forEach((clause, i) => {
+      const keywords = getKeywords(clause.originalText + ' ' + clause.plainLanguage);
+      const matches: string[] = [];
+      
+      analysis.clauses.forEach((otherClause, j) => {
+        if (i !== j) {
+          const otherKeywords = getKeywords(otherClause.originalText + ' ' + otherClause.plainLanguage);
+          const commonKeywords = keywords.filter(k => otherKeywords.includes(k));
+          
+          // If >30% keywords match, consider similar
+          if (commonKeywords.length / keywords.length > 0.3) {
+            matches.push(otherClause.id);
+          }
+        }
+      });
+      
+      if (matches.length > 0) {
+        similar.set(clause.id, matches.slice(0, 2)); // Max 2 similar clauses
+      }
+    });
+    
+    return similar;
+  }, [analysis.clauses]);
+
+  // Toggle sort direction or change sort field
+  const handleSort = (field: 'order' | 'risk' | 'title') => {
+    if (clauseSortBy === field) {
+      setClauseSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setClauseSortBy(field);
+      setClauseSortDir('asc');
+    }
+  };
+
+  // Handle print
+  const handlePrint = () => {
+    window.print();
+  };
 
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -395,6 +623,52 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
     } finally {
       setIsGeneratingScript(false);
     }
+  };
+
+  // Export annotations (highlights and comments) to JSON
+  const exportAnnotations = () => {
+    const annotationsData = {
+      contractName: analysis.metadata.fileName,
+      exportedAt: new Date().toISOString(),
+      highlights: Array.from(highlightedClauses.entries()).map(([clauseId, color]) => {
+        const clause = analysis.clauses.find(c => c.id === clauseId);
+        return {
+          clauseId,
+          clauseTitle: clause?.title || 'Unknown',
+          color,
+          riskLevel: clause?.riskLevel || 'unknown',
+        };
+      }),
+      comments: Array.from(clauseComments.entries()).map(([clauseId, comments]) => {
+        const clause = analysis.clauses.find(c => c.id === clauseId);
+        return {
+          clauseId,
+          clauseTitle: clause?.title || 'Unknown',
+          comments: comments.filter(c => c.text.trim()).map(c => ({
+            text: c.text,
+            timestamp: c.timestamp,
+            date: new Date(c.timestamp).toLocaleString(),
+          })),
+        };
+      }).filter(item => item.comments.length > 0),
+      summary: {
+        totalHighlights: highlightedClauses.size,
+        totalComments: Object.values(clauseComments).reduce((sum, comments) => sum + comments.filter((c: {text: string}) => c.text.trim()).length, 0),
+      },
+    };
+
+    const blob = new Blob([JSON.stringify(annotationsData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const timestamp = new Date().toISOString().split('T')[0];
+    a.download = `annotations-${timestamp}-${analysis.metadata.fileName}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast(`✓ Exported ${annotationsData.summary.totalHighlights} highlights and ${annotationsData.summary.totalComments} comments`, 'success');
   };
 
   const generateFullPlaybook = async () => {
@@ -648,6 +922,15 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                   <div className="flex items-center justify-between py-2">
                     <span className="text-stone-700">High & Critical</span>
                     <kbd className="px-3 py-1 bg-stone-100 border border-stone-300 rounded text-sm font-mono">5</kbd>
+                  </div>
+                  <div className="border-t border-stone-300 my-2"></div>
+                  <div className="flex items-center justify-between py-2 border-b border-stone-200">
+                    <span className="text-stone-700">Next Clause</span>
+                    <kbd className="px-3 py-1 bg-stone-100 border border-stone-300 rounded text-sm font-mono">Ctrl+↓</kbd>
+                  </div>
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-stone-700">Previous Clause</span>
+                    <kbd className="px-3 py-1 bg-stone-100 border border-stone-300 rounded text-sm font-mono">Ctrl+↑</kbd>
                   </div>
                 </div>
               </div>
@@ -1410,22 +1693,27 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
 
                 {/* Nested Clause Items */}
                 <div className="pl-8 space-y-1 mt-2 mb-2 border-l-2 border-stone-200 ml-4">
-                  {(showAllClauses ? analysis.clauses : analysis.clauses.slice(0, 8)).map((clause, idx) => (
+                  {(showAllClauses ? filteredAndSortedClauses : filteredAndSortedClauses.slice(0, 8)).map((clause) => (
                     <button
-                      key={idx}
+                      key={clause.id}
                       onClick={() => {
-                        scrollToSection(`clause-${idx}`);
+                        scrollToSection(`clause-${clause.id}`);
                       }}
-                      className={`w-full text-left px-3 py-2.5 text-xs rounded-md transition-all duration-200 ${activeSection === `clause-${idx}`
+                      className={`w-full text-left px-3 py-2.5 text-xs rounded-md transition-all duration-200 ${activeSection === `clause-${clause.id}`
                         ? 'bg-stone-800 text-white font-semibold shadow-sm'
                         : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900 hover:pl-4'
                         }`}
                       title={clause.title}
                     >
-                      <span className="opacity-60 mr-2">└</span>{clause.title}
+                      <span className="opacity-60 mr-2">└</span>
+                      <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${clause.riskLevel === 'critical' ? 'bg-red-500' :
+                        clause.riskLevel === 'high' ? 'bg-orange-500' :
+                        clause.riskLevel === 'medium' ? 'bg-yellow-500' :
+                        'bg-green-500'}`}></span>
+                      {clause.title.length > 35 ? clause.title.substring(0, 35) + '...' : clause.title}
                     </button>
                   ))}
-                  {analysis.clauses.length > 8 && (
+                  {filteredAndSortedClauses.length > 8 && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1433,7 +1721,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                       }}
                       className="w-full text-left px-3 py-2.5 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-all duration-200 font-semibold hover:pl-4"
                     >
-                      {showAllClauses ? '▲ Show Less' : `▼ Show ${analysis.clauses.length - 8} More Clauses`}
+                      {showAllClauses ? '▲ Show Less' : `▼ Show ${filteredAndSortedClauses.length - 8} More Clauses`}
                     </button>
                   )}
                 </div>
@@ -1740,39 +2028,946 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
           )}
 
           {/* Clauses Section */}
-          <div id="clauses" className="bg-white border-2 border-stone-900 p-8">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-stone-200">
-              <h3 className="text-3xl font-bold text-stone-900">
-                Detailed Provision Analysis
-              </h3>
-              {viewMode === 'quick' && filteredClauses.length > 5 && (
+          <div id="clauses" className="bg-white border-2 border-stone-900 p-8 print:border print:p-4">
+            <div className="flex items-center justify-between mb-4 pb-4 border-b-2 border-stone-200">
+              <div>
+                <h3 className="text-3xl font-bold text-stone-900">
+                  Detailed Provision Analysis
+                </h3>
+                {/* Reading time & word count */}
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex items-center gap-1.5 text-stone-500">
+                    <Clock className="w-4 h-4" />
+                    <span className="text-sm">{readingTimeMinutes} min read</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-stone-500">
+                    <FileText className="w-4 h-4" />
+                    <span className="text-sm">{totalWordCount.toLocaleString()} words</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 print:hidden">
+                {/* Export Annotations - NEW */}
+                {(highlightedClauses.size > 0 || clauseComments.size > 0 || bookmarkedClauses.size > 0) && (
+                  <button
+                    onClick={() => {
+                      const exportData = {
+                        contractName: analysis.metadata.fileName,
+                        exportedAt: new Date().toISOString(),
+                        summary: {
+                          highlights: highlightedClauses.size,
+                          comments: Array.from(clauseComments.values()).reduce((sum, comments) => sum + comments.filter(c => c.text.trim()).length, 0),
+                          bookmarks: bookmarkedClauses.size,
+                        },
+                        annotations: filteredAndSortedClauses.map(clause => {
+                          const hasAnnotations = highlightedClauses.has(clause.id) || clauseComments.has(clause.id) || bookmarkedClauses.has(clause.title);
+                          if (!hasAnnotations) return null;
+                          
+                          return {
+                            clauseId: clause.id,
+                            clauseTitle: clause.title,
+                            riskLevel: clause.riskLevel,
+                            highlight: highlightedClauses.get(clause.id) || null,
+                            comments: (clauseComments.get(clause.id) || []).filter(c => c.text.trim()).map(c => ({
+                              text: c.text,
+                              timestamp: new Date(c.timestamp).toISOString(),
+                            })),
+                            bookmarked: bookmarkedClauses.has(clause.title),
+                            note: clauseNotes.get(clause.title) || null,
+                          };
+                        }).filter(a => a !== null),
+                      };
+                      
+                      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      const timestamp = new Date().toISOString().split('T')[0];
+                      a.download = `annotations-${timestamp}-${analysis.metadata.fileName}.json`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      showToast(`✓ Exported ${exportData.annotations.length} annotations`, 'success');
+                    }}
+                    className="text-xs text-purple-600 hover:text-purple-800 font-medium flex items-center gap-1 border border-purple-300 px-2 py-1 rounded hover:bg-purple-50 transition-colors"
+                    title="Export all highlights, comments, and bookmarks"
+                  >
+                    <Download className="w-3 h-3" />
+                    Annotations
+                  </button>
+                )}
+                {viewMode === 'quick' && filteredAndSortedClauses.length > 5 && (
+                  <button
+                    onClick={() => setViewMode('deep')}
+                    className="text-sm text-stone-600 hover:text-stone-900 font-medium flex items-center gap-2"
+                  >
+                    Show all {filteredAndSortedClauses.length} clauses
+                    <Eye className="w-4 h-4" />
+                  </button>
+                )}
                 <button
-                  onClick={() => setViewMode('deep')}
-                  className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-2"
+                  onClick={handlePrint}
+                  className="p-2 border border-stone-300 hover:border-stone-900 hover:bg-stone-50 transition-colors"
+                  title="Print analysis (Ctrl+P)"
                 >
-                  Show all {filteredClauses.length} clauses
-                  <Eye className="w-4 h-4" />
+                  <Printer className="w-4 h-4 text-stone-600" />
                 </button>
-              )}
+              </div>
             </div>
-            <div className="space-y-8">
-              {filteredClauses.slice(0, viewMode === 'quick' ? 5 : undefined).map((clause, index) => (
-                <div
-                  key={clause.id}
-                  id={`clause-${index}`}
-                  className="border-t border-stone-200 pt-6 first:border-0 first:pt-0"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-stone-400 font-mono text-sm">{String(index + 1).padStart(2, '0')}</span>
-                      <h4 className="text-xl font-bold text-stone-900">{clause.title}</h4>
-                    </div>
-                    <div className="flex items-center gap-2">
+
+            {/* Search and Sort Controls */}
+            <div className="space-y-4 mb-6 print:hidden">
+              <div className="flex flex-wrap items-center gap-4">
+                {/* Search Input */}
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                  <input
+                    id="clause-search-input"
+                    type="text"
+                    placeholder="Search clauses... (Ctrl+F)"
+                    value={clauseSearchQuery}
+                    onChange={(e) => setClauseSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-stone-300 text-sm focus:outline-none focus:border-stone-900 transition-colors"
+                  />
+                  {clauseSearchQuery && (
+                    <button
+                      onClick={() => setClauseSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                      aria-label="Clear search"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Sort Controls */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-stone-500 uppercase tracking-wider font-medium">Sort:</span>
+                  <button
+                    onClick={() => handleSort('order')}
+                    className={`px-3 py-1.5 text-xs font-medium border transition-colors flex items-center gap-1 ${clauseSortBy === 'order' ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-300 hover:border-stone-900'
+                      }`}
+                  >
+                    Order
+                    {clauseSortBy === 'order' && (clauseSortDir === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />)}
+                  </button>
+                  <button
+                    onClick={() => handleSort('risk')}
+                    className={`px-3 py-1.5 text-xs font-medium border transition-colors flex items-center gap-1 ${clauseSortBy === 'risk' ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-300 hover:border-stone-900'
+                      }`}
+                  >
+                    Risk
+                    {clauseSortBy === 'risk' && (clauseSortDir === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />)}
+                  </button>
+                  <button
+                    onClick={() => handleSort('title')}
+                    className={`px-3 py-1.5 text-xs font-medium border transition-colors flex items-center gap-1 ${clauseSortBy === 'title' ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-300 hover:border-stone-900'
+                      }`}
+                  >
+                    Title
+                    {clauseSortBy === 'title' && (clauseSortDir === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />)}
+                  </button>
+                </div>
+                
+                {/* View Options */}
+                <div className="flex items-center gap-2 ml-auto">
+                  <button
+                    onClick={() => {
+                      setCompareMode(!compareMode);
+                      if (!compareMode) {
+                        setSelectedClausesForCompare(new Set());
+                      }
+                    }}
+                    className={`px-3 py-1.5 text-xs font-medium border transition-colors flex items-center gap-1 ${compareMode ? 'bg-orange-600 text-white border-orange-600' : 'bg-white text-stone-600 border-stone-300 hover:border-stone-900'}`}
+                    title="Compare clauses side-by-side"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Compare {selectedClausesForCompare.size > 0 ? `(${selectedClausesForCompare.size})` : ''}
+                  </button>
+                  <button
+                    onClick={() => setGroupByCategory(!groupByCategory)}
+                    className={`px-3 py-1.5 text-xs font-medium border transition-colors flex items-center gap-1 ${groupByCategory ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-stone-600 border-stone-300 hover:border-stone-900'}`}
+                    title="Group by category"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    Group
+                  </button>
+                  <button
+                    onClick={() => setShowAnalytics(!showAnalytics)}
+                    className={`px-3 py-1.5 text-xs font-medium border transition-colors flex items-center gap-1 ${showAnalytics ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-stone-600 border-stone-300 hover:border-stone-900'}`}
+                    title="Show analytics"
+                  >
+                    <TrendingUp className="w-3 h-3" />
+                    Analytics
+                  </button>
+                  <button
+                    onClick={generateFullPlaybook}
+                    disabled={isGeneratingPlaybook}
+                    className="px-3 py-1.5 text-xs font-medium border-2 border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Generate comprehensive negotiation playbook"
+                  >
+                    {isGeneratingPlaybook ? (
+                      <><Loader2 className="w-3 h-3 animate-spin" /> Generating...</>
+                    ) : (
+                      <><Briefcase className="w-3 h-3" /> Generate Playbook</>
+                    )}
+                  </button>
+                </div>
+              </div>
+              
+              {/* Category Filter Pills */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-stone-500 uppercase tracking-wider font-medium">Categories:</span>
+                {categories.map(category => (
+                  <button
+                    key={category}
+                    onClick={() => {
+                      const newSet = new Set(selectedCategories);
+                      if (newSet.has(category)) {
+                        newSet.delete(category);
+                      } else {
+                        newSet.add(category);
+                      }
+                      setSelectedCategories(newSet);
+                    }}
+                    className={`px-3 py-1.5 text-xs font-medium border rounded-full transition-all ${selectedCategories.has(category)
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-white text-stone-600 border-stone-300 hover:border-blue-600 hover:text-blue-600'
+                      }`}
+                  >
+                    {category.replace(/_/g, ' ')}
+                    <span className="ml-1.5 opacity-70">({categoryStats[category]?.count || 0})</span>
+                  </button>
+                ))}
+                {selectedCategories.size > 0 && (
+                  <button
+                    onClick={() => setSelectedCategories(new Set())}
+                    className="text-xs text-stone-500 hover:text-stone-700 underline ml-2"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Search Results Count */}
+            {(clauseSearchQuery || selectedCategories.size > 0) && (
+              <div className="mb-4 bg-blue-50 border-l-4 border-blue-500 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-semibold text-blue-900">
+                      {filteredAndSortedClauses.length} of {analysis.clauses.length} clauses shown
+                    </span>
+                    {clauseSearchQuery && (
+                      <span className="text-blue-700 ml-2">
+                        • Searching: "{clauseSearchQuery}"
+                      </span>
+                    )}
+                    {selectedCategories.size > 0 && (
+                      <span className="text-blue-700 ml-2">
+                        • {selectedCategories.size} {selectedCategories.size === 1 ? 'category' : 'categories'} filtered
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => {
+                      setClauseSearchQuery('');
+                      setSelectedCategories(new Set());
+                    }}
+                    className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 border border-blue-300 px-2 py-1 rounded hover:bg-blue-100"
+                  >
+                    <X className="w-3 h-3" />
+                    Clear filters
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {/* Compare Mode Banner */}
+            {compareMode && (
+              <div className="mb-4 bg-orange-50 border-l-4 border-orange-500 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-semibold text-orange-900">
+                      Compare Mode: Select {selectedClausesForCompare.size > 0 ? `${2 - selectedClausesForCompare.size} more` : '2'} clause{selectedClausesForCompare.size === 1 ? '' : 's'}
+                    </span>
+                    {selectedClausesForCompare.size > 0 && (
+                      <span className="text-orange-700 ml-2">
+                        • {selectedClausesForCompare.size} selected
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    {selectedClausesForCompare.size === 2 && (
                       <button
-                        onClick={() => toggleBookmark(clause.title)}
-                        className={`p-2 rounded transition-colors ${bookmarkedClauses.has(clause.title)
-                          ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                          : 'bg-stone-100 text-stone-400 hover:bg-stone-200 hover:text-stone-600'
+                        onClick={() => {
+                          // Show comparison view
+                          const clausesToCompare = filteredAndSortedClauses.filter(c => selectedClausesForCompare.has(c.id));
+                          if (clausesToCompare.length === 2) {
+                            // Scroll to first clause and highlight both
+                            scrollToSection(`clause-${clausesToCompare[0].id}`);
+                            showToast('📊 Comparing clauses - scroll to see differences', 'success');
+                          }
+                        }}
+                        className="text-xs text-white bg-orange-600 hover:bg-orange-700 font-medium flex items-center gap-1 px-3 py-1.5 rounded"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        View Comparison
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        setCompareMode(false);
+                        setSelectedClausesForCompare(new Set());
+                      }}
+                      className="text-xs text-orange-600 hover:text-orange-800 font-medium flex items-center gap-1 border border-orange-300 px-2 py-1 rounded hover:bg-orange-100"
+                    >
+                      <X className="w-3 h-3" />
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Analytics Dashboard */}
+            {showAnalytics && (
+              <div className="mb-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 p-6 rounded-lg">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-indigo-600" />
+                    <h4 className="text-lg font-bold text-indigo-900">Contract Analytics</h4>
+                  </div>
+                  <button
+                    onClick={() => setShowAnalytics(false)}
+                    className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                  >
+                    Hide
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                  <div className="bg-white/80 p-4 rounded border border-indigo-200">
+                    <div className="text-2xl font-bold text-red-600 mb-1">
+                      {analysis.clauses.filter(c => c.riskLevel === 'critical').length}
+                    </div>
+                    <div className="text-xs text-stone-600 uppercase tracking-wider">Critical Risk</div>
+                  </div>
+                  <div className="bg-white/80 p-4 rounded border border-indigo-200">
+                    <div className="text-2xl font-bold text-orange-600 mb-1">
+                      {analysis.clauses.filter(c => c.riskLevel === 'high').length}
+                    </div>
+                    <div className="text-xs text-stone-600 uppercase tracking-wider">High Risk</div>
+                  </div>
+                  <div className="bg-white/80 p-4 rounded border border-indigo-200">
+                    <div className="text-2xl font-bold text-yellow-600 mb-1">
+                      {analysis.clauses.filter(c => c.riskLevel === 'medium').length}
+                    </div>
+                    <div className="text-xs text-stone-600 uppercase tracking-wider">Medium Risk</div>
+                  </div>
+                  <div className="bg-white/80 p-4 rounded border border-indigo-200">
+                    <div className="text-2xl font-bold text-green-600 mb-1">
+                      {analysis.clauses.filter(c => c.riskLevel === 'low').length}
+                    </div>
+                    <div className="text-xs text-stone-600 uppercase tracking-wider">Low Risk</div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  {/* Category Distribution */}
+                  <div className="bg-white/80 p-4 rounded border border-indigo-200">
+                    <h5 className="text-sm font-bold text-indigo-900 mb-3">Category Distribution</h5>
+                    <div className="space-y-2">
+                      {Object.entries(categoryStats)
+                        .sort((a, b) => b[1].count - a[1].count)
+                        .slice(0, 5)
+                        .map(([category, stats]) => (
+                          <div key={category}>
+                            <div className="flex items-center justify-between text-xs mb-1">
+                              <span className="text-stone-700 font-medium">{category.replace(/_/g, ' ')}</span>
+                              <span className="text-stone-500">{stats.count} clauses</span>
+                            </div>
+                            <div className="h-2 bg-indigo-100 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-indigo-600 transition-all duration-500"
+                                style={{width: `${(stats.count / analysis.clauses.length) * 100}%`}}
+                              ></div>
+                            </div>
+                          </div>
+                        ))
+                      }
+                    </div>
+                  </div>
+                  
+                  {/* Complexity Scores */}
+                  <div className="bg-white/80 p-4 rounded border border-indigo-200">
+                    <h5 className="text-sm font-bold text-indigo-900 mb-3">Most Complex Clauses</h5>
+                    <div className="space-y-2">
+                      {clauseComplexity
+                        .sort((a, b) => b.score - a.score)
+                        .slice(0, 5)
+                        .map(({id, score}) => {
+                          const clause = analysis.clauses.find(c => c.id === id);
+                          if (!clause) return null;
+                          return (
+                            <div key={id} className="flex items-center justify-between">
+                              <button
+                                onClick={() => scrollToSection(`clause-${id}`)}
+                                className="text-xs text-indigo-700 hover:text-indigo-900 font-medium truncate flex-1 text-left"
+                              >
+                                {clause.title.length > 25 ? clause.title.substring(0, 25) + '...' : clause.title}
+                              </button>
+                              <div className="flex items-center gap-2">
+                                <div className="w-16 h-1.5 bg-indigo-100 rounded-full overflow-hidden">
+                                  <div
+                                    className={`h-full transition-all duration-500 ${score > 70 ? 'bg-red-500' : score > 40 ? 'bg-orange-500' : 'bg-green-500'}`}
+                                    style={{width: `${score}%`}}
+                                  ></div>
+                                </div>
+                                <span className="text-xs font-mono text-stone-600 w-8">{score}</span>
+                              </div>
+                            </div>
+                          );
+                        })
+                      }
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Risk Distribution Pie Chart */}
+                <div className="mt-6 bg-white/80 p-4 rounded border border-indigo-200">
+                  <h5 className="text-sm font-bold text-indigo-900 mb-4 text-center">Risk Level Distribution</h5>
+                  <div className="flex items-center justify-center gap-6">
+                    {/* Simple Pie Chart using CSS */}
+                    <div className="relative w-32 h-32">
+                      {(() => {
+                        const critical = analysis.clauses.filter(c => c.riskLevel === 'critical').length;
+                        const high = analysis.clauses.filter(c => c.riskLevel === 'high').length;
+                        const medium = analysis.clauses.filter(c => c.riskLevel === 'medium').length;
+                        const low = analysis.clauses.filter(c => c.riskLevel === 'low').length;
+                        const total = analysis.clauses.length;
+                        
+                        const criticalPct = (critical / total) * 100;
+                        const highPct = (high / total) * 100;
+                        const mediumPct = (medium / total) * 100;
+                        const lowPct = (low / total) * 100;
+                        
+                        return (
+                          <>
+                            <div 
+                              className="absolute inset-0 rounded-full"
+                              style={{
+                                background: `conic-gradient(
+                                  #dc2626 0% ${criticalPct}%,
+                                  #f97316 ${criticalPct}% ${criticalPct + highPct}%,
+                                  #eab308 ${criticalPct + highPct}% ${criticalPct + highPct + mediumPct}%,
+                                  #22c55e ${criticalPct + highPct + mediumPct}% 100%
+                                )`
+                              }}
+                            ></div>
+                            <div className="absolute inset-[30%] bg-white rounded-full flex items-center justify-center">
+                              <div className="text-center">
+                                <div className="text-xl font-bold text-indigo-900">{total}</div>
+                                <div className="text-[8px] text-stone-600 uppercase">Clauses</div>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                    
+                    {/* Legend */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-red-600 rounded"></div>
+                        <span className="text-xs text-stone-700">
+                          Critical ({analysis.clauses.filter(c => c.riskLevel === 'critical').length})
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-orange-600 rounded"></div>
+                        <span className="text-xs text-stone-700">
+                          High ({analysis.clauses.filter(c => c.riskLevel === 'high').length})
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-yellow-600 rounded"></div>
+                        <span className="text-xs text-stone-700">
+                          Medium ({analysis.clauses.filter(c => c.riskLevel === 'medium').length})
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-600 rounded"></div>
+                        <span className="text-xs text-stone-700">
+                          Low ({analysis.clauses.filter(c => c.riskLevel === 'low').length})
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Quick Stats Floating Card */}
+            {!showChat && !showContractMap && (
+              <div className="fixed bottom-6 right-6 bg-white border-2 border-stone-900 shadow-2xl z-30 w-80 rounded-sm overflow-hidden">
+                <div className="bg-stone-900 text-white p-3 flex items-center justify-between">
+                  <h4 className="font-bold text-sm uppercase tracking-wider">Quick Stats</h4>
+                  <button
+                    onClick={() => scrollToSection('summary')}
+                    className="text-xs text-stone-300 hover:text-white"
+                    aria-label="View full summary"
+                  >
+                    View Full →
+                  </button>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-stone-600 uppercase">Risk Score</span>
+                    <span className={`font-bold text-lg ${analysis.riskScore > 70 ? 'text-red-600' : analysis.riskScore > 40 ? 'text-amber-600' : 'text-green-600'}`}>
+                      {analysis.riskScore}/100
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-stone-600 uppercase">Red Flags</span>
+                    <span className="font-bold text-lg text-red-600">{analysis.redFlags.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-stone-600 uppercase">Total Clauses</span>
+                    <span className="font-bold text-lg text-stone-900">{analysis.clauses.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-stone-600 uppercase">Highlighted</span>
+                    <span className="font-bold text-lg text-purple-600">{Object.keys(highlightedClauses).length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-stone-600 uppercase">Comments</span>
+                    <span className="font-bold text-lg text-blue-600">
+                      {Object.values(clauseComments).reduce((sum, comments) => sum + comments.length, 0)}
+                    </span>
+                  </div>
+                  <div className="pt-2 border-t border-stone-200 flex gap-2">
+                    <button
+                      onClick={() => setShowChat(true)}
+                      className="flex-1 text-xs py-2 bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+                      aria-label="Open chat assistant"
+                    >
+                      💬 Ask AI
+                    </button>
+                    <button
+                      onClick={exportAnnotations}
+                      className="flex-1 text-xs py-2 border-2 border-stone-900 hover:bg-stone-900 hover:text-white transition-colors"
+                      aria-label="Export annotations"
+                    >
+                      📥 Export
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-8">
+              {groupByCategory && groupedClauses ? (
+                // Grouped by category view
+                Object.entries(groupedClauses).map(([category, clauses]) => (
+                  <div key={category} className="border-2 border-stone-200 rounded-lg overflow-hidden">
+                    <button
+                      onClick={() => {
+                        const newSet = new Set(collapsedCategories);
+                        if (newSet.has(category)) {
+                          newSet.delete(category);
+                        } else {
+                          newSet.add(category);
+                        }
+                        setCollapsedCategories(newSet);
+                      }}
+                      className="w-full bg-stone-100 hover:bg-stone-200 px-6 py-4 flex items-center justify-between transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`transform transition-transform ${collapsedCategories.has(category) ? '' : 'rotate-90'}`}>
+                          <svg className="w-4 h-4 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                        <h4 className="text-lg font-bold text-stone-900">
+                          {category.replace(/_/g, ' ').toUpperCase()}
+                        </h4>
+                        <span className="text-sm text-stone-500 font-medium">
+                          ({clauses.length} clause{clauses.length !== 1 ? 's' : ''})
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {categoryStats[category] && (
+                          <>
+                            {categoryStats[category].critical > 0 && (
+                              <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded">
+                                {categoryStats[category].critical} critical
+                              </span>
+                            )}
+                            {categoryStats[category].high > 0 && (
+                              <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded">
+                                {categoryStats[category].high} high
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </button>
+                    
+                    {!collapsedCategories.has(category) && (
+                      <div className="p-6 space-y-8">
+                        {clauses.map((clause) => {
+                          const clauseIndex = filteredAndSortedClauses.findIndex(c => c.id === clause.id) + 1;
+                          return (
+                            <div
+                              key={clause.id}
+                              id={`clause-${clause.id}`}
+                              className={`border-t border-stone-200 pt-6 first:border-0 first:pt-0 transition-colors ${
+                                highlightedClauses.has(clause.id) 
+                                  ? `bg-${highlightedClauses.get(clause.id)}-50 -mx-4 px-4 py-4 border-l-4 border-${highlightedClauses.get(clause.id)}-400`
+                                  : ''
+                              }`}
+                            >
+                              {/* Render clause content directly here */}
+                              <div className="flex items-start justify-between mb-4">
+                                <div className="flex items-center gap-3">
+                                  {compareMode && (
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedClausesForCompare.has(clause.id)}
+                                      onChange={(e) => {
+                                        const newSet = new Set(selectedClausesForCompare);
+                                        if (e.target.checked) {
+                                          if (newSet.size < 2) {
+                                            newSet.add(clause.id);
+                                          } else {
+                                            showToast('⚠️ You can only compare 2 clauses at a time', 'error');
+                                            return;
+                                          }
+                                        } else {
+                                          newSet.delete(clause.id);
+                                        }
+                                        setSelectedClausesForCompare(newSet);
+                                      }}
+                                      className="w-5 h-5 rounded border-2 border-orange-500 text-orange-600 focus:ring-orange-500"
+                                      aria-label="Select clause for comparison"
+                                    />
+                                  )}
+                                  <span className="text-stone-400 font-mono text-sm">
+                                    {String(clauseIndex).padStart(2, '0')}
+                                  </span>
+                                  <h4 className="text-xl font-bold text-stone-900">{clause.title}</h4>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {/* Highlight Color Picker */}
+                                  <div className="relative group">
+                                    <button
+                                      className={`p-2 rounded transition-colors ${highlightedClauses.has(clause.id) ? 'bg-yellow-100' : 'bg-stone-100'} hover:bg-stone-200`}
+                                      title="Highlight clause"
+                                      aria-label="Choose highlight color for clause"
+                                    >
+                                      <svg className="w-4 h-4 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                                      </svg>
+                                    </button>
+                                    <div className="absolute right-0 top-full mt-1 bg-white border-2 border-stone-900 p-2 hidden group-hover:flex gap-1 z-10 shadow-xl">
+                                      {['yellow', 'green', 'blue', 'pink', 'purple'].map(color => (
+                                        <button
+                                          key={color}
+                                          onClick={() => {
+                                            const newMap = new Map(highlightedClauses);
+                                            if (highlightedClauses.get(clause.id) === color) {
+                                              newMap.delete(clause.id);
+                                            } else {
+                                              newMap.set(clause.id, color);
+                                            }
+                                            setHighlightedClauses(newMap);
+                                          }}
+                                          className={`w-6 h-6 rounded border-2 ${highlightedClauses.get(clause.id) === color ? 'border-stone-900' : 'border-stone-300'} bg-${color}-200 hover:border-stone-900 transition-colors`}
+                                          title={`Highlight ${color}`}
+                                          aria-label={`Highlight clause with ${color} color`}
+                                        />
+                                      ))}
+                                      <button
+                                        onClick={() => {
+                                          const newMap = new Map(highlightedClauses);
+                                          newMap.delete(clause.id);
+                                          setHighlightedClauses(newMap);
+                                        }}
+                                        className="w-6 h-6 rounded border-2 border-stone-300 hover:border-stone-900 flex items-center justify-center"
+                                        title="Remove highlight"
+                                        aria-label="Remove clause highlight"
+                                      >
+                                        <X className="w-3 h-3 text-stone-600" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <button
+                                    onClick={() => toggleBookmark(clause.title)}
+                                    className={`p-2 rounded transition-colors ${bookmarkedClauses.has(clause.title)
+                                      ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                      : 'bg-stone-100 text-stone-400 hover:bg-stone-200 hover:text-stone-600'
+                                      }`}
+                                    title={bookmarkedClauses.has(clause.title) ? 'Remove bookmark' : 'Bookmark this clause'}
+                                    aria-label={bookmarkedClauses.has(clause.title) ? 'Remove bookmark from clause' : 'Bookmark this clause'}
+                                  >
+                                    {bookmarkedClauses.has(clause.title) ? (
+                                      <BookmarkCheck className="w-4 h-4" />
+                                    ) : (
+                                      <Bookmark className="w-4 h-4" />
+                                    )}
+                                  </button>
+                                  {(clause.riskLevel === 'critical' || clause.riskLevel === 'high') && (
+                                    <button
+                                      onClick={() => generateNegotiationScript(clause.title)}
+                                      className="p-2 rounded bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition-colors"
+                                      title="Generate negotiation script"
+                                      aria-label="Generate negotiation script for this clause"
+                                    >
+                                      <Briefcase className="w-4 h-4" />
+                                    </button>
+                                  )}
+                                  <span className={`text-xs px-3 py-1 uppercase font-semibold tracking-wider ${clause.riskLevel === 'critical' ? 'bg-stone-900 text-white' :
+                                    clause.riskLevel === 'high' ? 'bg-stone-700 text-white' :
+                                      clause.riskLevel === 'medium' ? 'bg-stone-400 text-white' :
+                                        'bg-stone-200 text-stone-900'
+                                    }`}>
+                                    {clause.riskLevel}
+                                  </span>
+                                  {clause.fairnessScore !== undefined && (
+                                    <div className="flex items-center gap-1 px-3 py-1 bg-white border-2 border-stone-900 rounded" title="Fairness Score: How balanced this clause is">
+                                      <Scale className="w-3 h-3 text-stone-600" />
+                                      <span className={`text-xs font-bold ${
+                                        clause.fairnessScore >= 76 ? 'text-green-600' :
+                                        clause.fairnessScore >= 51 ? 'text-blue-600' :
+                                        clause.fairnessScore >= 26 ? 'text-orange-600' :
+                                        'text-red-600'
+                                      }`}>
+                                        {clause.fairnessScore}/100
+                                      </span>
+                                      <span className="text-xs text-stone-500">Fair</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Continue with the rest of the clause rendering... */}
+                              <div className="mb-4">
+                                <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-2">Contractual Language</p>
+                                <p className="text-sm text-stone-600 italic bg-stone-50 p-4 border-l-2 border-stone-300 font-serif leading-relaxed">
+                                  "{clause.originalText}"
+                                </p>
+                              </div>
+
+                              <div className="mb-4">
+                                <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-2">Translation</p>
+                                <p className="text-stone-800 bg-white p-4 border-l-2 border-stone-900 leading-relaxed">
+                                  {clause.plainLanguage}
+                                </p>
+                              </div>
+                              
+                              {/* Similar Clauses Detection */}
+                              {similarClauses.has(clause.id) && similarClauses.get(clause.id)!.length > 0 && (
+                                <div className="mb-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 p-4 rounded">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                    <p className="text-xs text-purple-900 uppercase tracking-wider font-semibold">AI Detected Similar Clauses</p>
+                                  </div>
+                                  <div className="flex flex-wrap gap-2">
+                                    {similarClauses.get(clause.id)!.map(similarId => {
+                                      const similarClause = analysis.clauses.find(c => c.id === similarId);
+                                      if (!similarClause) return null;
+                                      return (
+                                        <button
+                                          key={similarId}
+                                          onClick={() => scrollToSection(`clause-${similarId}`)}
+                                          className="text-xs px-3 py-1.5 bg-white border border-purple-300 text-purple-700 hover:bg-purple-100 hover:border-purple-500 transition-colors rounded-full flex items-center gap-1"
+                                        >
+                                          <span className="font-medium">{similarClause.title.length > 30 ? similarClause.title.substring(0, 30) + '...' : similarClause.title}</span>
+                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                          </svg>
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                  <p className="text-xs text-purple-600 mt-2 italic">
+                                    These clauses share similar language and may be related
+                                  </p>
+                                </div>
+                              )}
+                              
+                              {/* Negotiation Strategy Card */}
+                              {clause.negotiationStrategy && (clause.riskLevel === 'high' || clause.riskLevel === 'critical' || (clause.fairnessScore && clause.fairnessScore < 40)) && (
+                                <div className="mb-4 bg-gradient-to-br from-indigo-50 to-blue-50 border-2 border-indigo-300 rounded-lg overflow-hidden">
+                                  <div className="bg-indigo-600 text-white px-4 py-3 flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <Briefcase className="w-4 h-4" />
+                                      <span className="font-bold text-sm uppercase tracking-wider">Negotiation Strategy</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <span className={`text-xs px-2 py-1 rounded-full ${
+                                        clause.negotiationStrategy.priority === 'high' ? 'bg-red-500' :
+                                        clause.negotiationStrategy.priority === 'medium' ? 'bg-yellow-500' :
+                                        'bg-green-500'
+                                      }`}>
+                                        {clause.negotiationStrategy.priority} priority
+                                      </span>
+                                      <span className={`text-xs px-2 py-1 rounded-full bg-white/20`}>
+                                        {clause.negotiationStrategy.leverage} leverage
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="p-4 space-y-3">
+                                    {clause.negotiationStrategy.suggestedApproach && (
+                                      <div>
+                                        <p className="text-xs text-indigo-900 uppercase tracking-wider font-semibold mb-2">💡 Recommended Approach</p>
+                                        <p className="text-sm text-stone-800 leading-relaxed bg-white p-3 border-l-4 border-indigo-500 rounded">
+                                          {clause.negotiationStrategy.suggestedApproach}
+                                        </p>
+                                      </div>
+                                    )}
+                                    {clause.negotiationStrategy.fallbackPositions && clause.negotiationStrategy.fallbackPositions.length > 0 && (
+                                      <div>
+                                        <p className="text-xs text-indigo-900 uppercase tracking-wider font-semibold mb-2">🔄 Fallback Positions</p>
+                                        <ul className="space-y-1">
+                                          {clause.negotiationStrategy.fallbackPositions.map((fallback, idx) => (
+                                            <li key={idx} className="text-sm text-stone-700 flex items-start gap-2">
+                                              <span className="text-indigo-600 font-mono text-xs mt-0.5">{idx + 1}.</span>
+                                              <span>{fallback}</span>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    )}
+                                    {clause.negotiationStrategy.marketPrecedents && clause.negotiationStrategy.marketPrecedents.length > 0 && (
+                                      <div>
+                                        <p className="text-xs text-indigo-900 uppercase tracking-wider font-semibold mb-2">📊 Market Precedents</p>
+                                        <div className="space-y-1">
+                                          {clause.negotiationStrategy.marketPrecedents.map((precedent, idx) => (
+                                            <p key={idx} className="text-xs text-stone-600 italic bg-white px-3 py-2 rounded border border-indigo-200">
+                                              • {precedent}
+                                            </p>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Inline Comments Section */}
+                              <div className="mb-4">
+                                <button
+                                  onClick={() => {
+                                    // Toggle comment section for this clause
+                                    const currentComments = clauseComments.get(clause.id) || [];
+                                    if (currentComments.length === 0) {
+                                      // Add empty first comment to show input
+                                      const newMap = new Map(clauseComments);
+                                      newMap.set(clause.id, [{text: '', timestamp: Date.now()}]);
+                                      setClauseComments(newMap);
+                                    }
+                                  }}
+                                  className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                                >
+                                  <StickyNote className="w-3 h-3" />
+                                  {(clauseComments.get(clause.id)?.length || 0) > 0 
+                                    ? `${clauseComments.get(clause.id)!.filter(c => c.text.trim()).length} comment(s)`
+                                    : 'Add comment'}
+                                </button>
+                                
+                                {clauseComments.has(clause.id) && (
+                                  <div className="mt-2 space-y-2">
+                                    {clauseComments.get(clause.id)!.map((comment, idx) => (
+                                      <div key={idx} className="bg-indigo-50 border-l-2 border-indigo-400 p-3">
+                                        <textarea
+                                          value={comment.text}
+                                          onChange={(e) => {
+                                            const newMap = new Map(clauseComments);
+                                            const comments = [...(newMap.get(clause.id) || [])];
+                                            comments[idx] = {...comment, text: e.target.value};
+                                            newMap.set(clause.id, comments);
+                                            setClauseComments(newMap);
+                                          }}
+                                          placeholder="Add your comment or notes here..."
+                                          className="w-full px-3 py-2 border border-indigo-200 text-sm focus:outline-none focus:border-indigo-500 bg-white"
+                                          rows={2}
+                                        />
+                                        <div className="flex items-center justify-between mt-2">
+                                          <span className="text-xs text-indigo-600">
+                                            {new Date(comment.timestamp).toLocaleString()}
+                                          </span>
+                                          <button
+                                            onClick={() => {
+                                              const newMap = new Map(clauseComments);
+                                              const comments = (newMap.get(clause.id) || []).filter((_, i) => i !== idx);
+                                              if (comments.length === 0) {
+                                                newMap.delete(clause.id);
+                                              } else {
+                                                newMap.set(clause.id, comments);
+                                              }
+                                              setClauseComments(newMap);
+                                            }}
+                                            className="text-xs text-red-600 hover:text-red-800"
+                                          >
+                                            Delete
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ))}
+                                    <button
+                                      onClick={() => {
+                                        const newMap = new Map(clauseComments);
+                                        const comments = [...(newMap.get(clause.id) || [])];
+                                        comments.push({text: '', timestamp: Date.now()});
+                                        newMap.set(clause.id, comments);
+                                        setClauseComments(newMap);
+                                      }}
+                                      className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                                    >
+                                      + Add another comment
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                // Regular list view  
+                filteredAndSortedClauses.slice(0, viewMode === 'quick' ? 5 : undefined).map((clause) => {
+                  const clauseIndex = filteredAndSortedClauses.findIndex(c => c.id === clause.id) + 1;
+                  return (
+                    <div
+                      key={clause.id}
+                      id={`clause-${clause.id}`}
+                      className="border-t border-stone-200 pt-6 first:border-0 first:pt-0"
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <span className="text-stone-400 font-mono text-sm">
+                            {String(filteredAndSortedClauses.findIndex(c => c.id === clause.id) + 1).padStart(2, '0')}
+                          </span>
+                          <h4 className="text-xl font-bold text-stone-900">{clause.title}</h4>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => toggleBookmark(clause.title)}
+                            className={`p-2 rounded transition-colors ${bookmarkedClauses.has(clause.title)
+                              ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                              : 'bg-stone-100 text-stone-400 hover:bg-stone-200 hover:text-stone-600'
                           }`}
                         title={bookmarkedClauses.has(clause.title) ? 'Remove bookmark' : 'Bookmark this clause'}
                       >
@@ -1921,7 +3116,9 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                     </div>
                   )}
                 </div>
-              ))}
+              );
+            })
+              )}
             </div>
           </div>
 

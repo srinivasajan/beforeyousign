@@ -33,14 +33,18 @@ import {
   Bell,
   Zap,
   Lock,
-  Brain
+  Brain,
+  PenLine,
+  Mic,
+  Languages,
+  Link2,
 } from 'lucide-react';
 import { useUser, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 
 
 // Primary navigation items (most important features)
 const primaryServices = [
-  { name: 'AI Draft', href: '/drafting', icon: FileSearch, badge: 'NEW' },
+  { name: 'AI Draft', href: '/drafting', icon: PenLine, badge: 'NEW' },
   { name: 'Analyze', href: '/analyze', icon: FileSearch },
   { name: 'PDF Tools', href: '/tools', icon: FileText, badge: 'NEW' },
   { name: 'Contracts', href: '/contracts', icon: FolderOpen },
@@ -52,17 +56,17 @@ const primaryServices = [
 
 // Secondary navigation items
 const secondaryServices = [
-  { name: 'Intelligence', href: '/intelligence', icon: TrendingUp, badge: 'NEW' },
+  { name: 'Intelligence', href: '/intelligence', icon: Brain, badge: 'NEW' },
   { name: 'Negotiate', href: '/negotiate', icon: MessageSquare, badge: 'AI' },
   { name: 'Smart Search', href: '/search', icon: Search, badge: 'AI' },
   { name: 'Market Intel', href: '/market-intelligence', icon: BarChart3, badge: 'LIVE' },
   { name: 'Risk Predict', href: '/risk', icon: Shield, badge: 'ML' },
-  { name: 'Benchmark', href: '/benchmark', icon: BarChart3, badge: 'LIVE' },
-  { name: 'Voice Contract', href: '/voice', icon: MessageSquare, badge: 'AI' },
-  { name: 'Blockchain', href: '/blockchain', icon: Shield, badge: 'NEW' },
+  { name: 'Benchmark', href: '/benchmark', icon: Target, badge: 'LIVE' },
+  { name: 'Voice Contract', href: '/voice', icon: Mic, badge: 'AI' },
+  { name: 'Blockchain', href: '/blockchain', icon: Link2, badge: 'NEW' },
   { name: 'Clause Library', href: '/clauses', icon: BookOpen, badge: 'LIVE' },
   { name: 'Obligations', href: '/obligations', icon: Clock, badge: 'AUTO' },
-  { name: 'Multi-Language', href: '/multi-language', icon: TrendingUp, badge: '50+' },
+  { name: 'Multi-Language', href: '/multi-language', icon: Languages, badge: '50+' },
   { name: 'Renewals', href: '/renewals', icon: Calendar },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Team', href: '/team', icon: Users },

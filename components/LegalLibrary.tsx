@@ -178,9 +178,9 @@ export default function LegalLibrary() {
       {/* Categories */}
       {libraryCategories.map((category) => {
         const Icon = category.icon;
-        
+
         return (
-          <div key={category.id} className="mb-20">
+          <div key={category.id} id={category.id} className="mb-20 scroll-mt-24">
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-3">
                 <Icon className="w-8 h-8 text-stone-900" />

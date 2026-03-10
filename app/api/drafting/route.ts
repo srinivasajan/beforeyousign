@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { action, ...data } = body;
 
-    const drafter = new AIContractDrafter(process.env.GEMINI_API_KEY || '');
+    const drafter = new AIContractDrafter();
 
     switch (action) {
       case 'draft': {

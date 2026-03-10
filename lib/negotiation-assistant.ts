@@ -10,7 +10,7 @@
  * - Negotiation playbooks
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateText, parseJsonResponse } from './nvidia-client';
 
 export interface NegotiationStrategy {
   clauseId: string;
@@ -126,13 +126,7 @@ export interface NegotiationRound {
 }
 
 export class NegotiationAssistant {
-  private gemini: GoogleGenerativeAI;
-  private model: any;
-
-  constructor(apiKey: string) {
-    this.gemini = new GoogleGenerativeAI(apiKey);
-    this.model = this.gemini.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-  }
+  constructor(_apiKey?: string) {}
 
   /**
    * Generate negotiation strategy for a specific clause
@@ -207,13 +201,9 @@ Format as JSON following this structure:
 }`;
 
     try {
-      const result = await this.model.generateContent(prompt);
-      const response = result.response.text();
-      
-      // Extract JSON from response
-      const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, response];
-      const jsonText = jsonMatch[1] || response;
-      const data = JSON.parse(jsonText.trim());
+      const response = await generateText(prompt);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data = parseJsonResponse<any>(response);
 
       return {
         clauseId: this.generateClauseId(clauseText),
@@ -299,14 +289,9 @@ Format as JSON:
 }`;
 
     try {
-      const result = await this.model.generateContent(prompt);
-      const response = result.response.text();
-      
-      const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, response];
-      const jsonText = jsonMatch[1] || response;
-      const data = JSON.parse(jsonText.trim());
-
-      return data as NegotiationPlaybook;
+      const response = await generateText(prompt);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return parseJsonResponse<any>(response) as NegotiationPlaybook;
     } catch (error) {
       console.error('Error generating playbook:', error);
       throw error;
@@ -355,12 +340,9 @@ Analyze and provide JSON:
 }`;
 
     try {
-      const result = await this.model.generateContent(prompt);
-      const response = result.response.text();
-      
-      const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, response];
-      const jsonText = jsonMatch[1] || response;
-      return JSON.parse(jsonText.trim());
+      const response = await generateText(prompt);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return parseJsonResponse<any>(response);
     } catch (error) {
       console.error('Error analyzing leverage:', error);
       throw error;

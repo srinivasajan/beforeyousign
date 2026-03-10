@@ -1,12 +1,7 @@
-// Negotiation script generator using AI
+// Negotiation script generator using NVIDIA NIM API
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateText, parseJsonResponse } from './nvidia-client';
 import type { ContractClause } from './types';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const model = genAI.getGenerativeModel({
-  model: 'gemini-2.5-flash',
-});
 
 export interface NegotiationScript {
   emailTemplate: string;
@@ -55,27 +50,9 @@ Generate a negotiation script in JSON format with the following structure:
 Return ONLY valid JSON, no additional text.`;
 
   try {
-    const result = await model.generateContent({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.7,
-      },
-    });
-
-    const response = result.response;
-    const text = response.text();
+    const text = await generateText(prompt, undefined, 0.7, 4096);
+    const script = parseJsonResponse<NegotiationScript>(text);
     
-    if (!text) {
-      throw new Error('No response from AI');
-    }
-    
-    // Extract JSON from markdown code blocks if present
-    const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, text];
-    const jsonText = jsonMatch[1] || text;
-    
-    const script = JSON.parse(jsonText.trim()) as NegotiationScript;
-    
-    // Validate required fields
     if (!script.emailTemplate || !script.talkingPoints || !script.negotiationStrategies) {
       throw new Error('Invalid script format');
     }

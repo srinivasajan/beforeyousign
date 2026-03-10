@@ -2,7 +2,7 @@
  * Advanced Multi-Model AI Analysis Engine
  * 
  * Features:
- * - Multi-model ensemble (GPT-4, Claude, Gemini)
+ * - NVIDIA NIM LLM ensemble analysis
  * - Risk prediction with confidence scores
  * - Automated clause extraction and categorization
  * - Industry-specific compliance checking
@@ -11,16 +11,16 @@
  * - Anomaly detection
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateText, parseJsonResponse, NVIDIA_MODELS } from './nvidia-client';
 
 // Analysis Models Configuration
 const ANALYSIS_MODELS = {
-  primary: 'gemini-2.0-flash-exp',
-  fallback: 'gemini-1.5-flash',
+  primary: NVIDIA_MODELS.primary,
+  fallback: NVIDIA_MODELS.fallback,
   specialized: {
-    risk: 'gemini-2.0-flash-exp',
-    compliance: 'gemini-1.5-pro',
-    negotiation: 'gemini-2.0-flash-exp',
+    risk: NVIDIA_MODELS.primary,
+    compliance: NVIDIA_MODELS.primary,
+    negotiation: NVIDIA_MODELS.primary,
   }
 };
 
@@ -186,14 +186,8 @@ export interface AdvancedAnalysisResult {
 }
 
 export class AdvancedAnalyzer {
-  private gemini: GoogleGenerativeAI;
-  private primaryModel: any;
-  private fallbackModel: any;
-
-  constructor(apiKey: string) {
-    this.gemini = new GoogleGenerativeAI(apiKey);
-    this.primaryModel = this.gemini.getGenerativeModel({ model: ANALYSIS_MODELS.primary });
-    this.fallbackModel = this.gemini.getGenerativeModel({ model: ANALYSIS_MODELS.fallback });
+  constructor(_apiKey?: string) {
+    // API key handled centrally via NVIDIA_API_KEY env var in nvidia-client.ts
   }
 
   async analyzeContract(
@@ -274,13 +268,11 @@ export class AdvancedAnalyzer {
     const prompt = this.buildCoreAnalysisPrompt(text, options);
     
     try {
-      const result = await this.primaryModel.generateContent(prompt);
-      const response = result.response.text();
+      const response = await generateText(prompt, ANALYSIS_MODELS.primary, 0.3, 8192);
       return this.parseCoreAnalysis(response);
     } catch (error) {
       console.log('[Primary Model Failed] Falling back to secondary model');
-      const result = await this.fallbackModel.generateContent(prompt);
-      const response = result.response.text();
+      const response = await generateText(prompt, ANALYSIS_MODELS.fallback, 0.3, 8192);
       return this.parseCoreAnalysis(response);
     }
   }
@@ -339,11 +331,10 @@ ${text}
 
 Return as JSON array of clause objects.`;
 
-    const result = await this.primaryModel.generateContent(prompt);
-    const response = result.response.text();
+    const response = await generateText(prompt, ANALYSIS_MODELS.primary, 0.3, 8192);
     
     try {
-      const parsed = JSON.parse(this.extractJSON(response));
+      const parsed = parseJsonResponse<ClauseExtraction[]>(response);
       return Array.isArray(parsed) ? parsed : [];
     } catch {
       return [];
@@ -368,11 +359,10 @@ ${text}
 
 Return JSON array of risk predictions with probability, confidence, and mitigation strategies.`;
 
-    const result = await this.primaryModel.generateContent(prompt);
-    const response = result.response.text();
+    const response = await generateText(prompt, ANALYSIS_MODELS.primary, 0.3, 4096);
     
     try {
-      const parsed = JSON.parse(this.extractJSON(response));
+      const parsed = parseJsonResponse<RiskPrediction[]>(response);
       return Array.isArray(parsed) ? parsed : [];
     } catch {
       return [];
@@ -401,11 +391,10 @@ ${text}
 
 Return JSON array of compliance checks.`;
 
-    const result = await this.primaryModel.generateContent(prompt);
-    const response = result.response.text();
+    const response = await generateText(prompt, ANALYSIS_MODELS.primary, 0.3, 4096);
     
     try {
-      const parsed = JSON.parse(this.extractJSON(response));
+      const parsed = parseJsonResponse<ComplianceCheck[]>(response);
       return Array.isArray(parsed) ? parsed : [];
     } catch {
       return [];
@@ -429,11 +418,10 @@ ${text}
 
 Return JSON with financial analysis.`;
 
-    const result = await this.primaryModel.generateContent(prompt);
-    const response = result.response.text();
+    const response = await generateText(prompt, ANALYSIS_MODELS.primary, 0.3, 4096);
     
     try {
-      return JSON.parse(this.extractJSON(response));
+      return parseJsonResponse<AdvancedAnalysisResult['financialAnalysis']>(response);
     } catch {
       return undefined;
     }
@@ -443,8 +431,6 @@ Return JSON with financial analysis.`;
     text: string,
     options: AdvancedAnalysisOptions
   ): Promise<AdvancedAnalysisResult['benchmarking']> {
-    // In production, this would query a database of contracts
-    // For now, we'll use AI to simulate benchmarking
     const prompt = `Compare this contract to industry standards for ${options.industry || 'general business'} ${options.contractType || 'contracts'}.
 
 Provide:
@@ -455,11 +441,10 @@ Provide:
 
 Return JSON with benchmarking data.`;
 
-    const result = await this.primaryModel.generateContent(prompt);
-    const response = result.response.text();
+    const response = await generateText(prompt, ANALYSIS_MODELS.primary, 0.3, 4096);
     
     try {
-      return JSON.parse(this.extractJSON(response));
+      return parseJsonResponse<AdvancedAnalysisResult['benchmarking']>(response);
     } catch {
       return undefined;
     }
@@ -484,11 +469,10 @@ ${text}
 
 Return JSON with negotiation insights.`;
 
-    const result = await this.primaryModel.generateContent(prompt);
-    const response = result.response.text();
+    const response = await generateText(prompt, ANALYSIS_MODELS.primary, 0.5, 4096);
     
     try {
-      return JSON.parse(this.extractJSON(response));
+      return parseJsonResponse<AdvancedAnalysisResult['negotiationInsights']>(response);
     } catch {
       return undefined;
     }

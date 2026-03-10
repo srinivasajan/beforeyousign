@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AIContractDrafter, ContractDraftRequest, DraftedContract } from '@/lib/ai-contract-drafter';
+import { ContractDraftRequest, DraftedContract } from '@/lib/ai-contract-drafter';
 
 export default function AIContractDrafterComponent() {
   // Add custom styles for select dropdown
@@ -25,8 +25,6 @@ export default function AIContractDrafterComponent() {
   const [loading, setLoading] = useState(false);
   const [selectedVariation, setSelectedVariation] = useState<'balanced' | 'protective' | 'simple'>('balanced');
 
-  const drafter = new AIContractDrafter(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
-
   const handleDraft = async () => {
     setLoading(true);
     setStep('drafting');
@@ -47,7 +45,18 @@ export default function AIContractDrafterComponent() {
         jurisdiction: 'United States',
       };
 
-      const result = await drafter.draftContract(request);
+      const res = await fetch('/api/drafting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'draft', ...request }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(err.error || 'Failed to draft contract');
+      }
+
+      const result: DraftedContract = await res.json();
       setDraftedContract(result);
       setStep('result');
     } catch (error) {

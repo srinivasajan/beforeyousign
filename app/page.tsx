@@ -229,7 +229,7 @@ export default function Home() {
               <div className="bg-white text-stone-900 border-2 border-white p-6 hover:bg-stone-50 transition-all duration-300">
                 <div className="flex items-center justify-between mb-3">
                   <MessageSquare className="w-6 h-6" />
-                  <span className="px-2 py-1 bg-purple-500 text-white text-xs font-bold mono">VOICE</span>
+                  <span className="px-2 py-1 bg-stone-900 text-white text-xs font-bold mono">VOICE</span>
                 </div>
                 <h4 className="text-lg font-bold mb-2">Voice-to-Contract</h4>
                 <p className="text-xs text-stone-600 leading-relaxed mb-3">
@@ -246,7 +246,7 @@ export default function Home() {
               <div className="bg-white text-stone-900 border-2 border-white p-6 hover:bg-stone-50 transition-all duration-300">
                 <div className="flex items-center justify-between mb-3">
                   <Shield className="w-6 h-6" />
-                  <span className="px-2 py-1 bg-indigo-500 text-white text-xs font-bold mono">WEB3</span>
+                  <span className="px-2 py-1 bg-stone-900 text-white text-xs font-bold mono">WEB3</span>
                 </div>
                 <h4 className="text-lg font-bold mb-2">Blockchain Registry</h4>
                 <p className="text-xs text-stone-600 leading-relaxed mb-3">

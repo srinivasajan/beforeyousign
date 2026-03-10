@@ -22,16 +22,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize advanced analyzer with Gemini API key
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: 'API configuration error' },
-        { status: 500 }
-      );
-    }
-    
-    const analyzer = new AdvancedAnalyzer(apiKey);
+    // Initialize advanced analyzer (uses NVIDIA_API_KEY internally)
+    const analyzer = new AdvancedAnalyzer();
 
     // Run comprehensive analysis
     const result = await analyzer.analyzeContract(

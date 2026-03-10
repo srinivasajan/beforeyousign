@@ -105,7 +105,7 @@ const SECURITY_HEADERS = {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://generativelanguage.googleapis.com https://*.clerk.accounts.dev https://clerk.clerk.services",
+    "connect-src 'self' https://integrate.api.nvidia.com https://*.clerk.accounts.dev https://clerk.clerk.services",
     "frame-src 'self' https://*.clerk.accounts.dev",
     "base-uri 'self'",
     "form-action 'self'",

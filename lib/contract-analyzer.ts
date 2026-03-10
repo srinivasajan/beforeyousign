@@ -1,18 +1,11 @@
-// AI-powered contract analysis using Google Gemini
+// AI-powered contract analysis using NVIDIA NIM API
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateText, parseJsonResponse, NVIDIA_MODELS } from './nvidia-client';
 import {
   ContractAnalysis,
   ClauseAnalysis,
   RedFlag,
-  RedFlagType,
-  ClauseCategory,
 } from './types';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const model = genAI.getGenerativeModel({
-  model: 'gemini-2.5-flash',
-});
 
 export class ContractAnalyzer {
   /**
@@ -31,30 +24,26 @@ export class ContractAnalyzer {
       try {
         const prompt = this.buildAnalysisPrompt(contractText, jurisdiction);
         
-        const result = await model.generateContent(prompt);
-
-        const response = result.response;
-        const text = response.text();
+        const text = await generateText(prompt, NVIDIA_MODELS.primary, 0.3, 8192);
         
         if (!text) {
           throw new Error('No response from AI');
         }
 
-        // Extract JSON from markdown code blocks if present
-        const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, text];
-        const jsonText = jsonMatch[1] || text;
-        
-        const analysisData = JSON.parse(jsonText.trim());
+        const analysisData = parseJsonResponse<Record<string, unknown>>(text);
         
         return this.formatAnalysis(analysisData, fileName, fileSize);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(`Contract analysis error (attempt ${attempt}/${maxRetries}):`, error);
+        const err = error as Error & { message?: string; status?: number };
         
         // Check if it's a rate limit or overload error
-        const isRateLimitError = error?.message?.includes('503') || 
-                                 error?.message?.includes('overloaded') ||
-                                 error?.message?.includes('UNAVAILABLE') ||
-                                 error?.status === 503;
+        const isRateLimitError = err?.message?.includes('503') || 
+                                 err?.message?.includes('429') ||
+                                 err?.message?.includes('overloaded') ||
+                                 err?.message?.includes('UNAVAILABLE') ||
+                                 err?.status === 503 ||
+                                 err?.status === 429;
         
         if (isRateLimitError && attempt < maxRetries) {
           // Exponential backoff: wait longer between each retry
@@ -66,14 +55,14 @@ export class ContractAnalyzer {
         // If not a rate limit error or we've exhausted retries
         if (isRateLimitError) {
           throw new Error(
-            'The Gemini API is currently overloaded. This usually happens during peak hours. Please wait 1-2 minutes and try again. If the issue persists, the free tier quota may be exhausted for today.'
+            'The AI service is currently busy. Please wait 1-2 minutes and try again.'
           );
         }
         
         // Check for API key issues
-        if (error?.message?.includes('API key') || error?.message?.includes('401')) {
+        if (err?.message?.includes('API key') || err?.message?.includes('401') || err?.message?.includes('Unauthorized')) {
           throw new Error(
-            'Invalid API key. Please check your GEMINI_API_KEY in the .env file and ensure it\'s correctly configured at https://aistudio.google.com/apikey'
+            'Invalid API key. Please check your NVIDIA_API_KEY in the .env.local file and ensure it is correctly configured.'
           );
         }
         
@@ -161,6 +150,30 @@ Example: If a termination clause requires 90 days notice when industry average i
 - percentile: 85 (stricter than 85% of similar contracts)
 - Include alternatives like "30 days written notice by either party"
 
+NEGOTIATION INTELLIGENCE:
+For clauses with medium-to-critical risk, add a negotiationStrategy with:
+- priority: "high|medium|low" (how important to negotiate this)
+- leverage: "strong|moderate|weak" (your negotiating position on this point)
+- suggestedApproach: Specific talking points or negotiation tactics
+- fallbackPositions: 2-3 compromise positions if your ideal terms are rejected
+- marketPrecedents: Similar contracts where this was negotiated successfully
+
+FAIRNESS SCORING:
+For each clause, calculate a fairnessScore (0-100) where:
+- 0-25: Extremely one-sided, heavily favors other party
+- 26-50: Somewhat unbalanced, minor improvements needed
+- 51-75: Reasonably balanced, standard market terms
+- 76-100: Exceptionally fair, protects both parties equally
+
+Consider: reciprocity, reasonableness, industry norms, legal enforceability
+
+AUTOMATED INSIGHTS:
+Detect and flag:
+- missingClauses: Important protections absent from this contract type
+- contradictions: Clauses that conflict with each other
+- unusualTerms: Atypical provisions that warrant extra scrutiny
+- strengthsToKeep: Surprisingly favorable terms worth preserving
+
 REQUIRED OUTPUT FORMAT:
 Return your analysis as a JSON object with the following structure:
 {
@@ -176,11 +189,19 @@ Return your analysis as a JSON object with the following structure:
       "category": "payment|termination|liability|intellectual_property|confidentiality|dispute_resolution|warranties|indemnification|non_compete|general|other",
       "concerns": ["concern 1", "concern 2"],
       "position": {"start": 0, "end": 100},
+      "fairnessScore": 50,
       "industryComparison": {
         "averageStrictness": 50,
         "percentile": 50,
         "commonAlternatives": ["alternative 1", "alternative 2"],
         "fairerVersion": "suggested balanced wording"
+      },
+      "negotiationStrategy": {
+        "priority": "high|medium|low",
+        "leverage": "strong|moderate|weak",
+        "suggestedApproach": "specific tactics",
+        "fallbackPositions": ["compromise 1", "compromise 2"],
+        "marketPrecedents": ["example 1", "example 2"]
       }
     }
   ],
@@ -196,11 +217,20 @@ Return your analysis as a JSON object with the following structure:
     }
   ],
   "recommendations": ["recommendation 1", "recommendation 2"],
+  "insights": {
+    "missingClauses": ["clause type 1", "clause type 2"],
+    "contradictions": [{"clause1": "id", "clause2": "id", "issue": "description"}],
+    "unusualTerms": [{"clauseId": "id", "reason": "why unusual"}],
+    "strengthsToKeep": ["favorable term 1", "favorable term 2"]
+  },
   "metadata": {
-    "documentType": "type or null",
+    "documentType": "employment|nda|service_agreement|lease|purchase_order|partnership|licensing|consulting|freelance|vendor|subscription|master_service_agreement|sow|other or null",
     "parties": ["party 1", "party 2"] or null,
     "effectiveDate": "date or null",
-    "expirationDate": "date or null"
+    "expirationDate": "date or null",
+    "governingLaw": "jurisdiction or null",
+    "contractValue": "estimated value or null",
+    "autoRenewal": true or false or null
   }
 }
 
@@ -211,14 +241,14 @@ Return ONLY the JSON object, no additional text or markdown formatting.`;
    * Format AI response into ContractAnalysis type
    */
   private static formatAnalysis(
-    data: any,
+    data: Record<string, unknown>,
     fileName: string,
     fileSize: number
   ): ContractAnalysis {
     return {
-      summary: data.summary || 'No summary available',
-      riskScore: Math.min(100, Math.max(0, data.riskScore || 0)),
-      clauses: (data.clauses || []).map((clause: any, index: number) => ({
+      summary: (data.summary as string) || 'No summary available',
+      riskScore: Math.min(100, Math.max(0, (data.riskScore as number) || 0)),
+      clauses: ((data.clauses as Array<Record<string, unknown>>) || []).map((clause, index: number) => ({
         id: clause.id || `clause_${index}`,
         title: clause.title || 'Unnamed Clause',
         originalText: clause.originalText || '',
@@ -227,9 +257,11 @@ Return ONLY the JSON object, no additional text or markdown formatting.`;
         category: clause.category || 'other',
         concerns: clause.concerns || [],
         position: clause.position || { start: 0, end: 0 },
+        fairnessScore: (clause.fairnessScore as number) || 50,
         industryComparison: clause.industryComparison || undefined,
+        negotiationStrategy: clause.negotiationStrategy || undefined,
       })) as ClauseAnalysis[],
-      redFlags: (data.redFlags || []).map((flag: any, index: number) => ({
+      redFlags: ((data.redFlags as Array<Record<string, unknown>>) || []).map((flag, index: number) => ({
         id: flag.id || `flag_${index}`,
         type: flag.type || 'other',
         severity: flag.severity || 'warning',
@@ -238,61 +270,78 @@ Return ONLY the JSON object, no additional text or markdown formatting.`;
         affectedClauses: flag.affectedClauses || [],
         recommendation: flag.recommendation || '',
       })) as RedFlag[],
-      recommendations: data.recommendations || [],
+      recommendations: (data.recommendations as string[]) || [],
+      insights: {
+        missingClauses: ((data.insights as Record<string, unknown>)?.missingClauses as string[]) || [],
+        contradictions: (((data.insights as Record<string, unknown>)?.contradictions as Array<Record<string, unknown>>) || []).map((c: Record<string, unknown>) => ({
+          clause1: (c.clause1 as string) || '',
+          clause2: (c.clause2 as string) || '',
+          issue: (c.issue as string) || '',
+        })),
+        unusualTerms: (((data.insights as Record<string, unknown>)?.unusualTerms as Array<Record<string, unknown>>) || []).map((t: Record<string, unknown>) => ({
+          clauseId: (t.clauseId as string) || '',
+          reason: (t.reason as string) || '',
+        })),
+        strengthsToKeep: ((data.insights as Record<string, unknown>)?.strengthsToKeep as string[]) || [],
+      },
       metadata: {
         fileName,
         fileSize,
         uploadedAt: new Date().toISOString(),
-        documentType: data.metadata?.documentType,
-        parties: data.metadata?.parties,
-        effectiveDate: data.metadata?.effectiveDate,
-        expirationDate: data.metadata?.expirationDate,
+        documentType: (data.metadata as Record<string, unknown>)?.documentType as string | undefined,
+        parties: (data.metadata as Record<string, unknown>)?.parties as string[] | undefined,
+        effectiveDate: (data.metadata as Record<string, unknown>)?.effectiveDate as string | undefined,
+        expirationDate: (data.metadata as Record<string, unknown>)?.expirationDate as string | undefined,
+        governingLaw: (data.metadata as Record<string, unknown>)?.governingLaw as string | undefined,
+        contractValue: (data.metadata as Record<string, unknown>)?.contractValue as string | undefined,
+        autoRenewal: (data.metadata as Record<string, unknown>)?.autoRenewal as boolean | undefined,
       },
       confidence: {
         overall: this.calculateOverallConfidence(data),
         riskScoreConfidence: this.calculateRiskConfidence(data),
         clauseAnalysisConfidence: this.calculateClauseConfidence(data),
-        model: 'Google Gemini 2.0 Flash',
-        modelVersion: 'gemini-2.0-flash-exp',
+        model: 'NVIDIA Llama-3.1 Nemotron-70B',
+        modelVersion: NVIDIA_MODELS.primary,
         analysisDate: new Date().toISOString(),
         notes: this.generateConfidenceNotes(data),
       },
     };
   }
 
-  private static calculateOverallConfidence(data: any): number {
+  private static calculateOverallConfidence(data: Record<string, unknown>): number {
     // Base confidence on completeness of analysis
     let confidence = 85; // Start with high baseline for Gemini 2.0
     
-    if (!data.summary || data.summary.length < 50) confidence -= 10;
-    if (!data.clauses || data.clauses.length === 0) confidence -= 15;
-    if (!data.redFlags || data.redFlags.length === 0) confidence -= 5;
-    if (!data.recommendations || data.recommendations.length === 0) confidence -= 10;
+    if (!(data.summary as string) || (data.summary as string).length < 50) confidence -= 10;
+    if (!(data.clauses as Array<unknown>) || (data.clauses as Array<unknown>).length === 0) confidence -= 15;
+    if (!(data.redFlags as Array<unknown>) || (data.redFlags as Array<unknown>).length === 0) confidence -= 5;
+    if (!(data.recommendations as Array<unknown>) || (data.recommendations as Array<unknown>).length === 0) confidence -= 10;
     
     return Math.max(60, Math.min(95, confidence));
   }
 
-  private static calculateRiskConfidence(data: any): number {
+  private static calculateRiskConfidence(data: Record<string, unknown>): number {
     // Confidence in risk score based on depth of analysis
     let confidence = 88;
     
-    const flagCount = (data.redFlags || []).length;
-    const clauseCount = (data.clauses || []).length;
+    const flagCount = ((data.redFlags as Array<unknown>) || []).length;
+    const clauseCount = ((data.clauses as Array<unknown>) || []).length;
+    const riskScore = (data.riskScore as number) || 0;
     
-    if (flagCount === 0 && data.riskScore > 50) confidence -= 15;
+    if (flagCount === 0 && riskScore > 50) confidence -= 15;
     if (clauseCount < 5) confidence -= 10;
-    if (data.riskScore < 10 || data.riskScore > 90) confidence -= 5; // Extreme scores slightly less confident
+    if (riskScore < 10 || riskScore > 90) confidence -= 5; // Extreme scores slightly less confident
     
     return Math.max(70, Math.min(95, confidence));
   }
 
-  private static calculateClauseConfidence(data: any): number {
+  private static calculateClauseConfidence(data: Record<string, unknown>): number {
     // Confidence in clause-level analysis
     let confidence = 90;
     
-    const clauses = data.clauses || [];
-    const clausesWithComparison = clauses.filter((c: any) => c.industryComparison).length;
-    const clausesWithConcerns = clauses.filter((c: any) => c.concerns && c.concerns.length > 0).length;
+    const clauses = (data.clauses as Array<Record<string, unknown>>) || [];
+    const clausesWithComparison = clauses.filter((c) => c.industryComparison).length;
+    const clausesWithConcerns = clauses.filter((c) => c.concerns && Array.isArray(c.concerns) && c.concerns.length > 0).length;
     
     if (clauses.length === 0) return 0;
     
@@ -305,11 +354,11 @@ Return ONLY the JSON object, no additional text or markdown formatting.`;
     return Math.max(75, Math.min(95, confidence));
   }
 
-  private static generateConfidenceNotes(data: any): string[] {
+  private static generateConfidenceNotes(data: Record<string, unknown>): string[] {
     const notes: string[] = [];
     
-    const clauseCount = (data.clauses || []).length;
-    const flagCount = (data.redFlags || []).length;
+    const clauseCount = ((data.clauses as Array<unknown>) || []).length;
+    const flagCount = ((data.redFlags as Array<unknown>) || []).length;
     
     if (clauseCount > 10) {
       notes.push('Comprehensive clause-level analysis performed');
@@ -319,12 +368,12 @@ Return ONLY the JSON object, no additional text or markdown formatting.`;
       notes.push('Multiple risk factors identified - thorough risk assessment');
     }
     
-    const clausesWithBenchmark = (data.clauses || []).filter((c: any) => c.industryComparison).length;
+    const clausesWithBenchmark = ((data.clauses as Array<Record<string, unknown>>) || []).filter((c) => c.industryComparison).length;
     if (clausesWithBenchmark > 0) {
       notes.push(`Industry comparison data available for ${clausesWithBenchmark} clause${clausesWithBenchmark === 1 ? '' : 's'}`);
     }
     
-    notes.push('Analysis performed by Google Gemini 2.0 Flash - latest generation model');
+    notes.push('Analysis performed by NVIDIA Llama-3.1 Nemotron-70B - state-of-the-art reasoning model');
     notes.push('Your contract data is not stored or used for model training');
     
     return notes;

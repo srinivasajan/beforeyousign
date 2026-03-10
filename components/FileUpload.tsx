@@ -16,7 +16,7 @@ export default function FileUpload({ onFileSelect, isAnalyzing }: FileUploadProp
   const [stateProvince, setStateProvince] = useState<string>('');
 
   // Countries by continent (7 continents - geographically accurate)
-  const countriesByContinent: Record<string, Array<{code: string; name: string}>> = {
+  const countriesByContinent: Record<string, Array<{ code: string; name: string }>> = {
     'North America': [
       { code: 'US', name: 'United States' },
       { code: 'CA', name: 'Canada' },
@@ -127,7 +127,7 @@ export default function FileUpload({ onFileSelect, isAnalyzing }: FileUploadProp
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       setError('');
-      
+
       if (acceptedFiles.length === 0) {
         setError('Please upload a valid PDF, DOCX, or TXT file');
         return;
@@ -226,7 +226,7 @@ export default function FileUpload({ onFileSelect, isAnalyzing }: FileUploadProp
             <div className="flex items-center gap-2 mb-2">
               <div className="w-6 h-6 rounded-full bg-stone-900 text-white flex items-center justify-center text-xs font-bold">3</div>
               <span className="text-sm font-semibold text-stone-900">
-                {statesProvinces[country] 
+                {statesProvinces[country]
                   ? (country === 'US' ? 'State' : country === 'CA' ? 'Province/Territory' : country === 'AU' ? 'State/Territory' : country === 'AE' ? 'Emirate' : 'State/Province')
                   : 'Legal Framework'
                 }
@@ -267,13 +267,13 @@ export default function FileUpload({ onFileSelect, isAnalyzing }: FileUploadProp
         `}
       >
         <input {...getInputProps()} />
-        
+
         {/* Decorative corner elements */}
         <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-stone-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-stone-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-stone-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-stone-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
+
         <div className="flex flex-col items-center gap-6">
           {acceptedFiles.length > 0 && !isAnalyzing ? (
             <>
@@ -299,9 +299,8 @@ export default function FileUpload({ onFileSelect, isAnalyzing }: FileUploadProp
           ) : (
             <>
               <div className="relative">
-                <Upload className={`w-20 h-20 transition-all duration-300 ${
-                  isDragActive ? 'text-stone-900 scale-110' : 'text-stone-400 group-hover:text-stone-700'
-                }`} />
+                <Upload className={`w-20 h-20 transition-all duration-300 ${isDragActive ? 'text-stone-900 scale-110' : 'text-stone-400 group-hover:text-stone-700'
+                  }`} />
                 <div className="absolute inset-0 border-2 border-dashed border-stone-300 rounded-full group-hover:border-stone-900 transition-colors duration-300 scale-150"></div>
               </div>
               <div>

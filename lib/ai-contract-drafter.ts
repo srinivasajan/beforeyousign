@@ -13,7 +13,7 @@
  * - Citation of legal precedents and standards
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateText, parseJsonResponse, NVIDIA_MODELS } from './nvidia-client';
 
 export interface ContractDraftRequest {
   // Basic Information
@@ -120,21 +120,10 @@ export interface ContractRefinement {
 }
 
 export class AIContractDrafter {
-  private gemini: GoogleGenerativeAI;
-  private model: any;
   private conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }> = [];
 
-  constructor(apiKey: string) {
-    this.gemini = new GoogleGenerativeAI(apiKey);
-    this.model = this.gemini.getGenerativeModel({ 
-      model: 'gemini-2.0-flash-exp',
-      generationConfig: {
-        temperature: 0.7, // Creative but controlled
-        topP: 0.9,
-        topK: 40,
-        maxOutputTokens: 8192,
-      },
-    });
+  constructor(_apiKey?: string) {
+    // API key handled centrally via NVIDIA_API_KEY env var
   }
 
   /**
@@ -144,16 +133,10 @@ export class AIContractDrafter {
     const systemPrompt = this.buildDraftingPrompt(request);
     
     try {
-      const result = await this.model.generateContent(systemPrompt);
-      const response = result.response.text();
-      
-      // Parse the AI response
+      const response = await generateText(systemPrompt, NVIDIA_MODELS.primary, 0.7, 8192);
       const draft = this.parseContractDraft(response, request);
-      
-      // Validate and enhance
       const validated = await this.validateDraft(draft);
       const enhanced = await this.enhanceDraft(validated, request);
-      
       return enhanced;
     } catch (error) {
       console.error('Error drafting contract:', error);
@@ -187,14 +170,8 @@ Output format:
 }`;
 
     try {
-      const result = await this.model.generateContent(refinementPrompt);
-      const response = result.response.text();
-      
-      // Parse and return refined draft
-      const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, response];
-      const jsonText = jsonMatch[1] || response;
-      const refined = JSON.parse(jsonText.trim());
-      
+      const response = await generateText(refinementPrompt, NVIDIA_MODELS.primary, 0.5, 8192);
+      const refined = parseJsonResponse<{ fullText: string }>(response);
       return {
         ...currentDraft,
         fullText: refined.fullText,
@@ -260,12 +237,14 @@ Respond in JSON:
   }
 }`;
 
-    const result = await this.model.generateContent(conversationPrompt);
-    const response = result.response.text();
-    
-    const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, response];
-    const jsonText = jsonMatch[1] || response;
-    const parsed = JSON.parse(jsonText.trim());
+    const response = await generateText(conversationPrompt, NVIDIA_MODELS.primary, 0.7, 4096);
+    const parsed = parseJsonResponse<{
+      response: string;
+      needsMoreInfo: boolean;
+      questions?: string[];
+      readyToDraft?: boolean;
+      extractedRequirements?: ContractDraftRequest;
+    }>(response);
 
     this.conversationHistory.push({ role: 'assistant', content: parsed.response });
 
@@ -322,11 +301,10 @@ Format as JSON array:
   }
 ]`;
 
-    const result = await this.model.generateContent(prompt);
-    const response = result.response.text();
+    const result = await generateText(prompt, NVIDIA_MODELS.primary, 0.5, 4096);
     
-    const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, response];
-    const jsonText = jsonMatch[1] || response;
+    const jsonMatch = result.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, result];
+    const jsonText = jsonMatch[1] || result;
     return JSON.parse(jsonText.trim());
   }
 
@@ -452,7 +430,7 @@ FORMAT YOUR RESPONSE AS JSON:
         sections: parsed.sections || [],
         signatures: this.extractSignatureBlocks(parsed.fullText),
         generatedAt: new Date(),
-        model: 'gemini-2.0-flash-exp',
+        model: NVIDIA_MODELS.primary,
         confidence: 85, // Would calculate based on completeness
         completeness: this.calculateCompleteness(parsed),
         riskScore: 0, // Would analyze after generation

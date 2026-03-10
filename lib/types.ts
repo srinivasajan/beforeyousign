@@ -6,6 +6,7 @@ export interface ContractAnalysis {
   clauses: ClauseAnalysis[];
   redFlags: RedFlag[];
   recommendations: string[];
+  insights?: ContractInsights;
   metadata: ContractMetadata;
   industryBenchmark?: IndustryBenchmark;
   comparativeInsights?: ComparativeInsight[];
@@ -25,11 +26,19 @@ export interface ClauseAnalysis {
     start: number;
     end: number;
   };
+  fairnessScore?: number; // 0-100, how fair/balanced this clause is
   industryComparison?: {
     averageStrictness: number; // 0-100, how strict this clause is compared to industry average
     percentile: number; // where this clause falls (0-100)
     commonAlternatives?: string[];
     fairerVersion?: string;
+  };
+  negotiationStrategy?: {
+    priority: 'high' | 'medium' | 'low';
+    leverage: 'strong' | 'moderate' | 'weak';
+    suggestedApproach?: string;
+    fallbackPositions?: string[];
+    marketPrecedents?: string[];
   };
 }
 
@@ -82,6 +91,23 @@ export interface ContractMetadata {
   parties?: string[];
   effectiveDate?: string;
   expirationDate?: string;
+  governingLaw?: string;
+  contractValue?: string;
+  autoRenewal?: boolean;
+}
+
+export interface ContractInsights {
+  missingClauses: string[]; // Important protections absent from this contract
+  contradictions: Array<{
+    clause1: string;
+    clause2: string;
+    issue: string;
+  }>;
+  unusualTerms: Array<{
+    clauseId: string;
+    reason: string;
+  }>;
+  strengthsToKeep: string[]; // Favorable terms worth preserving
 }
 
 export interface AnalysisRequest {

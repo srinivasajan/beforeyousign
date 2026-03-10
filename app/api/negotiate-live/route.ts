@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateText, parseJsonResponse } from '@/lib/nvidia-client';
 
 export interface NegotiationRequest {
   contractText: string;
@@ -61,21 +61,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: 'AI service not configured' },
-        { status: 500 }
-      );
-    }
-
-    const gemini = new GoogleGenerativeAI(apiKey);
-    const model = gemini.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-
     const prompt = buildNegotiationPrompt(body);
-    const result = await model.generateContent(prompt);
-    const response = result.response.text();
-
+    const response = await generateText(prompt, undefined, 0.7, 4096);
     const negotiationAdvice = parseNegotiationResponse(response);
 
     return NextResponse.json(negotiationAdvice);
@@ -170,12 +157,7 @@ Respond in JSON format:
 
 function parseNegotiationResponse(response: string): NegotiationResponse {
   try {
-    // Extract JSON from response
-    const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)```/) || response.match(/\{[\s\S]*\}/);
-    const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : response;
-    
-    const parsed = JSON.parse(jsonStr);
-    return parsed;
+    return parseJsonResponse<NegotiationResponse>(response);
   } catch (error) {
     console.error('[Parse Error]', error);
     
