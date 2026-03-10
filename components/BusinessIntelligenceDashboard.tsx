@@ -37,25 +37,25 @@ export default function BusinessIntelligenceDashboard() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading analytics...</p>
+          <div className="animate-spin h-16 w-16 border-b-2 border-stone-900 mx-auto mb-4"></div>
+          <p className="text-stone-600">Loading analytics...</p>
         </div>
       </div>
     );
   }
 
-  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
+  const COLORS = ['#1c1917', '#44403c', '#78716c', '#a8a29e', '#d6d3d1', '#e7e5e4'];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-stone-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-6">
+      <div className="bg-white border-b border-stone-200 p-6">
         <h1 className="text-3xl font-bold mb-2">Business Intelligence Dashboard</h1>
-        <p className="text-gray-600">Portfolio optimization and strategic insights</p>
+        <p className="text-stone-600">Portfolio optimization and strategic insights</p>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white border-b border-stone-200">
         <nav className="flex">
           {(['overview', 'savings', 'vendors', 'risks', 'renewals'] as const).map(tab => (
             <button
@@ -63,8 +63,8 @@ export default function BusinessIntelligenceDashboard() {
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-4 text-sm font-medium ${
                 activeTab === tab
-                  ? 'border-b-2 border-blue-500 text-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'border-b-2 border-stone-900 text-stone-900'
+                  : 'text-stone-500 hover:text-stone-700'
               }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -112,7 +112,7 @@ export default function BusinessIntelligenceDashboard() {
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Spend by Category */}
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white border border-stone-200 p-6">
                 <h3 className="text-lg font-semibold mb-4">Spend by Category</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
@@ -139,24 +139,24 @@ export default function BusinessIntelligenceDashboard() {
               </div>
 
               {/* Top Vendors */}
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white border border-stone-200 p-6">
                 <h3 className="text-lg font-semibold mb-4">Top 5 Vendors</h3>
                 <div className="space-y-3">
                   {portfolio.topVendors.slice(0, 5).map((vendor, idx) => (
                     <div key={vendor.vendorId} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl font-bold text-gray-300">{idx + 1}</span>
+                        <span className="text-2xl font-bold text-stone-300">{idx + 1}</span>
                         <div>
                           <p className="font-medium">{vendor.vendorName}</p>
-                          <p className="text-sm text-gray-600">{vendor.percentOfTotal.toFixed(1)}% of total spend</p>
+                          <p className="text-sm text-stone-600">{vendor.percentOfTotal.toFixed(1)}% of total spend</p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="font-semibold">${(vendor.totalSpend / 1000).toFixed(0)}k</p>
                         <span className={`text-xs ${
-                          vendor.trend === 'increasing' ? 'text-red-600' :
-                          vendor.trend === 'decreasing' ? 'text-green-600' :
-                          'text-gray-600'
+                          vendor.trend === 'increasing' ? 'text-stone-900 font-medium' :
+                          vendor.trend === 'decreasing' ? 'text-stone-700' :
+                          'text-stone-500'
                         }`}>
                           {vendor.trend === 'increasing' ? '↑' : vendor.trend === 'decreasing' ? '↓' : '→'} {vendor.trend}
                         </span>
@@ -178,15 +178,15 @@ export default function BusinessIntelligenceDashboard() {
 
         {activeTab === 'savings' && (
           <div className="space-y-6">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-              <h2 className="text-2xl font-bold text-green-800 mb-2">
+            <div className="bg-stone-50 border border-stone-200 p-6">
+              <h2 className="text-2xl font-bold text-stone-900 mb-2">
                 💰 ${(portfolio.costSavingsOpportunities.reduce((sum, opp) => sum + opp.estimatedSavings, 0) / 1000).toFixed(0)}k
                 <span className="text-lg font-normal ml-2">in potential annual savings identified</span>
               </h2>
             </div>
 
             {portfolio.costSavingsOpportunities.map((opportunity, idx) => (
-              <div key={opportunity.id} className="bg-white rounded-lg shadow p-6">
+              <div key={opportunity.id} className="bg-white border border-stone-200 p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
@@ -198,43 +198,43 @@ export default function BusinessIntelligenceDashboard() {
                       </span>
                       <div>
                         <h3 className="text-xl font-bold">{opportunity.title}</h3>
-                        <p className="text-sm text-gray-600">{opportunity.description}</p>
+                        <p className="text-sm text-stone-600">{opportunity.description}</p>
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-green-600">
+                    <div className="text-3xl font-bold text-stone-900">
                       ${(opportunity.estimatedSavings / 1000).toFixed(0)}k
                     </div>
-                    <div className="text-sm text-gray-600">{opportunity.savingsPercentage}% savings</div>
+                    <div className="text-sm text-stone-600">{opportunity.savingsPercentage}% savings</div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-4 gap-4 mb-4">
                   <div>
-                    <p className="text-xs text-gray-600">Confidence</p>
+                    <p className="text-xs text-stone-600">Confidence</p>
                     <p className="font-semibold capitalize">{opportunity.confidence}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-600">Effort</p>
+                    <p className="text-xs text-stone-600">Effort</p>
                     <p className="font-semibold capitalize">{opportunity.effort}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-600">Timeline</p>
+                    <p className="text-xs text-stone-600">Timeline</p>
                     <p className="font-semibold">{opportunity.timeline} days</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-600">Priority</p>
+                    <p className="text-xs text-stone-600">Priority</p>
                     <p className="font-semibold">{opportunity.priority}/10</p>
                   </div>
                 </div>
 
-                <div className="border-t border-gray-200 pt-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Action Items:</p>
+                <div className="border-t border-stone-200 pt-4">
+                  <p className="text-sm font-medium text-stone-700 mb-2">Action Items:</p>
                   <ul className="space-y-1">
                     {opportunity.actionItems.map((item, i) => (
-                      <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
-                        <span className="text-blue-600 mt-0.5">▸</span>
+                      <li key={i} className="text-sm text-stone-600 flex items-start gap-2">
+                        <span className="text-stone-900 mt-0.5">▸</span>
                         {item}
                       </li>
                     ))}
@@ -248,50 +248,38 @@ export default function BusinessIntelligenceDashboard() {
         {activeTab === 'vendors' && (
           <div className="space-y-6">
             {Object.entries(portfolio.byVendor).map(([vendorId, vendor]) => (
-              <div key={vendorId} className="bg-white rounded-lg shadow p-6">
+              <div key={vendorId} className="bg-white border border-stone-200 p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-bold">{vendor.vendorName}</h3>
-                    <p className="text-sm text-gray-600">{vendor.contractCount} contracts • {vendor.relationshipLength} months relationship</p>
+                    <p className="text-sm text-stone-600">{vendor.contractCount} contracts • {vendor.relationshipLength} months relationship</p>
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold">${(vendor.totalSpend / 1000).toFixed(0)}k</div>
-                    <div className="text-sm text-gray-600">{vendor.concentration.toFixed(1)}% of total</div>
+                    <div className="text-sm text-stone-600">{vendor.concentration.toFixed(1)}% of total</div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  <div className="bg-blue-50 p-3 rounded">
-                    <p className="text-xs text-blue-600 mb-1">Performance</p>
-                    <p className="text-lg font-bold text-blue-900">{vendor.performanceScore}/100</p>
+                  <div className="bg-stone-100 p-3">
+                    <p className="text-xs text-stone-600 mb-1">Performance</p>
+                    <p className="text-lg font-bold text-stone-900">{vendor.performanceScore}/100</p>
                   </div>
-                  <div className="bg-green-50 p-3 rounded">
-                    <p className="text-xs text-green-600 mb-1">SLA Compliance</p>
-                    <p className="text-lg font-bold text-green-900">{vendor.slaCompliance.toFixed(1)}%</p>
+                  <div className="bg-stone-100 p-3">
+                    <p className="text-xs text-stone-600 mb-1">SLA Compliance</p>
+                    <p className="text-lg font-bold text-stone-900">{vendor.slaCompliance.toFixed(1)}%</p>
                   </div>
-                  <div className="bg-purple-50 p-3 rounded">
-                    <p className="text-xs text-purple-600 mb-1">Quality</p>
-                    <p className="text-lg font-bold text-purple-900">{vendor.qualityRating}/5 ⭐</p>
+                  <div className="bg-stone-100 p-3">
+                    <p className="text-xs text-stone-600 mb-1">Quality</p>
+                    <p className="text-lg font-bold text-stone-900">{vendor.qualityRating}/5 ⭐</p>
                   </div>
-                  <div className="bg-yellow-50 p-3 rounded">
-                    <p className="text-xs text-yellow-600 mb-1">On-Time</p>
-                    <p className="text-lg font-bold text-yellow-900">{vendor.deliveryOnTime}%</p>
+                  <div className="bg-stone-100 p-3">
+                    <p className="text-xs text-stone-600 mb-1">On-Time</p>
+                    <p className="text-lg font-bold text-stone-900">{vendor.deliveryOnTime}%</p>
                   </div>
-                  <div className={`p-3 rounded ${
-                    vendor.riskLevel === 'low' ? 'bg-green-50' :
-                    vendor.riskLevel === 'medium' ? 'bg-yellow-50' :
-                    'bg-red-50'
-                  }`}>
-                    <p className={`text-xs mb-1 ${
-                      vendor.riskLevel === 'low' ? 'text-green-600' :
-                      vendor.riskLevel === 'medium' ? 'text-yellow-600' :
-                      'text-red-600'
-                    }`}>Risk Level</p>
-                    <p className={`text-lg font-bold capitalize ${
-                      vendor.riskLevel === 'low' ? 'text-green-900' :
-                      vendor.riskLevel === 'medium' ? 'text-yellow-900' :
-                      'text-red-900'
-                    }`}>{vendor.riskLevel}</p>
+                  <div className="bg-stone-100 p-3">
+                    <p className="text-xs text-stone-600 mb-1">Risk Level</p>
+                    <p className="text-lg font-bold capitalize text-stone-900">{vendor.riskLevel}</p>
                   </div>
                 </div>
               </div>
@@ -302,40 +290,30 @@ export default function BusinessIntelligenceDashboard() {
         {activeTab === 'risks' && (
           <div className="space-y-6">
             {portfolio.riskExposures.map(risk => (
-              <div key={risk.id} className={`rounded-lg shadow p-6 ${
-                risk.severity === 'critical' ? 'bg-red-50 border-2 border-red-200' :
-                risk.severity === 'high' ? 'bg-orange-50 border-2 border-orange-200' :
-                risk.severity === 'medium' ? 'bg-yellow-50 border border-yellow-200' :
-                'bg-blue-50 border border-blue-200'
-              }`}>
+              <div key={risk.id} className="bg-stone-50 border-2 border-stone-300 p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        risk.severity === 'critical' ? 'bg-red-600 text-white' :
-                        risk.severity === 'high' ? 'bg-orange-600 text-white' :
-                        risk.severity === 'medium' ? 'bg-yellow-600 text-white' :
-                        'bg-blue-600 text-white'
-                      }`}>
+                      <span className="px-3 py-1 text-xs font-semibold bg-stone-900 text-white">
                         {risk.severity.toUpperCase()}
                       </span>
-                      <span className="text-xs text-gray-600 capitalize">{risk.riskType}</span>
+                      <span className="text-xs text-stone-600 capitalize">{risk.riskType}</span>
                     </div>
                     <h3 className="text-xl font-bold">{risk.title}</h3>
-                    <p className="text-gray-700 mt-1">{risk.description}</p>
+                    <p className="text-stone-700 mt-1">{risk.description}</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-red-600">${(risk.potentialLoss / 1000).toFixed(0)}k</div>
-                    <div className="text-sm text-gray-600">{risk.probability}% probability</div>
+                    <div className="text-2xl font-bold text-stone-900">${(risk.potentialLoss / 1000).toFixed(0)}k</div>
+                    <div className="text-sm text-stone-600">{risk.probability}% probability</div>
                   </div>
                 </div>
 
-                <div className="border-t border-gray-300 pt-4 mt-4">
+                <div className="border-t border-stone-300 pt-4 mt-4">
                   <p className="font-semibold mb-2">Recommended Actions:</p>
                   <ul className="space-y-1">
                     {risk.recommendedActions.map((action, i) => (
                       <li key={i} className="text-sm flex items-start gap-2">
-                        <span className="text-blue-600 mt-0.5">•</span>
+                        <span className="text-stone-900 mt-0.5">•</span>
                         {action}
                       </li>
                     ))}
@@ -349,12 +327,12 @@ export default function BusinessIntelligenceDashboard() {
         {activeTab === 'renewals' && (
           <div className="space-y-6">
             {portfolio.upcomingRenewals.map(renewal => (
-              <div key={renewal.contractId} className="bg-white rounded-lg shadow p-6">
+              <div key={renewal.contractId} className="bg-white border border-stone-200 p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-bold">{renewal.contractName}</h3>
-                    <p className="text-gray-600">{renewal.vendor}</p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-stone-600">{renewal.vendor}</p>
+                    <p className="text-sm text-stone-500 mt-1">
                       Renews in {renewal.daysUntilRenewal} days ({renewal.renewalDate.toLocaleDateString()})
                     </p>
                   </div>
@@ -363,18 +341,13 @@ export default function BusinessIntelligenceDashboard() {
                     <div className="text-2xl font-bold">
                       ${(renewal.currentValue / 1000).toFixed(0)}k → ${(renewal.projectedValue / 1000).toFixed(0)}k
                     </div>
-                    <div className={`text-sm ${renewal.projectedIncrease > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                    <div className="text-sm text-stone-700">
                       {renewal.projectedIncrease > 0 ? '+' : ''}{renewal.projectedIncrease}% change
                     </div>
                   </div>
                 </div>
 
-                <div className={`p-4 rounded-lg mb-4 ${
-                  renewal.recommendation === 'renew' ? 'bg-green-50 border border-green-200' :
-                  renewal.recommendation === 'renegotiate' ? 'bg-yellow-50 border border-yellow-200' :
-                  renewal.recommendation === 'alternative' ? 'bg-blue-50 border border-blue-200' :
-                  'bg-red-50 border border-red-200'
-                }`}>
+                <div className="p-4 bg-stone-50 border border-stone-200 mb-4">
                   <p className="font-semibold mb-1">
                     Recommendation: <span className="capitalize">{renewal.recommendation}</span>
                   </p>
@@ -387,7 +360,7 @@ export default function BusinessIntelligenceDashboard() {
                     <ul className="space-y-1">
                       {renewal.negotiationPoints.map((point, i) => (
                         <li key={i} className="text-sm flex items-start gap-2">
-                          <span className="text-blue-600 mt-0.5">▸</span>
+                        <span className="text-stone-900 mt-0.5">▸</span>
                           {point}
                         </li>
                       ))}
@@ -411,13 +384,13 @@ function KPICard({ title, value, change, trend, icon }: {
   icon: string;
 }) {
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white border border-stone-200 p-6">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-sm text-gray-600">{title}</p>
+        <p className="text-sm text-stone-600">{title}</p>
         <span className="text-2xl">{icon}</span>
       </div>
       <p className="text-3xl font-bold mb-1">{value}</p>
-      <p className={`text-sm ${trend === 'up' && change > 0 ? 'text-green-600' : trend === 'down' ? 'text-green-600' : 'text-red-600'}`}>
+      <p className="text-sm text-stone-700">
         {trend === 'up' ? '↑' : '↓'} {Math.abs(change)}% from last period
       </p>
     </div>
@@ -426,10 +399,10 @@ function KPICard({ title, value, change, trend, icon }: {
 
 function MetricCard({ title, value, target }: { title: string; value: string; target: string }) {
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <p className="text-sm text-gray-600 mb-1">{title}</p>
+    <div className="bg-white border border-stone-200 p-6">
+      <p className="text-sm text-stone-600 mb-1">{title}</p>
       <p className="text-2xl font-bold mb-1">{value}</p>
-      <p className="text-xs text-gray-500">Target: {target}</p>
+      <p className="text-xs text-stone-500">Target: {target}</p>
     </div>
   );
 }

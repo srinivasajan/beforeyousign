@@ -17,32 +17,32 @@ export default function RenewalCalendar() {
 
   const urgencyConfig = {
     OVERDUE: { 
-      bg: 'bg-red-100', 
-      text: 'text-red-700', 
-      border: 'border-red-300',
+      bg: 'bg-stone-900', 
+      text: 'text-white', 
+      border: 'border-stone-900',
       icon: CalendarX,
-      badgeBg: 'bg-red-500'
+      badgeBg: 'bg-stone-900'
     },
     URGENT: { 
-      bg: 'bg-orange-100', 
-      text: 'text-orange-700', 
-      border: 'border-orange-300',
+      bg: 'bg-stone-700', 
+      text: 'text-white', 
+      border: 'border-stone-700',
       icon: AlertTriangle,
-      badgeBg: 'bg-orange-500'
+      badgeBg: 'bg-stone-700'
     },
     SOON: { 
-      bg: 'bg-amber-100', 
-      text: 'text-amber-700', 
-      border: 'border-amber-300',
+      bg: 'bg-stone-100', 
+      text: 'text-stone-900', 
+      border: 'border-stone-400',
       icon: Clock,
-      badgeBg: 'bg-amber-500'
+      badgeBg: 'bg-stone-500'
     },
     SCHEDULED: { 
-      bg: 'bg-blue-100', 
-      text: 'text-blue-700', 
-      border: 'border-blue-300',
+      bg: 'bg-stone-50', 
+      text: 'text-stone-700', 
+      border: 'border-stone-200',
       icon: CalendarCheck,
-      badgeBg: 'bg-blue-500'
+      badgeBg: 'bg-stone-300'
     },
   };
 
@@ -68,7 +68,7 @@ export default function RenewalCalendar() {
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => setViewMode('list')}
-                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                className={`px-4 py-2 font-semibold transition-all ${
                   viewMode === 'list' 
                     ? 'bg-stone-900 text-white' 
                     : 'bg-white border border-stone-300 text-stone-700 hover:bg-stone-50'
@@ -78,7 +78,7 @@ export default function RenewalCalendar() {
               </button>
               <button 
                 onClick={() => setViewMode('calendar')}
-                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                className={`px-4 py-2 font-semibold transition-all ${
                   viewMode === 'calendar' 
                     ? 'bg-stone-900 text-white' 
                     : 'bg-white border border-stone-300 text-stone-700 hover:bg-stone-50'
@@ -92,62 +92,62 @@ export default function RenewalCalendar() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white border-2 border-red-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border-2 border-stone-200 p-6 hover:border-stone-900 transition-colors">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
+              <div className="w-12 h-12 bg-stone-100 flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-stone-900" />
               </div>
-              {overdueCount > 0 && <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />}
+              {overdueCount > 0 && <span className="w-3 h-3 bg-stone-900" />}
             </div>
-            <p className="text-3xl font-bold text-red-600 mb-1">{overdueCount}</p>
+            <p className="text-3xl font-bold text-stone-900 mb-1">{overdueCount}</p>
             <p className="text-sm font-semibold text-stone-700">Overdue</p>
             <p className="text-xs text-stone-500 mt-1">Requires immediate action</p>
           </div>
 
-          <div className="bg-white border-2 border-amber-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border-2 border-stone-200 p-6 hover:border-stone-900 transition-colors">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-amber-600" />
+              <div className="w-12 h-12 bg-stone-100 flex items-center justify-center">
+                <Clock className="w-6 h-6 text-stone-900" />
               </div>
-              <span className="text-xs font-bold text-amber-600 uppercase">Urgent</span>
+              <span className="text-xs font-bold text-stone-900 uppercase">Urgent</span>
             </div>
-            <p className="text-3xl font-bold text-amber-600 mb-1">{next30DaysCount}</p>
+            <p className="text-3xl font-bold text-stone-900 mb-1">{next30DaysCount}</p>
             <p className="text-sm font-semibold text-stone-700">Next 30 Days</p>
             <p className="text-xs text-stone-500 mt-1">Upcoming renewals</p>
           </div>
 
-          <div className="bg-white border-2 border-blue-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border-2 border-stone-200 p-6 hover:border-stone-900 transition-colors">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Repeat className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-stone-100 flex items-center justify-center">
+                <Repeat className="w-6 h-6 text-stone-900" />
               </div>
-              <span className="text-xs font-bold text-blue-600 uppercase">Auto</span>
+              <span className="text-xs font-bold text-stone-900 uppercase">Auto</span>
             </div>
-            <p className="text-3xl font-bold text-blue-600 mb-1">{autoRenewCount}</p>
+            <p className="text-3xl font-bold text-stone-900 mb-1">{autoRenewCount}</p>
             <p className="text-sm font-semibold text-stone-700">Auto-Renewal</p>
             <p className="text-xs text-stone-500 mt-1">Requires review</p>
           </div>
 
-          <div className="bg-white border-2 border-emerald-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border-2 border-stone-200 p-6 hover:border-stone-900 transition-colors">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-emerald-600" />
+              <div className="w-12 h-12 bg-stone-100 flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-stone-900" />
               </div>
-              <TrendingUp className="w-4 h-4 text-emerald-600" />
+              <TrendingUp className="w-4 h-4 text-stone-900" />
             </div>
-            <p className="text-3xl font-bold text-emerald-600 mb-1">${(totalAnnualValue / 1000).toFixed(0)}K</p>
+            <p className="text-3xl font-bold text-stone-900 mb-1">${(totalAnnualValue / 1000).toFixed(0)}K</p>
             <p className="text-sm font-semibold text-stone-700">Annual Value</p>
             <p className="text-xs text-stone-500 mt-1">Total renewal value</p>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white border border-stone-200 rounded-xl p-4 mb-6 shadow-sm">
+        <div className="bg-white border border-stone-200 p-4 mb-6">
           <div className="flex items-center gap-3">
             <span className="text-sm font-semibold text-stone-700">Filter by:</span>
             <button
               onClick={() => setFilterUrgency('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              className={`px-4 py-2 text-sm font-semibold transition-all ${
                 filterUrgency === 'all'
                   ? 'bg-stone-900 text-white'
                   : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
@@ -162,7 +162,7 @@ export default function RenewalCalendar() {
                 <button
                   key={urgency}
                   onClick={() => setFilterUrgency(urgency)}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                  className={`px-4 py-2 text-sm font-semibold transition-all ${
                     filterUrgency === urgency
                       ? `${config.bg} ${config.text} border-2 ${config.border}`
                       : 'bg-stone-100 text-stone-700 hover:bg-stone-200'

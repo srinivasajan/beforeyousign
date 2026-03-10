@@ -70,7 +70,7 @@ export default function Footer() {
                         </p>
                         <div className="flex items-center gap-2 text-sm text-stone-400">
                             <span>Made with</span>
-                            <Heart className="w-4 h-4 text-red-500 fill-red-500 animate-pulse" />
+                            <Heart className="w-4 h-4 text-stone-400 fill-stone-400" />
                             <span>by Srinivas Jangiti</span>
                         </div>
                     </div>

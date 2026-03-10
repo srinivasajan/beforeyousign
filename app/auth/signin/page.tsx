@@ -47,7 +47,7 @@ function SignInContent() {
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-stone-900 rounded-lg mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-stone-900 mb-4">
             <Lock className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-stone-900 mb-2">Welcome Back</h1>
@@ -56,11 +56,11 @@ function SignInContent() {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="mb-6 p-4 bg-stone-100 border-2 border-stone-900 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-stone-900 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-red-900">Sign In Failed</p>
-              <p className="text-sm text-red-700 mt-1">{error}</p>
+              <p className="text-sm font-medium text-stone-900">Sign In Failed</p>
+              <p className="text-sm text-stone-700 mt-1">{error}</p>
             </div>
           </div>
         )}
@@ -70,7 +70,7 @@ function SignInContent() {
           <button
             type="button"
             onClick={() => handleOAuthSignIn('github')}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-stone-900 text-white font-medium rounded-lg hover:bg-stone-800 transition-colors"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-stone-900 text-white font-medium hover:bg-stone-800 transition-colors"
           >
             <Github className="w-5 h-5" />
             <span>Continue with GitHub</span>
@@ -79,7 +79,7 @@ function SignInContent() {
           <button
             type="button"
             onClick={() => handleOAuthSignIn('google')}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border-2 border-stone-200 text-stone-900 font-medium rounded-lg hover:border-stone-900 transition-colors"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border-2 border-stone-200 text-stone-900 font-medium hover:border-stone-900 transition-colors"
           >
             <Chrome className="w-5 h-5" />
             <span>Continue with Google</span>
@@ -112,7 +112,7 @@ function SignInContent() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="block w-full pl-10 pr-3 py-3 border-2 border-stone-200 rounded-lg focus:outline-none focus:border-stone-900 transition-colors"
+                className="block w-full pl-10 pr-3 py-3 border-2 border-stone-200 focus:outline-none focus:border-stone-900 transition-colors bg-white"
                 placeholder="you@example.com"
               />
             </div>
@@ -132,7 +132,7 @@ function SignInContent() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="block w-full pl-10 pr-10 py-3 border-2 border-stone-200 rounded-lg focus:outline-none focus:border-stone-900 transition-colors"
+                className="block w-full pl-10 pr-10 py-3 border-2 border-stone-200 focus:outline-none focus:border-stone-900 transition-colors bg-white"
                 placeholder="Enter your password"
               />
               <button
@@ -168,7 +168,7 @@ function SignInContent() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-3 bg-stone-900 text-white font-medium rounded-lg hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-3 bg-stone-900 text-white font-medium hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
@@ -186,10 +186,10 @@ function SignInContent() {
         </p>
 
         {/* Demo Credentials */}
-        <div className="mt-8 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
-          <p className="text-sm font-medium text-blue-900 mb-2">Demo Credentials</p>
-          <p className="text-xs text-blue-700 font-mono">Email: test@example.com</p>
-          <p className="text-xs text-blue-700 font-mono">Password: password123</p>
+        <div className="mt-8 p-4 bg-stone-100 border-2 border-stone-300">
+          <p className="text-sm font-medium text-stone-900 mb-2">Demo Credentials</p>
+          <p className="text-xs text-stone-700 font-mono">Email: test@example.com</p>
+          <p className="text-xs text-stone-700 font-mono">Password: password123</p>
         </div>
       </div>
     </div>
@@ -198,7 +198,7 @@ function SignInContent() {
 
 export default function SignInPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-stone-50 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-900"></div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-stone-50 flex items-center justify-center"><div className="w-8 h-8 border-b-2 border-stone-900 animate-spin"></div></div>}>
       <SignInContent />
     </Suspense>
   );

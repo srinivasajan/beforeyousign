@@ -125,7 +125,6 @@ const quickActions = [
         description: 'AI-powered risk analysis',
         icon: Search,
         href: '/analyze',
-        color: 'from-blue-500 to-indigo-600',
         badge: 'AI'
     },
     {
@@ -133,7 +132,6 @@ const quickActions = [
         description: 'Create with AI assistance',
         icon: Edit3,
         href: '/drafting',
-        color: 'from-purple-500 to-pink-600',
         badge: 'NEW'
     },
     {
@@ -141,14 +139,12 @@ const quickActions = [
         description: 'E-signature workflow',
         icon: FileSignature,
         href: '/esignature',
-        color: 'from-green-500 to-emerald-600'
     },
     {
         title: 'Upload Contract',
         description: 'Add to your repository',
         icon: Upload,
         href: '/contracts',
-        color: 'from-orange-500 to-amber-600'
     }
 ];
 
@@ -158,12 +154,7 @@ function CircularProgress({ value, size = 120, strokeWidth = 8 }: { value: numbe
     const circumference = radius * 2 * Math.PI;
     const offset = circumference - (value / 100) * circumference;
 
-    const getColor = (score: number) => {
-        if (score >= 80) return '#22c55e';
-        if (score >= 60) return '#eab308';
-        if (score >= 40) return '#f97316';
-        return '#ef4444';
-    };
+    const getColor = () => '#1c1917';
 
     return (
         <div className="relative" style={{ width: size, height: size }}>
@@ -182,8 +173,8 @@ function CircularProgress({ value, size = 120, strokeWidth = 8 }: { value: numbe
                     strokeWidth={strokeWidth}
                     strokeDasharray={circumference}
                     strokeDashoffset={offset}
-                    strokeLinecap="round"
-                    stroke={getColor(value)}
+                    strokeLinecap="butt"
+                    stroke={getColor()}
                     fill="transparent"
                     r={radius}
                     cx={size / 2}
@@ -252,7 +243,7 @@ export default function UserDashboard() {
                 <div className="mb-8">
                     <div className="flex items-center gap-2 mb-2">
                         <span className="mono text-xs text-stone-500 tracking-wider uppercase">Personal Dashboard</span>
-                        <span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded-full">LIVE</span>
+                        <span className="px-2 py-0.5 bg-stone-900 text-white text-[10px] font-bold">LIVE</span>
                     </div>
                     <h1 className="text-4xl font-bold text-stone-900 mb-2">Welcome back</h1>
                     <p className="text-stone-600">Here's an overview of your contract portfolio and recent activity.</p>
@@ -266,17 +257,16 @@ export default function UserDashboard() {
                             <Link
                                 key={action.href}
                                 href={action.href}
-                                className="group relative bg-white border-2 border-stone-200 rounded-xl p-5 hover:border-stone-900 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden"
+                                className="group relative bg-white border-2 border-stone-200 p-5 hover:border-stone-900 transition-all duration-300 overflow-hidden"
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
-                                <div className={`absolute inset-0 bg-gradient-to-br ${action.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
                                 <div className="relative">
                                     <div className="flex items-center justify-between mb-3">
-                                        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${action.color} flex items-center justify-center shadow-lg`}>
+                                        <div className={`w-10 h-10 bg-stone-900 flex items-center justify-center`}>
                                             <Icon className="w-5 h-5 text-white" />
                                         </div>
                                         {action.badge && (
-                                            <span className={`px-2 py-0.5 bg-gradient-to-r ${action.color} text-white text-[10px] font-bold rounded-full`}>
+                                            <span className="px-2 py-0.5 bg-stone-900 text-white text-[10px] font-bold">
                                                 {action.badge}
                                             </span>
                                         )}
@@ -295,7 +285,7 @@ export default function UserDashboard() {
                     <div className="lg:col-span-2 space-y-6">
                         {/* Stats Cards */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="bg-white border-2 border-stone-200 rounded-xl p-4 hover:border-stone-400 transition-colors">
+                            <div className="bg-white border-2 border-stone-200 p-4 hover:border-stone-900 transition-colors">
                                 <div className="flex items-center gap-2 mb-2">
                                     <FolderOpen className="w-4 h-4 text-stone-500" />
                                     <span className="text-xs text-stone-500 font-medium">Total</span>
@@ -304,36 +294,36 @@ export default function UserDashboard() {
                                 <p className="text-xs text-stone-500">contracts</p>
                             </div>
 
-                            <div className="bg-white border-2 border-stone-200 rounded-xl p-4 hover:border-amber-400 transition-colors">
+                            <div className="bg-white border-2 border-stone-200 p-4 hover:border-stone-900 transition-colors">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <Clock className="w-4 h-4 text-amber-500" />
+                                    <Clock className="w-4 h-4 text-stone-500" />
                                     <span className="text-xs text-stone-500 font-medium">Pending</span>
                                 </div>
-                                <p className="text-2xl font-bold text-amber-600">{summary.pending}</p>
+                                <p className="text-2xl font-bold text-stone-900">{summary.pending}</p>
                                 <p className="text-xs text-stone-500">need review</p>
                             </div>
 
-                            <div className="bg-white border-2 border-stone-200 rounded-xl p-4 hover:border-orange-400 transition-colors">
+                            <div className="bg-white border-2 border-stone-200 p-4 hover:border-stone-900 transition-colors">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <Calendar className="w-4 h-4 text-orange-500" />
+                                    <Calendar className="w-4 h-4 text-stone-500" />
                                     <span className="text-xs text-stone-500 font-medium">Expiring</span>
                                 </div>
-                                <p className="text-2xl font-bold text-orange-600">{summary.expiringSoon}</p>
+                                <p className="text-2xl font-bold text-stone-900">{summary.expiringSoon}</p>
                                 <p className="text-xs text-stone-500">in 30 days</p>
                             </div>
 
-                            <div className="bg-white border-2 border-stone-200 rounded-xl p-4 hover:border-red-400 transition-colors">
+                            <div className="bg-white border-2 border-stone-200 p-4 hover:border-stone-900 transition-colors">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <AlertTriangle className="w-4 h-4 text-red-500" />
+                                    <AlertTriangle className="w-4 h-4 text-stone-500" />
                                     <span className="text-xs text-stone-500 font-medium">High Risk</span>
                                 </div>
-                                <p className="text-2xl font-bold text-red-600">{summary.highRisk}</p>
+                                <p className="text-2xl font-bold text-stone-900">{summary.highRisk}</p>
                                 <p className="text-xs text-stone-500">contracts</p>
                             </div>
                         </div>
 
                         {/* Recent Activity */}
-                        <div className="bg-white border-2 border-stone-200 rounded-xl overflow-hidden">
+                        <div className="bg-white border-2 border-stone-200 overflow-hidden">
                             <div className="px-5 py-4 border-b border-stone-200 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Activity className="w-5 h-5 text-stone-700" />
@@ -349,12 +339,8 @@ export default function UserDashboard() {
                                     return (
                                         <div key={activity.id} className="px-5 py-4 hover:bg-stone-50 transition-colors">
                                             <div className="flex items-start gap-3">
-                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${activity.status === 'warning' ? 'bg-amber-100' :
-                                                        activity.status === 'completed' ? 'bg-green-100' : 'bg-stone-100'
-                                                    }`}>
-                                                    <Icon className={`w-4 h-4 ${activity.status === 'warning' ? 'text-amber-600' :
-                                                            activity.status === 'completed' ? 'text-green-600' : 'text-stone-600'
-                                                        }`} />
+                                                <div className={`w-8 h-8 flex items-center justify-center flex-shrink-0 bg-stone-100`}>
+                                                    <Icon className="w-4 h-4 text-stone-600" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center justify-between mb-1">
@@ -374,7 +360,7 @@ export default function UserDashboard() {
                     {/* Right Column - Health Score & Deadlines */}
                     <div className="space-y-6">
                         {/* Health Score Card */}
-                        <div className="bg-white border-2 border-stone-200 rounded-xl p-6">
+                        <div className="bg-white border-2 border-stone-200 p-6">
                             <div className="flex items-center gap-2 mb-6">
                                 <Shield className="w-5 h-5 text-stone-700" />
                                 <h2 className="text-lg font-bold text-stone-900">Portfolio Health</h2>
@@ -385,10 +371,10 @@ export default function UserDashboard() {
                                     <div className="flex items-center justify-between text-xs mb-2">
                                         <span className="text-stone-500">Risk Distribution</span>
                                     </div>
-                                    <div className="flex gap-1 h-2 rounded-full overflow-hidden">
-                                        <div className="bg-green-500 w-[60%]" title="Low Risk" />
-                                        <div className="bg-amber-500 w-[25%]" title="Medium Risk" />
-                                        <div className="bg-red-500 w-[15%]" title="High Risk" />
+                                    <div className="flex gap-1 h-2 overflow-hidden">
+                                        <div className="bg-stone-400 w-[60%]" title="Low Risk" />
+                                        <div className="bg-stone-600 w-[25%]" title="Medium Risk" />
+                                        <div className="bg-stone-900 w-[15%]" title="High Risk" />
                                     </div>
                                     <div className="flex justify-between mt-2 text-[10px] text-stone-400">
                                         <span>Low (60%)</span>
@@ -399,7 +385,7 @@ export default function UserDashboard() {
                             </div>
                             <Link
                                 href="/analytics"
-                                className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 bg-stone-100 hover:bg-stone-200 rounded-lg text-sm font-medium text-stone-700 transition-colors"
+                                className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-sm font-medium text-stone-700 transition-colors"
                             >
                                 <BarChart3 className="w-4 h-4" />
                                 View Analytics
@@ -407,7 +393,7 @@ export default function UserDashboard() {
                         </div>
 
                         {/* Upcoming Deadlines */}
-                        <div className="bg-white border-2 border-stone-200 rounded-xl overflow-hidden">
+                        <div className="bg-white border-2 border-stone-200 overflow-hidden">
                             <div className="px-5 py-4 border-b border-stone-200 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Bell className="w-5 h-5 text-stone-700" />
@@ -422,9 +408,7 @@ export default function UserDashboard() {
                                     <div key={deadline.id} className="px-5 py-4 hover:bg-stone-50 transition-colors">
                                         <div className="flex items-center justify-between mb-1">
                                             <p className="text-sm font-semibold text-stone-900 truncate">{deadline.contractName}</p>
-                                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${deadline.priority === 'high' ? 'bg-red-100 text-red-700' :
-                                                    deadline.priority === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-stone-600'
-                                                }`}>
+                                            <span className="px-2 py-0.5 border border-stone-900 text-[10px] font-bold text-stone-900">
                                                 {deadline.type.toUpperCase()}
                                             </span>
                                         </div>
@@ -438,7 +422,7 @@ export default function UserDashboard() {
                         </div>
 
                         {/* Pro Tip Card */}
-                        <div className="bg-gradient-to-br from-stone-900 to-stone-800 rounded-xl p-5 text-white">
+                        <div className="bg-stone-900 p-5 text-white">
                             <div className="flex items-center gap-2 mb-3">
                                 <Star className="w-4 h-4 text-amber-400" />
                                 <span className="text-xs font-bold uppercase tracking-wider text-stone-400">Pro Tip</span>
@@ -448,7 +432,7 @@ export default function UserDashboard() {
                             </p>
                             <Link
                                 href="/chat"
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-white text-stone-900 rounded-lg text-sm font-medium hover:bg-stone-100 transition-colors"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-white text-stone-900 text-sm font-medium hover:bg-stone-100 transition-colors"
                             >
                                 <MessageSquare className="w-4 h-4" />
                                 Try Chat

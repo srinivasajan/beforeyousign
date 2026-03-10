@@ -27,9 +27,9 @@ export default function TemplatesEnhanced() {
   };
 
   const complexityColors = {
-    Simple: { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300' },
-    Moderate: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
-    Complex: { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300' },
+    Simple:   { bg: 'bg-stone-100', text: 'text-stone-900', border: 'border-stone-300' },
+    Moderate: { bg: 'bg-stone-100', text: 'text-stone-900', border: 'border-stone-400' },
+    Complex:  { bg: 'bg-stone-900', text: 'text-white',     border: 'border-stone-900' },
   };
 
   const filteredTemplates = contractTemplates.filter(t => {
@@ -77,30 +77,30 @@ export default function TemplatesEnhanced() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white border border-stone-200 rounded-xl p-4">
+          <div className="bg-white border border-stone-200 p-4">
             <div className="flex items-center gap-3 mb-2">
-              <FileText className="w-5 h-5 text-blue-600" />
+              <FileText className="w-5 h-5 text-stone-900" />
               <span className="text-sm font-semibold text-stone-700">Total Templates</span>
             </div>
             <p className="text-3xl font-bold text-stone-900">{contractTemplates.length}</p>
           </div>
-          <div className="bg-white border border-stone-200 rounded-xl p-4">
+          <div className="bg-white border border-stone-200 p-4">
             <div className="flex items-center gap-3 mb-2">
-              <Download className="w-5 h-5 text-green-600" />
+              <Download className="w-5 h-5 text-stone-900" />
               <span className="text-sm font-semibold text-stone-700">Total Downloads</span>
             </div>
             <p className="text-3xl font-bold text-stone-900">{(contractTemplates.reduce((sum, t) => sum + t.downloadCount, 0) / 1000).toFixed(0)}K</p>
           </div>
-          <div className="bg-white border border-stone-200 rounded-xl p-4">
+          <div className="bg-white border border-stone-200 p-4">
             <div className="flex items-center gap-3 mb-2">
-              <Star className="w-5 h-5 text-amber-500" />
+              <Star className="w-5 h-5 text-stone-900" />
               <span className="text-sm font-semibold text-stone-700">Avg Rating</span>
             </div>
             <p className="text-3xl font-bold text-stone-900">{(contractTemplates.reduce((sum, t) => sum + t.rating, 0) / contractTemplates.length).toFixed(1)}</p>
           </div>
-          <div className="bg-white border border-stone-200 rounded-xl p-4">
+          <div className="bg-white border border-stone-200 p-4">
             <div className="flex items-center gap-3 mb-2">
-              <Building className="w-5 h-5 text-purple-600" />
+              <Building className="w-5 h-5 text-stone-900" />
               <span className="text-sm font-semibold text-stone-700">Categories</span>
             </div>
             <p className="text-3xl font-bold text-stone-900">{categories.length - 1}</p>
@@ -108,7 +108,7 @@ export default function TemplatesEnhanced() {
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white border border-stone-200 rounded-xl p-6 mb-6 shadow-sm">
+        <div className="bg-white border border-stone-200 p-6 mb-6">
           <div className="flex flex-col gap-4">
             {/* Search */}
             <div className="relative">
@@ -196,22 +196,22 @@ export default function TemplatesEnhanced() {
             const diffColor = complexityColors[template.complexity as keyof typeof complexityColors];
             
             return (
-              <div key={template.id} className="bg-white border border-stone-200 rounded-xl p-6 hover:shadow-xl transition-all group">
+              <div key={template.id} className="bg-white border border-stone-200 p-6 hover:border-stone-900 transition-all group">
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-6 h-6 text-blue-600" />
+                  <div className={`w-12 h-12 bg-stone-100 flex items-center justify-center flex-shrink-0 transition-transform`}>
+                    <Icon className="w-6 h-6 text-stone-900" />
                   </div>
-                  <span className={`px-3 py-1 text-xs font-bold rounded-lg border-2 ${diffColor.bg} ${diffColor.text} ${diffColor.border}`}>
+                  <span className={`px-3 py-1 text-xs font-bold border-2 ${diffColor.bg} ${diffColor.text} ${diffColor.border}`}>
                     {template.complexity}
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-stone-900 mb-2 group-hover:text-blue-600 transition-colors">{template.name}</h3>
+                <h3 className="text-lg font-bold text-stone-900 mb-2">{template.name}</h3>
                 <p className="text-sm text-stone-600 mb-4 line-clamp-2">{template.description}</p>
 
                 <div className="flex items-center gap-4 mb-4 pb-4 border-b border-stone-200">
                   <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                    <Star className="w-4 h-4 text-stone-900 fill-stone-900" />
                     <span className="text-sm font-bold text-stone-900">{template.rating}</span>
                   </div>
                   <div className="flex items-center gap-1 text-stone-600">
@@ -223,7 +223,7 @@ export default function TemplatesEnhanced() {
                 <div className="flex gap-2">
                   <button 
                     onClick={() => setPreviewTemplate(template.id)}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-900 text-white rounded-lg font-semibold hover:bg-stone-800 transition-all shadow-md hover:shadow-lg"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-900 text-white font-semibold hover:bg-stone-800 transition-all"
                   >
                     <Eye className="w-4 h-4" />
                     Preview

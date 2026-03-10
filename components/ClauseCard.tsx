@@ -101,11 +101,11 @@ export default function ClauseCard({
         if (!industryComparison) return null;
         const strictness = industryComparison.averageStrictness;
         if (strictness > 60) {
-            return { icon: <TrendingUp className="w-4 h-4 text-red-500" />, text: 'Stricter than average', color: 'text-red-600' };
+            return { icon: <TrendingUp className="w-4 h-4 text-stone-900" />, text: 'Stricter than average', color: 'text-stone-900' };
         } else if (strictness < 40) {
-            return { icon: <TrendingDown className="w-4 h-4 text-green-500" />, text: 'More favorable', color: 'text-green-600' };
+            return { icon: <TrendingDown className="w-4 h-4 text-stone-600" />, text: 'More favorable', color: 'text-stone-600' };
         }
-        return { icon: <Minus className="w-4 h-4 text-blue-500" />, text: 'Industry standard', color: 'text-blue-600' };
+        return { icon: <Minus className="w-4 h-4 text-stone-500" />, text: 'Industry standard', color: 'text-stone-500' };
     };
 
     const strictnessInfo = getStrictnessIndicator();
@@ -114,9 +114,8 @@ export default function ClauseCard({
         <div
             className={`
         group bg-white border-l-4 ${style.border} border border-stone-200
-        rounded-r-lg overflow-hidden transition-all duration-300
-        hover:shadow-lg ${style.glow}
-        ${isExpanded ? 'shadow-md' : 'hover:translate-x-1'}
+        overflow-hidden transition-all duration-300
+        ${isExpanded ? '' : 'hover:translate-x-1'}
       `}
         >
             {/* Header - Always visible */}
@@ -127,14 +126,14 @@ export default function ClauseCard({
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-4 flex-1 min-w-0">
                         {/* Index number */}
-                        <div className="flex-shrink-0 w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center">
+                        <div className="flex-shrink-0 w-8 h-8 bg-stone-100 flex items-center justify-center">
                             <span className="text-sm font-mono text-stone-500">{String(index).padStart(2, '0')}</span>
                         </div>
 
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-3 mb-2">
                                 <h4 className="text-lg font-bold text-stone-900 truncate">{title}</h4>
-                                <span className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${style.badge}`}>
+                                <span className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold uppercase tracking-wider ${style.badge}`}>
                                     {style.icon}
                                     {riskLevel}
                                 </span>
@@ -164,8 +163,8 @@ export default function ClauseCard({
                                 e.stopPropagation();
                                 onBookmark();
                             }}
-                            className={`p-2 rounded-lg transition-all duration-200 ${isBookmarked
-                                    ? 'bg-amber-100 text-amber-600 hover:bg-amber-200'
+                            className={`p-2 transition-all duration-200 ${isBookmarked
+                                    ? 'bg-stone-900 text-white hover:bg-stone-700'
                                     : 'bg-stone-100 text-stone-400 hover:bg-stone-200 hover:text-stone-600'
                                 }`}
                             title={isBookmarked ? 'Remove bookmark' : 'Bookmark clause'}
@@ -179,7 +178,7 @@ export default function ClauseCard({
                                     e.stopPropagation();
                                     onNegotiate();
                                 }}
-                                className="p-2 rounded-lg bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-all duration-200"
+                                className="p-2 bg-stone-900 text-white hover:bg-stone-700 transition-all duration-200"
                                 title="Generate negotiation script"
                             >
                                 <Briefcase className="w-4 h-4" />
@@ -188,7 +187,7 @@ export default function ClauseCard({
 
                         <button
                             onClick={(e) => e.stopPropagation()}
-                            className="p-2 rounded-lg text-stone-400 hover:text-stone-600"
+                            className="p-2 text-stone-400 hover:text-stone-600"
                         >
                             {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                         </button>
@@ -209,7 +208,7 @@ export default function ClauseCard({
                         <div className="flex items-center gap-2 mb-3">
                             <button
                                 onClick={() => setShowOriginal(false)}
-                                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${!showOriginal
+                                className={`px-3 py-1.5 text-sm font-medium transition-colors ${!showOriginal
                                         ? 'bg-stone-900 text-white'
                                         : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                                     }`}
@@ -218,7 +217,7 @@ export default function ClauseCard({
                             </button>
                             <button
                                 onClick={() => setShowOriginal(true)}
-                                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${showOriginal
+                                className={`px-3 py-1.5 text-sm font-medium transition-colors ${showOriginal
                                         ? 'bg-stone-900 text-white'
                                         : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                                     }`}
@@ -230,11 +229,11 @@ export default function ClauseCard({
                                 className="ml-auto p-2 text-stone-400 hover:text-stone-600 transition-colors"
                                 title="Copy text"
                             >
-                                {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                                {copied ? <Check className="w-4 h-4 text-stone-900" /> : <Copy className="w-4 h-4" />}
                             </button>
                         </div>
 
-                        <div className={`p-4 rounded-lg transition-colors duration-300 ${showOriginal
+                        <div className={`p-4 transition-colors duration-300 ${showOriginal
                                 ? 'bg-stone-50 border-l-2 border-stone-300 font-serif italic text-stone-600'
                                 : 'bg-white border-l-2 border-stone-900 text-stone-800'
                             }`}>
@@ -246,24 +245,21 @@ export default function ClauseCard({
 
                     {/* Industry Comparison */}
                     {industryComparison && (
-                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
+                        <div className="bg-stone-50 border border-stone-200 p-4">
                             <div className="flex items-center gap-2 mb-4">
-                                <Scale className="w-4 h-4 text-blue-600" />
-                                <span className="text-sm font-bold text-blue-900 uppercase tracking-wider">Industry Benchmark</span>
+                                <Scale className="w-4 h-4 text-stone-900" />
+                                <span className="text-sm font-bold text-stone-900 uppercase tracking-wider">Industry Benchmark</span>
                             </div>
 
                             {/* Strictness meter */}
                             <div className="mb-4">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm text-blue-800">Strictness Level</span>
-                                    <span className="text-sm font-bold text-blue-900">{industryComparison.averageStrictness}/100</span>
+                                    <span className="text-sm text-stone-700">Strictness Level</span>
+                                    <span className="text-sm font-bold text-stone-900">{industryComparison.averageStrictness}/100</span>
                                 </div>
-                                <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
+                                <div className="h-2 bg-stone-200 overflow-hidden">
                                     <div
-                                        className={`h-full transition-all duration-700 ease-out rounded-full ${industryComparison.averageStrictness > 70 ? 'bg-red-500' :
-                                                industryComparison.averageStrictness > 50 ? 'bg-orange-500' :
-                                                    'bg-green-500'
-                                            }`}
+                                        className="h-full transition-all duration-700 ease-out bg-stone-900"
                                         style={{ width: `${industryComparison.averageStrictness}%` }}
                                     />
                                 </div>
@@ -277,12 +273,12 @@ export default function ClauseCard({
 
                             {/* Fairer Version */}
                             {industryComparison.fairerVersion && (
-                                <div className="bg-white/60 rounded-lg p-3 border-l-2 border-green-500">
+                                <div className="bg-white p-3 border-l-2 border-stone-900">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <FileText className="w-3 h-3 text-green-600" />
-                                        <span className="text-xs font-bold text-green-800 uppercase tracking-wider">Suggested Alternative</span>
+                                        <FileText className="w-3 h-3 text-stone-900" />
+                                        <span className="text-xs font-bold text-stone-900 uppercase tracking-wider">Suggested Alternative</span>
                                     </div>
-                                    <p className="text-sm text-green-900 italic">"{industryComparison.fairerVersion}"</p>
+                                    <p className="text-sm text-stone-700 italic">"{industryComparison.fairerVersion}"</p>
                                 </div>
                             )}
                         </div>
@@ -308,7 +304,7 @@ export default function ClauseCard({
                         {onAskAI && (
                             <button
                                 onClick={onAskAI}
-                                className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium"
+                                className="flex items-center gap-2 px-4 py-2 bg-stone-900 text-white hover:bg-stone-700 transition-colors text-sm font-medium"
                             >
                                 <MessageSquare className="w-4 h-4" />
                                 Ask AI about this
@@ -317,7 +313,7 @@ export default function ClauseCard({
 
                         <button
                             onClick={() => setShowNoteInput(!showNoteInput)}
-                            className="flex items-center gap-2 px-4 py-2 bg-stone-100 text-stone-700 rounded-lg hover:bg-stone-200 transition-colors text-sm font-medium"
+                            className="flex items-center gap-2 px-4 py-2 bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors text-sm font-medium"
                         >
                             <FileText className="w-4 h-4" />
                             {note ? 'Edit Note' : 'Add Note'}
@@ -331,7 +327,7 @@ export default function ClauseCard({
                                 value={note || ''}
                                 onChange={(e) => onNoteChange(e.target.value)}
                                 placeholder="Add your notes about this clause..."
-                                className="w-full px-4 py-3 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                                className="w-full px-4 py-3 text-sm border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-900 resize-none"
                                 rows={3}
                             />
                         </div>

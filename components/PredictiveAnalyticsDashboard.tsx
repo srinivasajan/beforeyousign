@@ -73,29 +73,16 @@ export default function PredictiveAnalyticsDashboard() {
     return 'F';
   };
 
-  const getHealthColor = (score: number): string => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    if (score >= 40) return 'text-orange-600';
-    return 'text-red-600';
-  };
+  const getHealthColor = (): string => 'text-stone-900';
 
-  const getImpactColor = (impact: string): string => {
-    const colors: Record<string, string> = {
-      critical: 'bg-red-100 text-red-700 border-red-300',
-      high: 'bg-orange-100 text-orange-700 border-orange-300',
-      medium: 'bg-yellow-100 text-yellow-700 border-yellow-300',
-      low: 'bg-blue-100 text-blue-700 border-blue-300',
-    };
-    return colors[impact] || 'bg-gray-100 text-gray-700 border-gray-300';
-  };
+  const getImpactColor = (): string => 'bg-stone-50 text-stone-900 border-stone-300';
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <Activity className="h-12 w-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading analytics...</p>
+          <Activity className="h-12 w-12 text-stone-900 animate-spin mx-auto mb-4" />
+          <p className="text-stone-600">Loading analytics...</p>
         </div>
       </div>
     );
@@ -107,10 +94,10 @@ export default function PredictiveAnalyticsDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Brain className="h-8 w-8 text-blue-600" />
+            <Brain className="h-8 w-8 text-stone-900" />
             Predictive Analytics
           </h1>
-          <p className="text-gray-600 mt-1">AI-powered insights and forecasting</p>
+          <p className="text-stone-600 mt-1">AI-powered insights and forecasting</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -118,10 +105,10 @@ export default function PredictiveAnalyticsDashboard() {
             <button
               key={tf}
               onClick={() => setTimeframe(tf)}
-              className={`px-4 py-2 rounded ${
+              className={`px-4 py-2 ${
                 timeframe === tf
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? 'bg-stone-900 text-white'
+                  : 'bg-stone-200 text-stone-700 hover:bg-stone-300'
               }`}
             >
               {tf}
@@ -132,58 +119,49 @@ export default function PredictiveAnalyticsDashboard() {
 
       {/* Contract Health Score */}
       {healthScore && (
-        <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg shadow-md p-6">
+        <div className="bg-stone-50 border border-stone-200 p-6">
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Activity className="h-6 w-6 text-blue-600" />
+            <Activity className="h-6 w-6 text-stone-900" />
             Contract Health Score
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Overall Score */}
-            <div className="bg-white rounded-lg p-6 shadow">
+            <div className="bg-white border border-stone-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-gray-600">Overall Health</span>
-                <span className={`text-6xl font-bold ${getHealthColor(healthScore.overall)}`}>
+                <span className="text-stone-600">Overall Health</span>
+                <span className={`text-6xl font-bold ${getHealthColor()}`}>
                   {getHealthGrade(healthScore.overall)}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex-1 bg-gray-200 rounded-full h-4">
+                <div className="flex-1 bg-stone-200 h-4">
                   <div
-                    className={`h-4 rounded-full ${
-                      healthScore.overall >= 80 ? 'bg-green-500' :
-                      healthScore.overall >= 60 ? 'bg-yellow-500' :
-                      healthScore.overall >= 40 ? 'bg-orange-500' :
-                      'bg-red-500'
-                    }`}
+                    className="h-4 bg-stone-900"
                     style={{ width: `${healthScore.overall}%` }}
                   />
                 </div>
                 <span className="font-bold">{healthScore.overall}%</span>
               </div>
-              <p className="text-sm text-gray-500 mt-2">
-                Trend: {healthScore.trend === 'improving' ? '📈 Improving' : 
-                       healthScore.trend === 'declining' ? '📉 Declining' : '➡️ Stable'}
+              <p className="text-sm text-stone-500 mt-2">
+                Trend: {healthScore.trend === 'improving' ? '↑ Improving' : 
+                       healthScore.trend === 'declining' ? '↓ Declining' : '→ Stable'}
               </p>
             </div>
 
             {/* Component Breakdown */}
-            <div className="bg-white rounded-lg p-6 shadow">
+            <div className="bg-white border border-stone-200 p-6">
               <h3 className="font-semibold mb-3">Health Components</h3>
               <div className="space-y-3">
                 {Object.entries(healthScore.components).map(([key, value]) => (
                   <div key={key}>
                     <div className="flex items-center justify-between text-sm mb-1">
                       <span className="capitalize">{key}</span>
-                      <span className={getHealthColor(value)}>{value}%</span>
+                      <span className={getHealthColor()}>{value}%</span>
                     </div>
-                    <div className="bg-gray-200 rounded-full h-2">
+                    <div className="bg-stone-200 h-2">
                       <div
-                        className={`h-2 rounded-full ${
-                          value >= 80 ? 'bg-green-500' :
-                          value >= 60 ? 'bg-yellow-500' :
-                          'bg-red-500'
-                        }`}
+                        className="h-2 bg-stone-900"
                         style={{ width: `${value}%` }}
                       />
                     </div>
@@ -197,27 +175,19 @@ export default function PredictiveAnalyticsDashboard() {
           {healthScore.alerts.length > 0 && (
             <div className="mt-6 space-y-2">
               <h3 className="font-semibold flex items-center gap-2">
-                <Bell className="h-5 w-5 text-orange-600" />
+                <Bell className="h-5 w-5 text-stone-900" />
                 Active Alerts
               </h3>
               {healthScore.alerts.map((alert, idx) => (
-                <div key={idx} className={`p-4 rounded-lg border ${
-                  alert.severity === 'critical' ? 'bg-red-50 border-red-200' :
-                  alert.severity === 'warning' ? 'bg-yellow-50 border-yellow-200' :
-                  'bg-blue-50 border-blue-200'
-                }`}>
+                <div key={idx} className="p-4 border border-stone-200 bg-stone-50">
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className={`h-5 w-5 mt-0.5 ${
-                      alert.severity === 'critical' ? 'text-red-600' :
-                      alert.severity === 'warning' ? 'text-yellow-600' :
-                      'text-blue-600'
-                    }`} />
+                    <AlertTriangle className="h-5 w-5 mt-0.5 text-stone-900" />
                     <div className="flex-1">
                       <h4 className="font-semibold">{alert.message}</h4>
-                      <p className="text-sm text-gray-600 mt-1">{alert.impact}</p>
+                      <p className="text-sm text-stone-600 mt-1">{alert.impact}</p>
                       <p className="text-sm font-medium mt-2">Action: {alert.action}</p>
                       {alert.deadline && (
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-stone-500 mt-1">
                           Deadline: {new Date(alert.deadline).toLocaleDateString()}
                         </p>
                       )}
@@ -235,7 +205,7 @@ export default function PredictiveAnalyticsDashboard() {
               <ul className="space-y-2">
                 {healthScore.recommendations.map((rec, idx) => (
                   <li key={idx} className="flex items-start gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                    <CheckCircle className="h-4 w-4 text-stone-900 mt-0.5" />
                     <span>{rec}</span>
                   </li>
                 ))}
@@ -246,15 +216,15 @@ export default function PredictiveAnalyticsDashboard() {
       )}
 
       {/* Predictive Insights */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white border border-stone-200 p-6">
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-          <Zap className="h-6 w-6 text-yellow-600" />
+          <Zap className="h-6 w-6 text-stone-900" />
           Predictive Insights
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {insights.map((insight, idx) => (
-            <div key={idx} className={`p-4 rounded-lg border-2 ${getImpactColor(insight.impact)}`}>
+            <div key={idx} className={`p-4 border-2 ${getImpactColor()}`}>
               <div className="flex items-start justify-between mb-2">
                 <h3 className="font-semibold capitalize">{insight.type.replace(/_/g, ' ')}</h3>
                 <span className="px-2 py-1 text-xs rounded bg-white">
@@ -306,35 +276,35 @@ export default function PredictiveAnalyticsDashboard() {
 
       {/* Portfolio Metrics */}
       {portfolio && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <PieChart className="h-6 w-6 text-purple-600" />
+      <div className="bg-white border border-stone-200 p-6">
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+          <PieChart className="h-6 w-6 text-stone-900" />
             Portfolio Overview
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <FileText className="h-8 w-8 text-blue-600 mb-2" />
+            <div className="bg-stone-100 p-4">
+              <FileText className="h-8 w-8 text-stone-900 mb-2" />
               <p className="text-2xl font-bold">{portfolio.totalContracts}</p>
-              <p className="text-sm text-gray-600">Total Contracts</p>
+              <p className="text-sm text-stone-600">Total Contracts</p>
             </div>
 
-            <div className="bg-green-50 p-4 rounded-lg">
-              <DollarSign className="h-8 w-8 text-green-600 mb-2" />
+            <div className="bg-stone-100 p-4">
+              <DollarSign className="h-8 w-8 text-stone-900 mb-2" />
               <p className="text-2xl font-bold">${(portfolio.totalValue / 1000000).toFixed(1)}M</p>
-              <p className="text-sm text-gray-600">Total Value</p>
+              <p className="text-sm text-stone-600">Total Value</p>
             </div>
 
-            <div className="bg-purple-50 p-4 rounded-lg">
-              <Target className="h-8 w-8 text-purple-600 mb-2" />
+            <div className="bg-stone-100 p-4">
+              <Target className="h-8 w-8 text-stone-900 mb-2" />
               <p className="text-2xl font-bold">{portfolio.averageHealth}%</p>
-              <p className="text-sm text-gray-600">Avg Health</p>
+              <p className="text-sm text-stone-600">Avg Health</p>
             </div>
 
-            <div className="bg-yellow-50 p-4 rounded-lg">
-              <Calendar className="h-8 w-8 text-yellow-600 mb-2" />
+            <div className="bg-stone-100 p-4">
+              <Calendar className="h-8 w-8 text-stone-900 mb-2" />
               <p className="text-2xl font-bold">{portfolio.upcomingRenewals}</p>
-              <p className="text-sm text-gray-600">Renewals (90d)</p>
+              <p className="text-sm text-stone-600">Renewals (90d)</p>
             </div>
           </div>
 
@@ -343,28 +313,28 @@ export default function PredictiveAnalyticsDashboard() {
             <h3 className="font-semibold mb-3">Risk Distribution</h3>
             <div className="grid grid-cols-4 gap-2">
               <div className="text-center">
-                <div className="bg-green-100 p-3 rounded">
-                  <p className="text-2xl font-bold text-green-700">{portfolio.riskDistribution.low}</p>
+                <div className="bg-stone-100 p-3">
+                  <p className="text-2xl font-bold text-stone-900">{portfolio.riskDistribution.low}</p>
                 </div>
-                <p className="text-xs text-gray-600 mt-1">Low Risk</p>
+                <p className="text-xs text-stone-600 mt-1">Low Risk</p>
               </div>
               <div className="text-center">
-                <div className="bg-yellow-100 p-3 rounded">
-                  <p className="text-2xl font-bold text-yellow-700">{portfolio.riskDistribution.medium}</p>
+                <div className="bg-stone-100 p-3">
+                  <p className="text-2xl font-bold text-stone-700">{portfolio.riskDistribution.medium}</p>
                 </div>
-                <p className="text-xs text-gray-600 mt-1">Medium Risk</p>
+                <p className="text-xs text-stone-600 mt-1">Medium Risk</p>
               </div>
               <div className="text-center">
-                <div className="bg-orange-100 p-3 rounded">
-                  <p className="text-2xl font-bold text-orange-700">{portfolio.riskDistribution.high}</p>
+                <div className="bg-stone-200 p-3">
+                  <p className="text-2xl font-bold text-stone-800">{portfolio.riskDistribution.high}</p>
                 </div>
-                <p className="text-xs text-gray-600 mt-1">High Risk</p>
+                <p className="text-xs text-stone-600 mt-1">High Risk</p>
               </div>
               <div className="text-center">
-                <div className="bg-red-100 p-3 rounded">
-                  <p className="text-2xl font-bold text-red-700">{portfolio.riskDistribution.critical}</p>
+                <div className="bg-stone-900 p-3">
+                  <p className="text-2xl font-bold text-white">{portfolio.riskDistribution.critical}</p>
                 </div>
-                <p className="text-xs text-gray-600 mt-1">Critical</p>
+                <p className="text-xs text-stone-600 mt-1">Critical</p>
               </div>
             </div>
           </div>
@@ -376,7 +346,7 @@ export default function PredictiveAnalyticsDashboard() {
               <ul className="space-y-1">
                 {portfolio.topRisks.map((risk, idx) => (
                   <li key={idx} className="text-sm flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5" />
+                    <AlertTriangle className="h-4 w-4 text-stone-900 mt-0.5" />
                     <span>{risk}</span>
                   </li>
                 ))}
@@ -388,34 +358,32 @@ export default function PredictiveAnalyticsDashboard() {
 
       {/* Risk Forecast */}
       {riskTrend && (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white border border-stone-200 p-6">
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <LineChart className="h-6 w-6 text-indigo-600" />
+            <LineChart className="h-6 w-6 text-stone-900" />
             Risk Forecast
           </h2>
 
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div>
-              <p className="text-sm text-gray-600">Current</p>
+              <p className="text-sm text-stone-600">Current</p>
               <p className="text-2xl font-bold">{riskTrend.current}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Change</p>
-              <p className={`text-2xl font-bold flex items-center gap-1 ${
-                riskTrend.trend === 'up' ? 'text-red-600' : 'text-green-600'
-              }`}>
+              <p className="text-sm text-stone-600">Change</p>
+              <p className={`text-2xl font-bold flex items-center gap-1 text-stone-900`}>
                 {riskTrend.trend === 'up' ? <TrendingUp className="h-6 w-6" /> : <TrendingDown className="h-6 w-6" />}
                 {Math.abs(riskTrend.percentChange).toFixed(1)}%
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Trend</p>
+              <p className="text-sm text-stone-600">Trend</p>
               <p className="text-2xl font-bold capitalize">{riskTrend.trend}</p>
             </div>
           </div>
 
           {/* Forecast visualization would go here */}
-          <div className="bg-gray-50 p-4 rounded text-sm text-gray-600">
+          <div className="bg-stone-50 p-4 border border-stone-200 text-sm text-stone-600">
             <p>📊 Forecast chart visualization (next 90 days)</p>
             <div className="mt-2 space-y-1">
               {riskTrend.forecast.slice(0, 3).map((f, idx) => (

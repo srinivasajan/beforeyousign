@@ -263,8 +263,8 @@ export default function AdvancedAnalyticsDashboard() {
               <div className="flex items-center gap-2 text-sm">
                 {data.risks.trend === 'down' && (
                   <>
-                    <TrendingDown className="w-4 h-4 text-green-600" />
-                    <span className="text-green-600 font-medium">Risk decreasing</span>
+                    <TrendingDown className="w-4 h-4 text-stone-600" />
+                    <span className="text-stone-600 font-medium">Risk decreasing</span>
                   </>
                 )}
               </div>
@@ -279,14 +279,14 @@ export default function AdvancedAnalyticsDashboard() {
           </div>
 
           {/* Savings Tracker */}
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6">
+          <div className="bg-stone-50 border-2 border-stone-200 p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-stone-900 flex items-center justify-center">
                 <DollarSign className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-stone-900">Cost Savings</h3>
-                <p className="text-sm text-green-700">Identified opportunities</p>
+                <p className="text-sm text-stone-600">Identified opportunities</p>
               </div>
             </div>
 
@@ -294,34 +294,34 @@ export default function AdvancedAnalyticsDashboard() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-stone-700">Total Identified</span>
-                  <span className="text-2xl font-bold text-green-600">
+                  <span className="text-2xl font-bold text-stone-900">
                     ${(data.savings.identified / 1000).toFixed(0)}K
                   </span>
                 </div>
-                <div className="h-2 bg-green-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-600" style={{ width: '100%' }} />
+                <div className="h-2 bg-stone-200 overflow-hidden">
+                  <div className="h-full bg-stone-900" style={{ width: '100%' }} />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-stone-700">Realized</span>
-                  <span className="text-lg font-bold text-green-700">
+                  <span className="text-lg font-bold text-stone-700">
                     ${(data.savings.realized / 1000).toFixed(0)}K
                   </span>
                 </div>
-                <div className="h-2 bg-green-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-stone-200 overflow-hidden">
                   <div
-                    className="h-full bg-green-500"
+                    className="h-full bg-stone-700"
                     style={{ width: `${(data.savings.realized / data.savings.identified) * 100}%` }}
                   />
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-green-200">
+              <div className="pt-4 border-t border-stone-200">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-stone-700">Potential</span>
-                  <span className="text-lg font-bold text-emerald-600">
+                  <span className="text-lg font-bold text-stone-500">
                     ${(data.savings.potential / 1000).toFixed(0)}K
                   </span>
                 </div>
@@ -356,7 +356,7 @@ export default function AdvancedAnalyticsDashboard() {
           <div className="bg-white border-2 border-stone-200 rounded-xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-stone-900">Upcoming Renewals</h3>
-              <span className="px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">
+              <span className="px-3 py-1 bg-stone-100 text-stone-900 text-xs font-bold">
                 {data.upcomingRenewals.length} pending
               </span>
             </div>
@@ -365,7 +365,7 @@ export default function AdvancedAnalyticsDashboard() {
               {data.upcomingRenewals.map((renewal) => (
                 <div
                   key={renewal.id}
-                  className="p-4 border-2 border-stone-200 rounded-lg hover:border-stone-900 transition-all cursor-pointer"
+                  className="p-4 border-2 border-stone-200 hover:border-stone-900 transition-all cursor-pointer"
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
@@ -376,7 +376,7 @@ export default function AdvancedAnalyticsDashboard() {
                       </div>
                     </div>
                     {renewal.autoRenew && (
-                      <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+                      <span className="px-2 py-1 bg-stone-100 text-stone-700 text-xs font-medium">
                         Auto
                       </span>
                     )}
@@ -443,10 +443,10 @@ function KPICard({
 }) {
   const colorClasses = {
     stone: 'bg-stone-100 text-stone-900',
-    green: 'bg-green-100 text-green-600',
-    blue: 'bg-blue-100 text-blue-600',
-    red: 'bg-red-100 text-red-600',
-    yellow: 'bg-yellow-100 text-yellow-600',
+    green: 'bg-stone-100 text-stone-900',
+    blue: 'bg-stone-100 text-stone-900',
+    red: 'bg-stone-100 text-stone-900',
+    yellow: 'bg-stone-100 text-stone-900',
   };
 
   return (
@@ -456,7 +456,7 @@ function KPICard({
           {icon}
         </div>
         {change && (
-          <div className={`flex items-center gap-1 ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+          <div className="flex items-center gap-1 text-stone-700">
             {trend === 'up' ? (
               <TrendingUp className="w-4 h-4" />
             ) : (
@@ -489,9 +489,9 @@ function RiskBar({
   const percentage = (count / total) * 100;
   
   const colorClasses = {
-    red: 'bg-red-500',
-    yellow: 'bg-yellow-500',
-    green: 'bg-green-500',
+    red: 'bg-stone-900',
+    yellow: 'bg-stone-600',
+    green: 'bg-stone-400',
   };
 
   return (
@@ -502,8 +502,8 @@ function RiskBar({
           {count} ({percentage.toFixed(0)}%)
         </span>
       </div>
-      <div className="h-3 bg-stone-100 rounded-full overflow-hidden">
-        <div className={`h-full ${colorClasses[color]} rounded-full`} style={{ width: `${percentage}%` }} />
+      <div className="h-3 bg-stone-100 overflow-hidden">
+        <div className={`h-full ${colorClasses[color]}`} style={{ width: `${percentage}%` }} />
       </div>
     </div>
   );

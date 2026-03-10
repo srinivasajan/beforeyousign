@@ -87,10 +87,10 @@ export default function RiskGauge({
     };
 
     const getRiskLabel = () => {
-        if (score >= 75) return { text: 'HIGH RISK', color: 'text-red-600' };
-        if (score >= 50) return { text: 'MEDIUM-HIGH', color: 'text-orange-600' };
-        if (score >= 25) return { text: 'MEDIUM', color: 'text-yellow-600' };
-        return { text: 'LOW RISK', color: 'text-green-600' };
+        if (score >= 75) return { text: 'HIGH RISK', color: 'text-stone-900' };
+        if (score >= 50) return { text: 'MEDIUM-HIGH', color: 'text-stone-700' };
+        if (score >= 25) return { text: 'MEDIUM', color: 'text-stone-600' };
+        return { text: 'LOW RISK', color: 'text-stone-500' };
     };
 
     const riskInfo = getRiskLabel();
@@ -107,56 +107,16 @@ export default function RiskGauge({
                     viewBox={`0 0 ${config.width} ${config.width / 2 + 20}`}
                     className="transform -rotate-0"
                 >
-                    {/* Gradient Definitions */}
-                    <defs>
-                        <linearGradient id="gradient-low" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#22c55e" />
-                            <stop offset="100%" stopColor="#86efac" />
-                        </linearGradient>
-                        <linearGradient id="gradient-medium" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#eab308" />
-                            <stop offset="100%" stopColor="#fde047" />
-                        </linearGradient>
-                        <linearGradient id="gradient-high" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#f97316" />
-                            <stop offset="100%" stopColor="#fdba74" />
-                        </linearGradient>
-                        <linearGradient id="gradient-critical" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#dc2626" />
-                            <stop offset="100%" stopColor="#f87171" />
-                        </linearGradient>
 
-                        {/* Background gradient */}
-                        <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.2" />
-                            <stop offset="33%" stopColor="#eab308" stopOpacity="0.2" />
-                            <stop offset="66%" stopColor="#f97316" stopOpacity="0.2" />
-                            <stop offset="100%" stopColor="#dc2626" stopOpacity="0.2" />
-                        </linearGradient>
 
-                        {/* Glow filter */}
-                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                            <feMerge>
-                                <feMergeNode in="coloredBlur" />
-                                <feMergeNode in="SourceGraphic" />
-                            </feMerge>
-                        </filter>
-
-                        {/* Drop shadow */}
-                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.2" />
-                        </filter>
-                    </defs>
-
-                    {/* Background Arc with gradient */}
+                    {/* Background Arc */}
                     <path
                         d={`M ${config.strokeWidth / 2} ${center} 
                 A ${radius} ${radius} 0 0 1 ${config.width - config.strokeWidth / 2} ${center}`}
                         fill="none"
-                        stroke="url(#bg-gradient)"
+                        stroke="#e7e5e4"
                         strokeWidth={config.strokeWidth}
-                        strokeLinecap="round"
+                        strokeLinecap="butt"
                     />
 
                     {/* Tick marks */}
@@ -186,12 +146,11 @@ export default function RiskGauge({
                         d={`M ${config.strokeWidth / 2} ${center} 
                 A ${radius} ${radius} 0 0 1 ${config.width - config.strokeWidth / 2} ${center}`}
                         fill="none"
-                        stroke={`url(#${getGradientId()})`}
+                        stroke="#1c1917"
                         strokeWidth={config.strokeWidth}
-                        strokeLinecap="round"
+                        strokeLinecap="butt"
                         strokeDasharray={circumference}
                         strokeDashoffset={dashOffset}
-                        filter="url(#glow)"
                         className="transition-all duration-300 ease-out"
                         style={{
                             transition: animated ? 'stroke-dashoffset 1.5s ease-out' : 'none'
@@ -210,7 +169,6 @@ export default function RiskGauge({
                         <polygon
                             points={`${center - 4},${center} ${center + 4},${center} ${center},${center - radius + 20}`}
                             fill="#1c1917"
-                            filter="url(#shadow)"
                         />
                         {/* Needle center cap */}
                         <circle
@@ -247,28 +205,22 @@ export default function RiskGauge({
                 </div>
             </div>
 
-            {/* Risk level indicator pills */}
+            {/* Risk level indicator */}
             <div className="flex items-center gap-1 mt-4">
                 {['Low', 'Medium', 'High', 'Critical'].map((level, idx) => {
                     const isActive = (idx === 0 && score < 25) ||
                         (idx === 1 && score >= 25 && score < 50) ||
                         (idx === 2 && score >= 50 && score < 75) ||
                         (idx === 3 && score >= 75);
-                    const colors = [
-                        'bg-green-500',
-                        'bg-yellow-500',
-                        'bg-orange-500',
-                        'bg-red-500'
-                    ];
                     return (
                         <div
                             key={level}
-                            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-all duration-500 ${isActive
-                                    ? `${colors[idx]} text-white scale-110`
-                                    : 'bg-stone-200 text-stone-500'
-                                }`}
+                            className={`flex items-center gap-1 px-2 py-0.5 text-xs font-medium border transition-all duration-500 ${
+                                isActive
+                                    ? 'bg-stone-900 text-white border-stone-900'
+                                    : 'bg-white text-stone-400 border-stone-200'
+                            }`}
                         >
-                            <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white animate-pulse' : 'bg-stone-400'}`} />
                             {level}
                         </div>
                     );

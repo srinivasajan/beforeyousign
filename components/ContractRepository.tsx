@@ -20,15 +20,15 @@ export default function ContractRepository() {
   ];
 
   const riskColors = {
-    Low: { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300', dot: 'bg-green-500' },
-    Medium: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300', dot: 'bg-amber-500' },
-    High: { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300', dot: 'bg-red-500' },
+    Low:    { bg: 'bg-stone-100', text: 'text-stone-600', border: 'border-stone-300', dot: 'bg-stone-400' },
+    Medium: { bg: 'bg-stone-100', text: 'text-stone-700', border: 'border-stone-500', dot: 'bg-stone-600' },
+    High:   { bg: 'bg-stone-900', text: 'text-white',     border: 'border-stone-900', dot: 'bg-stone-900' },
   };
 
   const statusColors = {
-    Active: { bg: 'bg-green-100', text: 'text-green-700', icon: CheckCircle },
-    Pending: { bg: 'bg-amber-100', text: 'text-amber-700', icon: Clock },
-    Expired: { bg: 'bg-stone-100', text: 'text-stone-700', icon: AlertTriangle },
+    Active:  { bg: 'bg-stone-900', text: 'text-white',     icon: CheckCircle },
+    Pending: { bg: 'bg-stone-100', text: 'text-stone-700', icon: Clock },
+    Expired: { bg: 'bg-stone-100', text: 'text-stone-500', icon: AlertTriangle },
   };
 
   const filteredContracts = contracts
@@ -61,7 +61,7 @@ export default function ContractRepository() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-3xl font-bold text-stone-900">My Contracts</h1>
-            <button className="flex items-center gap-2 px-6 py-3 bg-stone-900 text-white rounded-xl font-semibold hover:bg-stone-800 transition-all shadow-lg hover:shadow-xl">
+            <button className="flex items-center gap-2 px-6 py-3 bg-stone-900 text-white font-semibold hover:bg-stone-800 transition-all">
               <Plus className="w-5 h-5" />
               Add Contract
             </button>
@@ -71,10 +71,10 @@ export default function ContractRepository() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white border border-stone-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border border-stone-200 p-6 hover:border-stone-900 transition-colors">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 bg-stone-100 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-stone-900" />
               </div>
               <span className="text-xs font-semibold text-stone-500 uppercase">Total</span>
             </div>
@@ -82,32 +82,32 @@ export default function ContractRepository() {
             <p className="text-sm text-stone-600">Total Contracts</p>
           </div>
 
-          <div className="bg-white border border-stone-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border border-stone-200 p-6 hover:border-stone-900 transition-colors">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-green-600" />
+              <div className="w-10 h-10 bg-stone-100 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-stone-900" />
               </div>
-              <span className="text-xs font-semibold text-green-600 uppercase">Active</span>
+              <span className="text-xs font-semibold text-stone-500 uppercase">Active</span>
             </div>
-            <p className="text-3xl font-bold text-green-600 mb-1">{activeContracts}</p>
+            <p className="text-3xl font-bold text-stone-900 mb-1">{activeContracts}</p>
             <p className="text-sm text-stone-600">Active Contracts</p>
           </div>
 
-          <div className="bg-white border border-stone-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border border-stone-200 p-6 hover:border-stone-900 transition-colors">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5 text-red-600" />
+              <div className="w-10 h-10 bg-stone-100 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-stone-900" />
               </div>
-              <span className="text-xs font-semibold text-red-600 uppercase">High Risk</span>
+              <span className="text-xs font-semibold text-stone-900 uppercase">High Risk</span>
             </div>
-            <p className="text-3xl font-bold text-red-600 mb-1">{highRiskContracts}</p>
+            <p className="text-3xl font-bold text-stone-900 mb-1">{highRiskContracts}</p>
             <p className="text-sm text-stone-600">Needs Attention</p>
           </div>
 
-          <div className="bg-white border border-stone-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-white border border-stone-200 p-6 hover:border-stone-900 transition-colors">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-emerald-600" />
+              <div className="w-10 h-10 bg-stone-100 flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-stone-900" />
               </div>
               <span className="text-xs font-semibold text-stone-500 uppercase">Value</span>
             </div>
@@ -117,7 +117,7 @@ export default function ContractRepository() {
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white border border-stone-200 rounded-xl p-6 mb-6 shadow-sm">
+        <div className="bg-white border border-stone-200 p-6 mb-6">
           <div className="flex flex-wrap gap-4 mb-4">
             <div className="flex-1 min-w-64">
               <div className="relative">
@@ -127,22 +127,22 @@ export default function ContractRepository() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search contracts, parties, types..."
-                  className="w-full pl-10 pr-4 py-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900 transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-900 transition-all"
                 />
               </div>
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-5 py-3 border-2 rounded-lg font-semibold transition-all ${showFilters ? 'bg-stone-900 text-white border-stone-900' : 'border-stone-300 hover:bg-stone-50'
+              className={`flex items-center gap-2 px-5 py-3 border-2 font-semibold transition-all ${showFilters ? 'bg-stone-900 text-white border-stone-900' : 'border-stone-300 hover:bg-stone-50'
                 }`}
             >
               <Filter className="w-4 h-4" />
               Filters
               {(filterStatus !== 'all' || filterRisk !== 'all') && (
-                <span className="w-2 h-2 bg-blue-500 rounded-full" />
+                <span className="w-2 h-2 bg-stone-900" />
               )}
             </button>
-            <button className="flex items-center gap-2 px-5 py-3 border border-stone-300 rounded-lg font-semibold hover:bg-stone-50 transition-colors">
+            <button className="flex items-center gap-2 px-5 py-3 border border-stone-300 font-semibold hover:bg-stone-50 transition-colors">
               <ArrowUpDown className="w-4 h-4" />
               Sort: {sortBy === 'date' ? 'Date' : sortBy === 'value' ? 'Value' : 'Risk'}
             </button>
@@ -158,7 +158,7 @@ export default function ContractRepository() {
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                     aria-label="Filter contracts by status"
-                    className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900"
+                    className="w-full px-4 py-2 border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-900"
                   >
                     <option value="all">All Statuses</option>
                     <option value="Active">Active</option>
@@ -172,7 +172,7 @@ export default function ContractRepository() {
                     value={filterRisk}
                     onChange={(e) => setFilterRisk(e.target.value)}
                     aria-label="Filter contracts by risk level"
-                    className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900"
+                    className="w-full px-4 py-2 border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-900"
                   >
                     <option value="all">All Risk Levels</option>
                     <option value="Low">Low Risk</option>
@@ -184,7 +184,7 @@ export default function ContractRepository() {
                   <label className="block text-sm font-semibold text-stone-700 mb-2">Sort By</label>
                   <select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)} aria-label="Sort contracts by" className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900"
+                    onChange={(e) => setSortBy(e.target.value)} aria-label="Sort contracts by" className="w-full px-4 py-2 border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-900"
                   >
                     <option value="date">Date Added</option>
                     <option value="value">Contract Value</option>
@@ -197,7 +197,7 @@ export default function ContractRepository() {
         </div>
 
         {/* Contracts Table */}
-        <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
+        <div className="bg-white border border-stone-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-stone-50 border-b border-stone-200">
