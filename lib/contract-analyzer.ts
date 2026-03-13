@@ -300,7 +300,7 @@ Return ONLY the JSON object, no additional text or markdown formatting.`;
         overall: this.calculateOverallConfidence(data),
         riskScoreConfidence: this.calculateRiskConfidence(data),
         clauseAnalysisConfidence: this.calculateClauseConfidence(data),
-        model: 'NVIDIA Llama-3.1 Nemotron-70B',
+        model: 'Llama 3.1 405B Instruct',
         modelVersion: NVIDIA_MODELS.primary,
         analysisDate: new Date().toISOString(),
         notes: this.generateConfidenceNotes(data),
@@ -373,7 +373,7 @@ Return ONLY the JSON object, no additional text or markdown formatting.`;
       notes.push(`Industry comparison data available for ${clausesWithBenchmark} clause${clausesWithBenchmark === 1 ? '' : 's'}`);
     }
     
-    notes.push('Analysis performed by NVIDIA Llama-3.1 Nemotron-70B - state-of-the-art reasoning model');
+    notes.push('Analysis performed by Llama 3.1 405B Instruct - state-of-the-art reasoning model');
     notes.push('Your contract data is not stored or used for model training');
     
     return notes;

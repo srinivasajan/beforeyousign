@@ -2515,7 +2515,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
             
             {/* Quick Stats Floating Card */}
             {!showChat && !showContractMap && (
-              <div className="fixed bottom-6 right-6 bg-white border-2 border-stone-900 shadow-2xl z-30 w-80 rounded-sm overflow-hidden">
+              <div className="fixed bottom-6 right-24 bg-white border-2 border-stone-900 shadow-2xl z-20 w-80 rounded-sm overflow-hidden">
                 <div className="bg-stone-900 text-white p-3 flex items-center justify-between">
                   <h4 className="font-bold text-sm uppercase tracking-wider">Quick Stats</h4>
                   <button

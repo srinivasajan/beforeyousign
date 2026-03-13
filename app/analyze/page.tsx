@@ -98,7 +98,7 @@ export default function AnalyzePage() {
                 <div className="w-4 h-4 bg-stone-900 rounded-full flex items-center justify-center">
                   <span className="text-[8px] text-white font-bold">AI</span>
                 </div>
-                <span className="text-sm">NVIDIA Nemotron-70B</span>
+                <span className="text-sm">Llama 3.1 405B Instruct</span>
               </div>
             </div>
 
