@@ -1,6 +1,5 @@
 // Document parsing utilities for PDF, DOCX, and TXT files
 
-import * as pdfParse from 'pdf-parse';
 import mammoth from 'mammoth';
 
 export class DocumentParser {
@@ -30,8 +29,10 @@ export class DocumentParser {
    */
   private static async parsePDF(buffer: Buffer): Promise<string> {
     try {
+      // Lazy load pdf-parse to prevent Vercel serverless environment crashes during module initialization
+      const pdfParseModule = await import('pdf-parse');
       // @ts-ignore - pdf-parse has ESM/CJS compatibility issues
-      const pdf = pdfParse.default || pdfParse;
+      const pdf = pdfParseModule.default || pdfParseModule;
       const data = await pdf(buffer);
       return data.text;
     } catch (error) {
