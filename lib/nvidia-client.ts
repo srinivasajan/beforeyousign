@@ -15,9 +15,9 @@ import OpenAI from 'openai';
 // ---------------------------------------------------------------------------
 export const NVIDIA_MODELS = {
   /** Primary model – ultimate reasoning and highest capability context support */
-  primary: 'meta/llama-3.1-405b-instruct',
+  primary: 'meta/llama-3.3-70b-instruct',
   /** Fallback – newest 70B model, extremely high quality and faster */
-  fallback: 'meta/llama-3.3-70b-instruct',
+  fallback: 'meta/llama-3.1-70b-instruct',
   /** Lightweight – for quick tasks */
   fast: 'meta/llama-3.1-8b-instruct',
 } as const;

@@ -30,7 +30,9 @@ export default function AnalyzePage() {
       // Check content type before parsing JSON to handle HTML error pages
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Server returned an invalid response (not JSON). The analysis API might be experiencing issues.');
+        const textResponse = await response.text();
+        const shortText = textResponse.length > 150 ? textResponse.substring(0, 150) + '...' : textResponse;
+        throw new Error(`Server returned an invalid response (Status: ${response.status}). Details: ${shortText}`);
       }
 
       const data = await response.json();
@@ -98,7 +100,7 @@ export default function AnalyzePage() {
                 <div className="w-4 h-4 bg-stone-900 rounded-full flex items-center justify-center">
                   <span className="text-[8px] text-white font-bold">AI</span>
                 </div>
-                <span className="text-sm">Llama 3.1 405B Instruct</span>
+                <span className="text-sm">Llama 3.3 70B Instruct</span>
               </div>
             </div>
 
