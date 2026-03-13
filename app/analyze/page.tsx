@@ -27,10 +27,16 @@ export default function AnalyzePage() {
         body: formData,
       });
 
+      // Check content type before parsing JSON to handle HTML error pages
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned an invalid response (not JSON). The analysis API might be experiencing issues.');
+      }
+
       const data = await response.json();
 
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to analyze contract');
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || `Failed to analyze contract (Status: ${response.status})`);
       }
 
       setAnalysis(data.analysis);
