@@ -81,7 +81,7 @@ export default function LawyerMarketplace() {
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-white py-16">
+      <div className="bg-stone-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-end justify-between gap-8">
             <div className="max-w-3xl">

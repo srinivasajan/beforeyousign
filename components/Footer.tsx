@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Mail, Phone, Heart } from 'lucide-react';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
@@ -39,26 +38,26 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* Developer Contact */}
+                    {/* Legal */}
                     <div>
-                        <h4 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider">Developer</h4>
-                        <div className="space-y-2">
-                            <p className="text-sm font-medium text-white">Srinivas Jangiti</p>
-                            <a
-                                href="tel:+918767505121"
-                                className="flex items-center gap-2 text-sm text-stone-400 hover:text-white transition-colors group"
-                            >
-                                <Phone className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                <span>+91 8767505121</span>
-                            </a>
-                            <a
-                                href="mailto:srinivasajangiti@gmail.com"
-                                className="flex items-center gap-2 text-sm text-stone-400 hover:text-white transition-colors group"
-                            >
-                                <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                <span>srinivasajangiti@gmail.com</span>
-                            </a>
-                        </div>
+                        <h4 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider">Legal</h4>
+                        <ul className="space-y-2">
+                            <li>
+                                <Link href="/privacy" className="text-sm text-stone-400 hover:text-white transition-colors">
+                                    Privacy Policy
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/terms" className="text-sm text-stone-400 hover:text-white transition-colors">
+                                    Terms of Service
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/disclaimer" className="text-sm text-stone-400 hover:text-white transition-colors">
+                                    Legal Disclaimer
+                                </Link>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
@@ -68,11 +67,9 @@ export default function Footer() {
                         <p className="text-sm text-stone-400">
                             © {currentYear} BeforeYouSign. All rights reserved.
                         </p>
-                        <div className="flex items-center gap-2 text-sm text-stone-400">
-                            <span>Made with</span>
-                            <Heart className="w-4 h-4 text-stone-400 fill-stone-400" />
-                            <span>by Srinivas Jangiti</span>
-                        </div>
+                        <p className="text-sm text-stone-500">
+                            AI-powered legal analysis. Not legal advice.
+                        </p>
                     </div>
                 </div>
             </div>

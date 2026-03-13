@@ -596,14 +596,14 @@ export default function PDFTools() {
 
             {/* Processing */}
             {processing && (
-              <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-6 mb-6">
+              <div className="bg-stone-50 border-2 border-stone-300 rounded-xl p-6 mb-6">
                 <div className="flex items-center justify-between mb-3">
-                  <p className="font-semibold text-blue-900">Processing your file...</p>
-                  <span className="text-blue-700 font-mono">{uploadProgress}%</span>
+                  <p className="font-semibold text-stone-900">Processing your file...</p>
+                  <span className="text-stone-700 font-mono">{uploadProgress}%</span>
                 </div>
-                <div className="w-full h-3 bg-blue-200 rounded-full overflow-hidden">
+                <div className="w-full h-3 bg-stone-200 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300"
+                    className="h-full bg-stone-900 transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>

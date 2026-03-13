@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Search, Star, BarChart2, Grid, List, SaveAll, Upload, Eye, AlertTriangle, X } from 'lucide-react';
 import { SmartTemplateBuilder, ClauseLibraryItem, ClauseCategory, TemplateBuilder } from '@/lib/smart-template-builder';
 
 export default function SmartTemplateBuilderComponent() {
   const [builder] = useState(() => {
     const b = new SmartTemplateBuilder();
-    console.log('🔍 Builder created, library size:', b.getClausesByCategory('payment').length);
     return b;
   });
   const [selectedCategory, setSelectedCategory] = useState<ClauseCategory>('preamble');
@@ -61,8 +61,6 @@ export default function SmartTemplateBuilderComponent() {
   const clauses = searchQuery
     ? builder.searchClauses(searchQuery)
     : builder.getClausesByCategory(selectedCategory);
-
-  console.log(`📋 Category: ${selectedCategory}, Clauses found: ${clauses.length}`, clauses.map(c => c.title));
 
   const handleAddClause = (clause: ClauseLibraryItem) => {
     const newSection = {
@@ -122,15 +120,13 @@ export default function SmartTemplateBuilderComponent() {
               className="p-2 hover:bg-stone-100 transition-colors"
               title={viewMode === 'list' ? 'Grid view' : 'List view'}
             >
-              {viewMode === 'list' ? '⊞' : '≡'}
+              {viewMode === 'list' ? <Grid className="w-4 h-4 text-stone-600" /> : <List className="w-4 h-4 text-stone-600" />}
             </button>
           </div>
           
           {/* Search Bar - Enhanced */}
           <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">
-              🔍
-            </div>
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <input
               type="text"
               value={searchQuery}
@@ -165,7 +161,7 @@ export default function SmartTemplateBuilderComponent() {
             {clauses.length === 0 && (
               <div className="text-center py-16 px-4">
                 <div className="w-20 h-20 bg-stone-100 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-4xl">🔍</span>
+                  <Search className="w-8 h-8 text-stone-400" />
                 </div>
                 <p className="text-sm font-semibold text-stone-700 mb-1">No clauses found</p>
                 <p className="text-xs text-stone-500">Try a different category or search term</p>
@@ -194,11 +190,11 @@ export default function SmartTemplateBuilderComponent() {
                   </p>
                   <div className="flex items-center gap-4 text-xs">
                     <span className="flex items-center gap-1.5 text-stone-600 font-medium">
-                      <span className="text-sm">⭐</span>
+                      <Star className="w-3.5 h-3.5 text-stone-500" />
                       {clause.rating.toFixed(1)}
                     </span>
                     <span className="flex items-center gap-1.5 text-stone-600 font-medium">
-                      <span className="text-sm">📊</span>
+                      <BarChart2 className="w-3.5 h-3.5 text-stone-500" />
                       {clause.popularity}%
                     </span>
                     <span className="text-stone-500 font-medium">
@@ -254,14 +250,17 @@ export default function SmartTemplateBuilderComponent() {
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-              <button className="px-4 py-2 bg-stone-900 text-white font-semibold text-sm hover:bg-stone-800 transition-all">
-                💾 Save Draft
+              <button className="flex items-center gap-2 px-4 py-2 bg-stone-900 text-white font-semibold text-sm hover:bg-stone-800 transition-all">
+                <SaveAll className="w-4 h-4" />
+                Save Draft
               </button>
-              <button className="px-4 py-2 bg-stone-100 text-stone-700 font-semibold text-sm hover:bg-stone-200 transition-all">
-                📤 Export
+              <button className="flex items-center gap-2 px-4 py-2 bg-stone-100 text-stone-700 font-semibold text-sm hover:bg-stone-200 transition-all">
+                <Upload className="w-4 h-4" />
+                Export
               </button>
-              <button className="px-4 py-2 bg-stone-100 text-stone-700 font-semibold text-sm hover:bg-stone-200 transition-all">
-                👁️ Preview
+              <button className="flex items-center gap-2 px-4 py-2 bg-stone-100 text-stone-700 font-semibold text-sm hover:bg-stone-200 transition-all">
+                <Eye className="w-4 h-4" />
+                Preview
               </button>
             </div>
 
@@ -269,7 +268,7 @@ export default function SmartTemplateBuilderComponent() {
             {completeness.missing.length > 0 && (
               <div className="mt-4 bg-stone-50 border border-stone-300 p-4">
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl">⚠️</span>
+                  <AlertTriangle className="w-5 h-5 text-stone-700 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm font-bold text-stone-900 mb-1">Missing Essential Clauses</p>
                     <p className="text-xs text-stone-700 font-medium">{completeness.missing.join(', ')}</p>
@@ -287,7 +286,7 @@ export default function SmartTemplateBuilderComponent() {
               <div className="text-center max-w-xl">
                 <div className="relative mb-8">
                   <div className="w-32 h-32 bg-stone-100 flex items-center justify-center mx-auto">
-                    <span className="text-6xl">📋</span>
+                    <SaveAll className="w-12 h-12 text-stone-400" />
                   </div>
                 </div>
                 <h3 className="text-3xl font-black text-stone-900 mb-4">
@@ -342,9 +341,10 @@ export default function SmartTemplateBuilderComponent() {
                           <div key={clauseInstance.id} className="mb-6 p-6 bg-stone-50 border border-stone-200 relative group hover:border-stone-900 transition-all">
                             <button
                               onClick={() => handleRemoveClause(section.id, clauseInstance.id)}
-                              className="absolute top-4 right-4 w-8 h-8 bg-stone-900 text-white opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-sm font-bold"
+                              aria-label="Remove clause"
+                              className="absolute top-4 right-4 w-8 h-8 bg-stone-900 text-white opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center"
                             >
-                              ✕
+                              <X className="w-4 h-4" />
                             </button>
                             <h3 className="font-black mb-4 text-base text-stone-900 uppercase tracking-wide">{clause.title}</h3>
                             <p className="text-base text-stone-800 leading-relaxed">{clause.text}</p>

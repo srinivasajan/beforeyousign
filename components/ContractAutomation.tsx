@@ -177,18 +177,18 @@ export default function ContractAutomation() {
   return (
     <div className="min-h-screen bg-stone-50 light-section-pattern">
       {/* Header */}
-      <div className="bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 text-white py-12 dark-section-pattern">
+      <div className="bg-stone-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
-              <Zap className="w-6 h-6 text-purple-900" />
+            <div className="w-12 h-12 bg-white/10 flex items-center justify-center">
+              <Zap className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-4xl font-bold">Contract Automation</h1>
-              <p className="text-purple-200 text-sm uppercase tracking-wider mono mt-1">Workflow Automation Engine</p>
+              <p className="text-stone-400 text-sm uppercase tracking-wider mono mt-1">Workflow Automation Engine</p>
             </div>
           </div>
-          <p className="text-xl text-purple-100 max-w-3xl">
+          <p className="text-xl text-stone-300 max-w-3xl">
             Automate repetitive contract tasks with intelligent workflows. Save time, reduce errors, and scale effortlessly.
           </p>
         </div>
@@ -198,14 +198,14 @@ export default function ContractAutomation() {
         {/* Stats Dashboard */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all">
-            <Workflow className="w-8 h-8 text-purple-600 mb-3" />
+            <Workflow className="w-8 h-8 text-stone-600 mb-3" />
             <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-1">Active Automations</p>
             <p className="text-3xl font-bold text-stone-900 mb-1">{stats.activeAutomations}</p>
             <p className="text-sm text-stone-600">Running workflows</p>
           </div>
 
           <div className="bg-white border-2 border-stone-200 rounded-xl p-6 hover:border-stone-900 transition-all">
-            <PlayCircle className="w-8 h-8 text-blue-600 mb-3" />
+            <PlayCircle className="w-8 h-8 text-stone-600 mb-3" />
             <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-1">Total Executions</p>
             <p className="text-3xl font-bold text-stone-900 mb-1">{stats.totalExecutions}</p>
             <p className="text-sm text-stone-600">This month</p>
@@ -230,7 +230,7 @@ export default function ContractAutomation() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold text-stone-900">Active Automations</h2>
-            <button className="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center gap-2">
+            <button className="px-4 py-2 bg-stone-900 text-white rounded-lg font-semibold hover:bg-stone-800 transition-colors flex items-center gap-2">
               <Plus className="w-4 h-4" />
               Create Automation
             </button>
@@ -242,7 +242,7 @@ export default function ContractAutomation() {
                 key={automation.id} 
                 className={`bg-white border-2 rounded-xl p-6 transition-all cursor-pointer ${
                   selectedAutomation === automation.name 
-                    ? 'border-purple-600 shadow-lg' 
+                    ? 'border-stone-900 shadow-lg' 
                     : 'border-stone-200 hover:border-stone-900'
                 }`}
                 onClick={() => setSelectedAutomation(automation.name)}
@@ -280,7 +280,7 @@ export default function ContractAutomation() {
                       <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-2">Actions</p>
                       <div className="flex flex-wrap gap-2">
                         {automation.actions.map((action, idx) => (
-                          <span key={idx} className="flex items-center gap-1 text-xs px-3 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-full">
+                          <span key={idx} className="flex items-center gap-1 text-xs px-3 py-1 bg-stone-100 text-stone-700 border border-stone-300 rounded-full">
                             <ArrowRight className="w-3 h-3" />
                             {action}
                           </span>
@@ -326,9 +326,9 @@ export default function ContractAutomation() {
                   {category.automations.map((automation, autoIdx) => (
                     <div key={autoIdx} className="p-3 bg-stone-50 border border-stone-200 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer group">
                       <div className="flex items-start gap-3">
-                        <automation.icon className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                        <automation.icon className="w-5 h-5 text-stone-500 flex-shrink-0 mt-0.5" />
                         <div className="flex-1">
-                          <p className="font-semibold text-sm text-stone-900 group-hover:text-purple-600 transition-colors">{automation.name}</p>
+                          <p className="font-semibold text-sm text-stone-900 group-hover:text-stone-700 transition-colors">{automation.name}</p>
                           <p className="text-xs text-stone-600 mt-1">{automation.description}</p>
                         </div>
                       </div>
@@ -366,7 +366,7 @@ export default function ContractAutomation() {
                         <p className="text-sm font-semibold text-stone-900">{log.automation}</p>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-sm font-mono text-blue-600">{log.contract}</p>
+                        <p className="text-sm font-mono text-stone-700">{log.contract}</p>
                       </td>
                       <td className="px-6 py-4">
                         <p className="text-sm font-mono text-stone-600">{log.duration}</p>

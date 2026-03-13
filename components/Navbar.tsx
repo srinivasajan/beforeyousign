@@ -44,29 +44,29 @@ import { useUser, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 
 // Primary navigation items (most important features)
 const primaryServices = [
-  { name: 'AI Draft', href: '/drafting', icon: PenLine, badge: 'NEW' },
+  { name: 'AI Draft', href: '/drafting', icon: PenLine },
   { name: 'Analyze', href: '/analyze', icon: FileSearch },
-  { name: 'PDF Tools', href: '/tools', icon: FileText, badge: 'NEW' },
+  { name: 'PDF Tools', href: '/tools', icon: FileText },
   { name: 'Contracts', href: '/contracts', icon: FolderOpen },
   { name: 'Templates', href: '/templates-enhanced', icon: BookTemplate },
-  { name: 'Builder', href: '/template-builder', icon: BookTemplate, badge: 'NEW' },
+  { name: 'Builder', href: '/template-builder', icon: BookTemplate },
   { name: 'E-Signature', href: '/esignature', icon: FileSignature },
   { name: 'Library', href: '/library', icon: BookOpen, hasMegaMenu: true },
 ];
 
 // Secondary navigation items
 const secondaryServices = [
-  { name: 'Intelligence', href: '/intelligence', icon: Brain, badge: 'NEW' },
-  { name: 'Negotiate', href: '/negotiate', icon: MessageSquare, badge: 'AI' },
-  { name: 'Smart Search', href: '/search', icon: Search, badge: 'AI' },
-  { name: 'Market Intel', href: '/market-intelligence', icon: BarChart3, badge: 'LIVE' },
-  { name: 'Risk Predict', href: '/risk', icon: Shield, badge: 'ML' },
-  { name: 'Benchmark', href: '/benchmark', icon: Target, badge: 'LIVE' },
-  { name: 'Voice Contract', href: '/voice', icon: Mic, badge: 'AI' },
-  { name: 'Blockchain', href: '/blockchain', icon: Link2, badge: 'NEW' },
-  { name: 'Clause Library', href: '/clauses', icon: BookOpen, badge: 'LIVE' },
-  { name: 'Obligations', href: '/obligations', icon: Clock, badge: 'AUTO' },
-  { name: 'Multi-Language', href: '/multi-language', icon: Languages, badge: '50+' },
+  { name: 'Intelligence', href: '/intelligence', icon: Brain },
+  { name: 'Negotiate', href: '/negotiate', icon: MessageSquare },
+  { name: 'Smart Search', href: '/search', icon: Search },
+  { name: 'Market Intel', href: '/market-intelligence', icon: BarChart3 },
+  { name: 'Risk Predict', href: '/risk', icon: Shield },
+  { name: 'Benchmark', href: '/benchmark', icon: Target },
+  { name: 'Voice Contract', href: '/voice', icon: Mic },
+  { name: 'Blockchain', href: '/blockchain', icon: Link2 },
+  { name: 'Clause Library', href: '/clauses', icon: BookOpen },
+  { name: 'Obligations', href: '/obligations', icon: Clock },
+  { name: 'Multi-Language', href: '/multi-language', icon: Languages },
   { name: 'Renewals', href: '/renewals', icon: Calendar },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Team', href: '/team', icon: Users },
@@ -315,7 +315,7 @@ export default function Navbar() {
 
             {/* Advanced Search Bar */}
             <div ref={searchRef} className="hidden md:flex flex-1 max-w-2xl mx-8 relative">
-              <div className="relative">
+              <div className="relative w-full">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
                 <input
                   type="text"
@@ -433,11 +433,10 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               <Link
                 href="/lawyers"
-                className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold hover:from-blue-700 hover:to-purple-700 transition-all rounded-lg shadow-md"
+                className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-stone-900 text-white text-sm font-semibold hover:bg-stone-800 transition-colors rounded-lg"
               >
                 <Scale className="w-4 h-4" strokeWidth={2.5} />
                 <span>Find Lawyers</span>
-                <div className="ml-1 px-1.5 py-0.5 bg-white/20 rounded text-[10px] font-bold uppercase">New</div>
               </Link>
 
               {!isLoaded ? (
@@ -633,11 +632,6 @@ export default function Navbar() {
                     strokeWidth={2.5}
                   />
                   <span className="tracking-wide">{service.name}</span>
-                  {service.badge && (
-                    <span className="ml-1 px-1.5 py-0.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded text-[10px] font-bold uppercase">
-                      {service.badge}
-                    </span>
-                  )}
                 </Link>
               );
             })}
@@ -746,7 +740,7 @@ export default function Navbar() {
                           </div>
                           <Link
                             href="/lawyers"
-                            className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all rounded-lg shadow-md whitespace-nowrap"
+                            className="px-6 py-2 bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors rounded-lg whitespace-nowrap"
                           >
                             Find Lawyers
                           </Link>
@@ -828,11 +822,10 @@ export default function Navbar() {
                 <Link
                   href="/lawyers"
                   onClick={() => setShowMobileMenu(false)}
-                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg shadow-md"
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-stone-900 text-white font-semibold rounded-lg"
                 >
                   <Scale className="w-5 h-5" />
                   <span>Find Lawyers</span>
-                  <div className="ml-1 px-1.5 py-0.5 bg-white/20 rounded text-[10px] font-bold uppercase">New</div>
                 </Link>
 
                 {isSignedIn ? (
