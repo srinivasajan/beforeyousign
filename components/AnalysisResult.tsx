@@ -1923,7 +1923,6 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                       <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wider">Analysis Confidence & Transparency</h4>
                     </div>
                     <p className="text-sm text-indigo-700">
-                      Powered by <span className="font-semibold">{analysis.confidence.model}</span> •
                       Last updated {new Date(analysis.confidence.analysisDate).toLocaleDateString()}
                     </p>
                   </div>
@@ -2561,7 +2560,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                     </button>
                     <button
                       onClick={exportAnnotations}
-                      className="flex-1 text-xs py-2 border-2 border-stone-900 hover:bg-stone-900 hover:text-white transition-colors"
+                      className="flex-1 text-xs py-2 border-2 text-stone-900 border-stone-900 hover:bg-stone-900 hover:text-white transition-colors"
                       aria-label="Export annotations"
                     >
                       📥 Export
