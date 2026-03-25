@@ -79,31 +79,40 @@ async function init() {
 // ─────────────────────────────────────────────
 // CONTRACT DETECTION HEURISTICS
 // ─────────────────────────────────────────────
+
+// Pages to NEVER run on (social feeds, video, search, email etc.)
+const SKIP_DOMAINS = [
+  'twitter.com', 'x.com', 'facebook.com', 'instagram.com',
+  'tiktok.com', 'youtube.com', 'reddit.com', 'linkedin.com',
+  'google.com/search', 'bing.com/search', 'duckduckgo.com',
+  'gmail.com', 'mail.google.com', 'outlook.com', 'yahoo.com/mail',
+  'netflix.com', 'spotify.com', 'twitch.tv', 'discord.com',
+  'wikipedia.org', // informational, not signing anything
+  'news.ycombinator.com',
+];
+
 function looksLikeContract() {
-  // Always analyze on known document/contract sites
-  const knownSites = [
+  const host = location.hostname + location.pathname;
+
+  // Skip social media / entertainment / search / email
+  if (SKIP_DOMAINS.some(d => host.includes(d))) return false;
+
+  // Always ON for known document / e-signature / legal sites
+  const CONTRACT_SITES = [
     'docs.google.com', 'docusign.com', 'hellosign.com', 'pandadoc.com',
-    'docuware.com', 'contractsafe.com', 'ironclad.com', 'dropbox.com',
-    'notion.so', 'confluence', 'sharepoint.com',
+    'docuware.com', 'contractsafe.com', 'ironclad.com', 'dropbox.com/paper',
+    'notion.so', 'sharepoint.com', 'confluence', 'conga.com',
+    'adobesign.com', 'esignlive.com', 'signrequest.com', 'signnow.com',
   ];
-  if (knownSites.some(s => location.hostname.includes(s))) return true;
+  if (CONTRACT_SITES.some(s => host.includes(s))) return true;
 
-  // Check if URL or title suggests a document/contract
-  const titleOrUrl = (document.title + location.href).toLowerCase();
-  if (/contract|agreement|terms|nda|lease|offer letter|employment/i.test(titleOrUrl)) return true;
+  // URL / title hint — agreements, NDAs, leases, terms etc.
+  const titleOrUrl = (document.title + ' ' + location.href).toLowerCase();
+  if (/\b(contract|agreement|terms|nda|lease|employ|offer.?letter|policy|waiver|consent|privacy)\b/.test(titleOrUrl)) return true;
 
-  // Keyword scan in page text
-  const text = (document.body.innerText || '').toLowerCase();
-  const legalKeywords = [
-    'indemnif', 'liability', 'termination', 'non-compete', 'confidential',
-    'arbitration', 'intellectual property', 'governing law', 'force majeure',
-    'liquidated damages', 'waiver', 'agreement', 'whereas', 'hereinafter',
-    'notwithstanding', 'pursuant to', 'in witness whereof', 'warranty',
-    'representations', 'covenants', 'shall not', 'party agrees',
-    'governing', 'limitation of liability', 'indemnification', 'breach',
-  ];
-  const matches = legalKeywords.filter(kw => text.includes(kw));
-  return matches.length >= 2; // ← lowered from 3 to 2
+  // Run on ANY page with reasonable text length — let the API decide
+  const bodyLen = (document.body.innerText || '').trim().length;
+  return bodyLen > 600; // covers most real documents / PDFs / web apps
 }
 
 // ─────────────────────────────────────────────

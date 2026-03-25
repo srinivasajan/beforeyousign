@@ -35,8 +35,8 @@
     "contextMenus"
   ],
   "host_permissions": [
-    "http://localhost:3000/*",
-    "https://*.beforeyousign.com/*"
+    "https://beforeyousign.vercel.app/*",
+    "http://localhost:3000/*"
   ],
   "options_page": "options/options.html",
   "commands": {
