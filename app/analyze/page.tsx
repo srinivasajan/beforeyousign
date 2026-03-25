@@ -73,7 +73,7 @@ export default function AnalyzePage() {
       )}
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-8 py-16">
+      <main className={analysis ? "max-w-[1600px] w-full mx-auto px-4 lg:px-8 py-8" : "max-w-7xl mx-auto px-8 py-16"}>
         {!analysis && !isAnalyzing && (
           <div className="max-w-4xl mx-auto">
             <div className="mb-12 text-center">

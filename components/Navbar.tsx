@@ -38,6 +38,7 @@ import {
   Mic,
   Languages,
   Link2,
+  Download,
 } from 'lucide-react';
 import { useUser, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 
@@ -431,6 +432,17 @@ export default function Navbar() {
 
             {/* Auth Actions */}
             <div className="flex items-center gap-3">
+              {/* Get Extension CTA */}
+              <Link
+                href="/extension"
+                className="hidden md:flex items-center gap-2 px-4 py-2.5 text-sm font-semibold transition-all rounded-lg border-2 border-stone-900 text-stone-900 hover:bg-stone-900 hover:text-white group relative overflow-hidden"
+                title="Get the BeforeYouSign Chrome Extension"
+              >
+                <span className="absolute inset-0 bg-stone-900 translate-x-[-101%] group-hover:translate-x-0 transition-transform duration-200 ease-in-out" />
+                <Download className="w-4 h-4 relative z-10 transition-colors" strokeWidth={2.5} />
+                <span className="relative z-10">Get Extension</span>
+              </Link>
+
               <Link
                 href="/lawyers"
                 className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-stone-900 text-white text-sm font-semibold hover:bg-stone-800 transition-colors rounded-lg"
@@ -632,6 +644,11 @@ export default function Navbar() {
                     strokeWidth={2.5}
                   />
                   <span className="tracking-wide">{service.name}</span>
+                  {service.badge && (
+                    <span className="ml-1 px-1.5 py-0.5 bg-stone-700 text-white rounded text-[10px] font-bold uppercase">
+                      {service.badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -773,6 +790,17 @@ export default function Navbar() {
 
             {/* Mobile Navigation Links */}
             <div className="space-y-1">
+              {/* Get Extension — Mobile */}
+              <Link
+                href="/extension"
+                onClick={() => setShowMobileMenu(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg bg-stone-900 text-white font-semibold mb-3"
+              >
+                <Download className="w-5 h-5" strokeWidth={2} />
+                <span>Get Chrome Extension</span>
+                <span className="ml-auto text-xs bg-white/20 px-2 py-0.5 rounded-full">New</span>
+              </Link>
+
               {primaryServices.map((service) => {
                 const Icon = service.icon;
                 const isActive = pathname === service.href;

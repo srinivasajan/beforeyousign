@@ -123,12 +123,14 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
       // Don't update active section while user is manually scrolling via click
       if (isScrolling) return;
 
-      const sections = ['summary', 'red-flags', 'clauses'];
-      // Add all clause IDs
-      for (let i = 0; i < analysis.clauses.length; i++) {
-        sections.push(`clause-${i}`);
-      }
-      sections.push('recommendations', 'alternatives');
+      const sections = [
+        'summary',
+        'red-flags',
+        'clauses',
+        ...filteredAndSortedClauses.map((clause) => `clause-${clause.id}`),
+        'recommendations',
+        'alternatives',
+      ];
 
       const scrollPosition = window.scrollY + 150;
 
@@ -146,7 +148,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isScrolling, analysis.clauses.length]);
+  }, [isScrolling, filteredAndSortedClauses]);
 
   // Generate contract ID for bookmarks
   const contractId = `${analysis.metadata.fileName}-${Date.now()}`.replace(/[^a-zA-Z0-9-]/g, '_');
@@ -869,7 +871,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
   };
 
   return (
-    <div className="w-full min-h-screen">
+    <div className="w-full min-h-screen overflow-x-hidden">
       {/* Main Content Wrapper with Sidebar Spacing */}
       <div className={`transition-all duration-300 ease-in-out ${showTOC ? 'xl:ml-72' : 'xl:ml-0'}`}>
         <div className="space-y-8 animate-fade-in relative">
@@ -1622,7 +1624,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
           )}
 
           {/* Sticky Table of Contents Sidebar */}
-          <div className={`fixed left-0 top-0 h-screen w-72 bg-gradient-to-b from-stone-50 to-white border-r-2 border-stone-200 shadow-xl z-40 transition-transform duration-300 ease-in-out ${showTOC ? 'translate-x-0' : '-translate-x-full'
+          <div className={`fixed left-0 top-32 h-[calc(100vh-8rem)] w-72 bg-gradient-to-b from-stone-50 to-white border-r-2 border-stone-200 shadow-xl z-40 transition-transform duration-300 ease-in-out ${showTOC ? 'translate-x-0' : '-translate-x-full'
             } hidden xl:block`}>
             <div className="h-full flex flex-col">
               {/* Header */}
@@ -1775,7 +1777,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
           {!showTOC && (
             <button
               onClick={() => setShowTOC(true)}
-              className="fixed left-0 top-1/2 -translate-y-1/2 bg-stone-900 text-white px-2 py-6 rounded-r-lg shadow-2xl z-40 hover:bg-stone-800 transition-all hover:px-3 hidden xl:flex flex-col items-center gap-2 group"
+              className="fixed left-0 top-[calc(50%+4rem)] -translate-y-1/2 bg-stone-900 text-white px-2 py-6 rounded-r-lg shadow-2xl z-40 hover:bg-stone-800 transition-all hover:px-3 hidden xl:flex flex-col items-center gap-2 group"
               aria-label="Show table of contents"
             >
               <FileText className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -1784,10 +1786,10 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
           )}
 
           {/* View Mode Toggle & Filters */}
-          <div className="bg-white border-2 border-stone-900 p-6 flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="bg-white border-2 border-stone-900 p-4 md:p-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-wrap items-center gap-3 md:gap-4">
               <span className="text-sm font-semibold text-stone-600 uppercase tracking-wider">View Mode:</span>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setViewMode('quick')}
                   className={`px-4 py-2 text-sm font-medium transition-colors ${viewMode === 'quick'
@@ -1811,7 +1813,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3 md:gap-4">
               <span className="text-sm font-semibold text-stone-600 uppercase tracking-wider">
                 <Filter className="w-4 h-4 inline mr-2" />
                 Risk Filter:
@@ -1830,17 +1832,17 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
           </div>
 
           {/* Header with Risk Score */}
-          <div id="summary" className="bg-white border-2 border-stone-900 p-10">
-            <div className="flex items-start justify-between mb-10 pb-8 border-b border-stone-200">
+          <div id="summary" className="bg-white border-2 border-stone-900 p-6 md:p-10">
+            <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between mb-10 pb-8 border-b border-stone-200">
               <div>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="h-px w-8 bg-stone-900"></div>
                   <span className="mono text-xs text-stone-500 tracking-wider uppercase">Analysis Report</span>
                 </div>
-                <h2 className="text-5xl font-bold text-stone-900 mb-3">Executive Analysis</h2>
+                <h2 className="text-3xl sm:text-4xl xl:text-5xl font-bold text-stone-900 mb-3">Executive Analysis</h2>
                 <p className="text-sm text-stone-500 mono tracking-wide">{analysis.metadata.fileName}</p>
               </div>
-              <div className="flex flex-wrap gap-3 no-print">
+              <div className="flex flex-wrap gap-2 md:gap-3 no-print xl:justify-end">
                 <button
                   onClick={() => setShowCompareModal(true)}
                   className="group flex items-center gap-2 px-5 py-3 border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200"
@@ -1879,7 +1881,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
             </div>
 
             {/* Key Metrics */}
-            <div className="grid grid-cols-3 gap-6 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
               <div className="metric-box p-8 group">
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">Risk Assessment</p>
@@ -2514,7 +2516,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
             
             {/* Quick Stats Floating Card */}
             {!showChat && !showContractMap && (
-              <div className="fixed bottom-6 right-24 bg-white border-2 border-stone-900 shadow-2xl z-20 w-80 rounded-sm overflow-hidden">
+              <div className="sticky top-24 ml-auto bg-white border-2 border-stone-900 shadow-xl z-20 w-full max-w-80 rounded-sm overflow-hidden hidden xl:block">
                 <div className="bg-stone-900 text-white p-3 flex items-center justify-between">
                   <h4 className="font-bold text-sm uppercase tracking-wider">Quick Stats</h4>
                   <button
@@ -2542,12 +2544,12 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-stone-600 uppercase">Highlighted</span>
-                    <span className="font-bold text-lg text-purple-600">{Object.keys(highlightedClauses).length}</span>
+                    <span className="font-bold text-lg text-purple-600">{highlightedClauses.size}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-stone-600 uppercase">Comments</span>
                     <span className="font-bold text-lg text-blue-600">
-                      {Object.values(clauseComments).reduce((sum, comments) => sum + comments.length, 0)}
+                      {Array.from(clauseComments.values()).reduce((sum, comments) => sum + comments.length, 0)}
                     </span>
                   </div>
                   <div className="pt-2 border-t border-stone-200 flex gap-2">

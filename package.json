@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "clean": "rimraf .next tsconfig.tsbuildinfo *.log",
+    "fresh": "rimraf .next tsconfig.tsbuildinfo *.log && next dev"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.37.3",
