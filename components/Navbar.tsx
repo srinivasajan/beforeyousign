@@ -44,7 +44,7 @@ import { useUser, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 
 
 // Primary navigation items (most important features)
-const primaryServices = [
+const primaryServices: Array<{ name: string; href: string; icon: any; hasMegaMenu?: boolean; badge?: string }> = [
   { name: 'AI Draft', href: '/drafting', icon: PenLine },
   { name: 'Analyze', href: '/analyze', icon: FileSearch },
   { name: 'PDF Tools', href: '/tools', icon: FileText },
