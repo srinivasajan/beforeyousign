@@ -117,6 +117,52 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
     }
   };
 
+  // Risk level priority for sorting
+  const riskPriority = { critical: 4, high: 3, medium: 2, low: 1 };
+
+  // Filtered and sorted clauses — declared early so useEffect deps below can reference it
+  const filteredAndSortedClauses = useMemo(() => {
+    let clauses = [...analysis.clauses];
+
+    // Apply search filter
+    if (clauseSearchQuery.trim()) {
+      const query = clauseSearchQuery.toLowerCase();
+      clauses = clauses.filter(clause =>
+        clause.title.toLowerCase().includes(query) ||
+        clause.plainLanguage.toLowerCase().includes(query) ||
+        clause.originalText.toLowerCase().includes(query) ||
+        clause.category.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply category filter
+    if (selectedCategories.size > 0) {
+      clauses = clauses.filter(c => selectedCategories.has(c.category));
+    }
+
+    // Apply risk filter
+    if (riskFilter === 'critical') {
+      clauses = clauses.filter(c => c.riskLevel === 'critical');
+    } else if (riskFilter === 'high') {
+      clauses = clauses.filter(c => c.riskLevel === 'critical' || c.riskLevel === 'high');
+    }
+
+    // Apply sorting
+    clauses.sort((a, b) => {
+      let comparison = 0;
+      if (clauseSortBy === 'risk') {
+        comparison = riskPriority[b.riskLevel] - riskPriority[a.riskLevel];
+      } else if (clauseSortBy === 'title') {
+        comparison = a.title.localeCompare(b.title);
+      } else {
+        comparison = a.position.start - b.position.start;
+      }
+      return clauseSortDir === 'desc' ? -comparison : comparison;
+    });
+
+    return clauses;
+  }, [analysis.clauses, clauseSearchQuery, selectedCategories, riskFilter, clauseSortBy, clauseSortDir]);
+
   // Track active section on scroll
   useEffect(() => {
     const handleScroll = () => {
@@ -275,6 +321,18 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
     );
     return totalText.split(/\s+/).length;
   }, [analysis.clauses]);
+
+  // Calculate clause complexity scores
+  const clauseComplexity = useMemo(() => {
+    return analysis.clauses.map(clause => ({
+      id: clause.id,
+      score: Math.min(100, Math.round(
+        (clause.originalText.split(/\s+/).length / 50) * 30 +
+        (clause.concerns.length * 15) +
+        (riskPriority[clause.riskLevel] * 10)
+      ))
+    }));
+  }, [analysis.clauses]);
   
   // Extract unique categories
   const categories = useMemo(() => {
@@ -295,64 +353,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
     return stats;
   }, [analysis.clauses]);
   
-  // Risk level priority for sorting
-  const riskPriority = { critical: 4, high: 3, medium: 2, low: 1 };
 
-  // Calculate clause complexity scores
-  const clauseComplexity = useMemo(() => {
-    return analysis.clauses.map(clause => ({
-      id: clause.id,
-      score: Math.min(100, Math.round(
-        (clause.originalText.split(/\s+/).length / 50) * 30 + // word count factor
-        (clause.concerns.length * 15) + // concerns factor  
-        (riskPriority[clause.riskLevel] * 10) // risk factor
-      ))
-    }));
-  }, [analysis.clauses]);
-
-  // Filtered and sorted clauses
-  const filteredAndSortedClauses = useMemo(() => {
-    let clauses = [...analysis.clauses];
-
-    // Apply search filter
-    if (clauseSearchQuery.trim()) {
-      const query = clauseSearchQuery.toLowerCase();
-      clauses = clauses.filter(clause =>
-        clause.title.toLowerCase().includes(query) ||
-        clause.plainLanguage.toLowerCase().includes(query) ||
-        clause.originalText.toLowerCase().includes(query) ||
-        clause.category.toLowerCase().includes(query)
-      );
-    }
-
-    // Apply category filter
-    if (selectedCategories.size > 0) {
-      clauses = clauses.filter(c => selectedCategories.has(c.category));
-    }
-
-    // Apply risk filter
-    if (riskFilter === 'critical') {
-      clauses = clauses.filter(c => c.riskLevel === 'critical');
-    } else if (riskFilter === 'high') {
-      clauses = clauses.filter(c => c.riskLevel === 'critical' || c.riskLevel === 'high');
-    }
-
-    // Apply sorting
-    clauses.sort((a, b) => {
-      let comparison = 0;
-      if (clauseSortBy === 'risk') {
-        comparison = riskPriority[b.riskLevel] - riskPriority[a.riskLevel];
-      } else if (clauseSortBy === 'title') {
-        comparison = a.title.localeCompare(b.title);
-      } else {
-        // Default: original order (by position)
-        comparison = a.position.start - b.position.start;
-      }
-      return clauseSortDir === 'desc' ? -comparison : comparison;
-    });
-
-    return clauses;
-  }, [analysis.clauses, clauseSearchQuery, selectedCategories, riskFilter, clauseSortBy, clauseSortDir]);
   
   // Group clauses by category
   const groupedClauses = useMemo(() => {
