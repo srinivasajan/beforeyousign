@@ -3,7 +3,7 @@
  * Grammarly-style contract risk highlighter for any web page
  */
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'https://beforeyousign.vercel.app';
 const BYS_CLASS = 'bys-highlight';
 const BYS_TOOLTIP_ID = 'bys-tooltip';
 const BYS_BADGE_ID = 'bys-page-badge';
@@ -80,28 +80,61 @@ async function init() {
 // CONTRACT DETECTION HEURISTICS
 // ─────────────────────────────────────────────
 function looksLikeContract() {
-  const text = document.body.innerText || '';
+  // Always analyze on known document/contract sites
+  const knownSites = [
+    'docs.google.com', 'docusign.com', 'hellosign.com', 'pandadoc.com',
+    'docuware.com', 'contractsafe.com', 'ironclad.com', 'dropbox.com',
+    'notion.so', 'confluence', 'sharepoint.com',
+  ];
+  if (knownSites.some(s => location.hostname.includes(s))) return true;
+
+  // Check if URL or title suggests a document/contract
+  const titleOrUrl = (document.title + location.href).toLowerCase();
+  if (/contract|agreement|terms|nda|lease|offer letter|employment/i.test(titleOrUrl)) return true;
+
+  // Keyword scan in page text
+  const text = (document.body.innerText || '').toLowerCase();
   const legalKeywords = [
     'indemnif', 'liability', 'termination', 'non-compete', 'confidential',
     'arbitration', 'intellectual property', 'governing law', 'force majeure',
     'liquidated damages', 'waiver', 'agreement', 'whereas', 'hereinafter',
     'notwithstanding', 'pursuant to', 'in witness whereof', 'warranty',
-    'representations', 'covenants', 'shall not', 'party agrees'
+    'representations', 'covenants', 'shall not', 'party agrees',
+    'governing', 'limitation of liability', 'indemnification', 'breach',
   ];
-  const lowerText = text.toLowerCase();
-  const matches = legalKeywords.filter(kw => lowerText.includes(kw));
-  return matches.length >= 3; // needs at least 3 legal keywords
+  const matches = legalKeywords.filter(kw => text.includes(kw));
+  return matches.length >= 2; // ← lowered from 3 to 2
 }
 
 // ─────────────────────────────────────────────
 // TEXT EXTRACTION
 // ─────────────────────────────────────────────
 function extractContractText() {
-  // Try to get meaningful content, skip nav/footer/header
+  // ── Google Docs ──────────────────────────────────────────
+  if (location.hostname.includes('docs.google.com')) {
+    // Google Docs renders text into .kix-lineview spans
+    const lines = Array.from(document.querySelectorAll('.kix-lineview'))
+      .map(el => el.innerText)
+      .filter(Boolean)
+      .join(' ');
+    if (lines.length > 200) return lines;
+
+    // Fallback: aria-label on canvas wrapper
+    const canvas = document.querySelector('.kix-appview-editor');
+    if (canvas) {
+      const text = canvas.innerText;
+      if (text && text.length > 200) return text;
+    }
+  }
+
+  // ── Try semantic content selectors ───────────────────────
   const selectors = [
     'main', 'article', '.contract', '.document', '.content',
     '[role="main"]', '.ql-editor', '.ProseMirror', '.document-content',
-    '.contract-text', '#contract', '#document'
+    '.contract-text', '#contract', '#document',
+    // DocuSign / PandaDoc / HelloSign
+    '.document-page', '.page-content', '.signing-page',
+    '[data-qa="document-body"]', '.document-body',
   ];
 
   for (const sel of selectors) {
@@ -112,7 +145,7 @@ function extractContractText() {
     }
   }
 
-  // Fall back to paragraphs with legal text
+  // ── Paragraph fallback ────────────────────────────────────
   const paras = Array.from(document.querySelectorAll('p, div, section'))
     .map(el => el.innerText)
     .filter(t => t && t.length > 100)
@@ -243,7 +276,7 @@ function showTooltip(e, clause, pinned = false) {
       <span class="bys-tt-suggestion-label">💡 Suggestion</span>
       <div>${clause.suggestion}</div>
     </div>
-    <a class="bys-tt-link" href="http://localhost:3000/analyze" target="_blank">
+    <a class="bys-tt-link" href="https://beforeyousign.vercel.app/analyze" target="_blank">
       Full Analysis on BeforeYouSign →
     </a>
   `;

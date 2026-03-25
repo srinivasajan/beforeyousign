@@ -9,7 +9,7 @@ const fields = {
 
 // Load saved settings
 chrome.storage.local.get(['apiBase', 'autoAnalyze', 'showBadge', 'highlightsEnabled'], (stored) => {
-  fields.apiBase.value        = stored.apiBase         || 'http://localhost:3000';
+  fields.apiBase.value        = stored.apiBase         || 'https://beforeyousign.vercel.app';
   fields.autoAnalyze.checked  = stored.autoAnalyze     !== false;
   fields.showBadge.checked    = stored.showBadge        !== false;
   fields.highlightsOn.checked = stored.highlightsEnabled !== false;
