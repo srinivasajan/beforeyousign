@@ -11,6 +11,27 @@ import { db } from '@/lib/database';
 export const runtime = 'nodejs';
 export const maxDuration = 60; // 60 seconds timeout
 
+const PARSE_TIMEOUT_MS = Number.parseInt(process.env.ANALYZE_PARSE_TIMEOUT_MS || '12000', 10);
+const ANALYSIS_TIMEOUT_MS = Number.parseInt(process.env.ANALYZE_EXECUTION_TIMEOUT_MS || '22000', 10);
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutHandle = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    if (timeoutHandle) {
+      clearTimeout(timeoutHandle);
+    }
+  }
+}
+
 export async function POST(request: NextRequest) {
   const startTime = performance.now();
   const requestId = request.headers.get('x-request-id') || crypto.randomUUID();
@@ -69,7 +90,7 @@ export async function POST(request: NextRequest) {
     // Parse document with performance tracking
     const contractText = await performanceMonitor.measureAsync(
       'document_parse',
-      () => DocumentParser.parse(file),
+      () => withTimeout(DocumentParser.parse(file), PARSE_TIMEOUT_MS, 'Document parsing'),
       { fileName: file.name, fileSize: file.size }
     );
 
@@ -87,7 +108,11 @@ export async function POST(request: NextRequest) {
     // Analyze contract with performance tracking
     const analysis = await performanceMonitor.measureAsync(
       'contract_analysis',
-      () => ContractAnalyzer.analyze(contractText, file.name, file.size, jurisdiction),
+      () => withTimeout(
+        ContractAnalyzer.analyze(contractText, file.name, file.size, jurisdiction),
+        ANALYSIS_TIMEOUT_MS,
+        'Contract analysis'
+      ),
       { jurisdiction, textLength: contractText.length }
     );
 
@@ -143,13 +168,19 @@ export async function POST(request: NextRequest) {
     
     db.insert('apiErrors', errorLog);
 
+    const errorMessage = error instanceof Error ? error.message : 'Failed to analyze contract';
+    const status = errorMessage.includes('timed out after') ? 504 : 500;
+
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to analyze contract',
+        error:
+          status === 504
+            ? 'Analysis took too long to complete. Please try again with a smaller contract, or retry in a few minutes.'
+            : errorMessage,
         requestId,
       },
-      { status: 500 }
+      { status }
     );
   }
 }

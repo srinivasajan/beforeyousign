@@ -22,6 +22,11 @@ export const NVIDIA_MODELS = {
   fast: 'meta/llama-3.1-8b-instruct',
 } as const;
 
+const DEFAULT_NVIDIA_TIMEOUT_MS = Number.parseInt(
+  process.env.NVIDIA_REQUEST_TIMEOUT_MS || '18000',
+  10
+);
+
 // ---------------------------------------------------------------------------
 // Client factory
 // ---------------------------------------------------------------------------
@@ -49,15 +54,34 @@ export async function generateText(
   model: string = NVIDIA_MODELS.primary,
   temperature = 0.7,
   maxTokens = 4096,
+  timeoutMs = DEFAULT_NVIDIA_TIMEOUT_MS,
 ): Promise<string> {
   const client = createNvidiaClient();
 
-  const completion = await client.chat.completions.create({
-    model,
-    messages: [{ role: 'user', content: prompt }],
-    temperature,
-    max_tokens: maxTokens,
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  let completion;
+  try {
+    completion = await client.chat.completions.create(
+      {
+        model,
+        messages: [{ role: 'user', content: prompt }],
+        temperature,
+        max_tokens: maxTokens,
+      },
+      {
+        signal: controller.signal,
+      }
+    );
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error(`NVIDIA request timed out after ${timeoutMs}ms`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   return completion.choices[0]?.message?.content ?? '';
 }

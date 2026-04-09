@@ -30,6 +30,9 @@ export default function AnalyzePage() {
       // Check content type before parsing JSON to handle HTML error pages
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
+        if (response.status === 504) {
+          throw new Error('Analysis timed out on the server. Please try again with a smaller contract or retry shortly.');
+        }
         const textResponse = await response.text();
         const shortText = textResponse.length > 150 ? textResponse.substring(0, 150) + '...' : textResponse;
         throw new Error(`Server returned an invalid response (Status: ${response.status}). Details: ${shortText}`);

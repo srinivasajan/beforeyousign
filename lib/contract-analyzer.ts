@@ -17,14 +17,19 @@ export class ContractAnalyzer {
     fileSize: number,
     jurisdiction: string = 'US'
   ): Promise<ContractAnalysis> {
-    const maxRetries = 3;
-    const baseDelay = 2000; // 2 seconds
+    const maxRetries = Math.max(1, Number.parseInt(process.env.ANALYZE_MAX_RETRIES || '1', 10));
+    const baseDelay = 750;
+    const maxPromptChars = Math.max(5000, Number.parseInt(process.env.ANALYZE_MAX_PROMPT_CHARS || '18000', 10));
+    const modelOutputTokens = Math.max(1024, Number.parseInt(process.env.ANALYZE_MAX_OUTPUT_TOKENS || '2048', 10));
+    const trimmedContractText = contractText.length > maxPromptChars
+      ? `${contractText.slice(0, maxPromptChars)}\n\n[Contract text truncated for faster analysis due to deployment limits]`
+      : contractText;
     
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const prompt = this.buildAnalysisPrompt(contractText, jurisdiction);
+        const prompt = this.buildAnalysisPrompt(trimmedContractText, jurisdiction);
         
-        const text = await generateText(prompt, NVIDIA_MODELS.primary, 0.3, 8192);
+        const text = await generateText(prompt, NVIDIA_MODELS.primary, 0.3, modelOutputTokens);
         
         if (!text) {
           throw new Error('No response from AI');
