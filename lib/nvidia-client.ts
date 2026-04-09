@@ -23,7 +23,7 @@ export const NVIDIA_MODELS = {
 } as const;
 
 const DEFAULT_NVIDIA_TIMEOUT_MS = Number.parseInt(
-  process.env.NVIDIA_REQUEST_TIMEOUT_MS || '18000',
+  process.env.NVIDIA_REQUEST_TIMEOUT_MS || '45000',
   10
 );
 

@@ -11,8 +11,8 @@ import { db } from '@/lib/database';
 export const runtime = 'nodejs';
 export const maxDuration = 60; // 60 seconds timeout
 
-const PARSE_TIMEOUT_MS = Number.parseInt(process.env.ANALYZE_PARSE_TIMEOUT_MS || '12000', 10);
-const ANALYSIS_TIMEOUT_MS = Number.parseInt(process.env.ANALYZE_EXECUTION_TIMEOUT_MS || '22000', 10);
+const PARSE_TIMEOUT_MS = Number.parseInt(process.env.ANALYZE_PARSE_TIMEOUT_MS || '20000', 10);
+const ANALYSIS_TIMEOUT_MS = Number.parseInt(process.env.ANALYZE_EXECUTION_TIMEOUT_MS || '50000', 10);
 
 async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
   let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
