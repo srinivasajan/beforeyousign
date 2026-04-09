@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         // Step 2: Build prompt
         send({ type: 'status', message: 'Connecting to AI...' });
         const maxPromptChars = parseInt(process.env.ANALYZE_MAX_PROMPT_CHARS || '6000');
-        const maxTokens = parseInt(process.env.ANALYZE_MAX_OUTPUT_TOKENS || '1024');
+        const maxTokens = parseInt(process.env.ANALYZE_MAX_OUTPUT_TOKENS || '2000');
         const trimmedText = contractText.length > maxPromptChars
           ? contractText.slice(0, maxPromptChars) + '\n\n[Contract text truncated for faster analysis]'
           : contractText;

@@ -112,10 +112,64 @@ export async function generateWithSystem(
 }
 
 /**
+ * Attempt to repair a truncated JSON string by closing any unclosed
+ * strings / arrays / objects. Returns the repaired string (best-effort).
+ */
+function repairTruncatedJson(text: string): string {
+  let result = text.trimEnd();
+
+  // Remove a trailing comma that would make the JSON invalid
+  result = result.replace(/,\s*$/, '');
+
+  // Walk the string tracking state so we know what's open
+  let inString = false;
+  let escape = false;
+  const stack: string[] = [];
+
+  for (const char of result) {
+    if (escape) { escape = false; continue; }
+    if (char === '\\' && inString) { escape = true; continue; }
+    if (char === '"') { inString = !inString; continue; }
+    if (!inString) {
+      if (char === '{' || char === '[') stack.push(char);
+      else if (char === '}' || char === ']') stack.pop();
+    }
+  }
+
+  // Close an unterminated string value
+  if (inString) result += '"';
+
+  // Remove any trailing comma that appeared just before the close
+  result = result.replace(/,(\s*)$/, '$1');
+
+  // Close remaining open structures in reverse order
+  while (stack.length > 0) {
+    const open = stack.pop();
+    result += open === '{' ? '}' : ']';
+  }
+
+  return result;
+}
+
+/**
  * Parse JSON from an AI response, stripping markdown code fences if present.
+ * Falls back to best-effort JSON repair when the response was truncated.
  */
 export function parseJsonResponse<T>(text: string): T {
   const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-  const jsonText = jsonMatch ? jsonMatch[1] : text;
-  return JSON.parse(jsonText.trim()) as T;
+  const jsonText = (jsonMatch ? jsonMatch[1] : text).trim();
+
+  // First attempt — clean parse
+  try {
+    return JSON.parse(jsonText) as T;
+  } catch {
+    // Second attempt — repair truncated JSON then parse
+    try {
+      return JSON.parse(repairTruncatedJson(jsonText)) as T;
+    } catch (repairErr) {
+      throw new Error(
+        `Failed to parse AI response as JSON: ${repairErr instanceof Error ? repairErr.message : String(repairErr)}`
+      );
+    }
+  }
 }
