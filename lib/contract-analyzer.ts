@@ -118,79 +118,36 @@ export class ContractAnalyzer {
     };
     
     const jurisdictionName = getJurisdictionName(jurisdiction);
-    return `You are an expert contract lawyer specializing in identifying risks, unfair terms, and hidden dangers in legal agreements. Your goal is to help ordinary people understand contracts written in complex legal language. Be thorough, precise, and focus on protecting the weaker party's interests.
+    return `You are an expert contract lawyer. Analyze the contract below and return a JSON risk assessment. Be concise — keep ALL string values short to fit within token limits.
 
 JURISDICTION: ${jurisdictionName}
-This contract will be analyzed under the laws and regulations of ${jurisdictionName}. Pay special attention to jurisdiction-specific legal requirements, protections, and restrictions that may apply.
-
-Analyze the following contract and provide a comprehensive risk assessment with industry benchmarking. Focus on identifying terms that disadvantage the weaker party (typically the individual, freelancer, employee, or small business).
 
 CONTRACT TEXT:
 ${contractText}
 
-IMPORTANT INSTRUCTIONS:
-- Identify ALL potentially harmful clauses
-- Pay special attention to: IP transfers, liability caps/waivers, auto-renewals, termination restrictions, indemnification, non-compete, payment terms, dispute resolution (especially forced arbitration), venue selection, amendment rights
-- Consider jurisdiction-specific laws:
-  * California: Non-compete clauses are largely unenforceable
-  * EU/UK: GDPR data protection requirements, stronger consumer protections
-  * Australia: Unfair contract terms legislation
-  * At-will employment varies by jurisdiction (standard in US, illegal in many countries)
-  * Minimum notice periods, mandatory benefits, and termination protections vary significantly
-- Flag clauses that may violate local laws or regulations in ${jurisdictionName}
-- Explain legal jargon in plain language that a 12-year-old could understand
-- Be specific about WHY something is risky IN THIS JURISDICTION
-- Provide actionable recommendations that comply with ${jurisdictionName} laws
-- Give accurate character positions for each clause in the contract text
-- Calculate a risk score between 0-100 based on the severity and number of problematic clauses
+INSTRUCTIONS:
+- Identify the most important risks and harmful clauses (max 8 clauses total)
+- Focus on: IP transfers, liability, auto-renewals, termination, indemnification, non-compete, payment, arbitration
+- Flag clauses violating ${jurisdictionName} laws
+- Keep ALL text values brief and concise (no long explanations)
+- originalText: copy at most 150 characters from the contract (truncate with "..." if longer)
+- plainLanguage: max 100 characters
+- concerns: max 2 items, max 80 chars each
+- recommendations: max 5 items, max 100 chars each
+- commonAlternatives: max 2 items, max 80 chars each
+- fallbackPositions: max 2 items, max 80 chars each
+- marketPrecedents: max 2 items, max 60 chars each
 
-INDUSTRY BENCHMARKING:
-For each significant clause, provide an industryComparison with:
-- averageStrictness: How strict this clause is (0-100, where 50 is industry average)
-- percentile: Where this falls compared to similar contracts (0-100)
-- commonAlternatives: 2-3 examples of fairer wording used in similar contracts
-- fairerVersion: Your suggested balanced alternative wording
-
-Example: If a termination clause requires 90 days notice when industry average is 30 days, note:
-- averageStrictness: 75 (3x stricter than average)
-- percentile: 85 (stricter than 85% of similar contracts)
-- Include alternatives like "30 days written notice by either party"
-
-NEGOTIATION INTELLIGENCE:
-For clauses with medium-to-critical risk, add a negotiationStrategy with:
-- priority: "high|medium|low" (how important to negotiate this)
-- leverage: "strong|moderate|weak" (your negotiating position on this point)
-- suggestedApproach: Specific talking points or negotiation tactics
-- fallbackPositions: 2-3 compromise positions if your ideal terms are rejected
-- marketPrecedents: Similar contracts where this was negotiated successfully
-
-FAIRNESS SCORING:
-For each clause, calculate a fairnessScore (0-100) where:
-- 0-25: Extremely one-sided, heavily favors other party
-- 26-50: Somewhat unbalanced, minor improvements needed
-- 51-75: Reasonably balanced, standard market terms
-- 76-100: Exceptionally fair, protects both parties equally
-
-Consider: reciprocity, reasonableness, industry norms, legal enforceability
-
-AUTOMATED INSIGHTS:
-Detect and flag:
-- missingClauses: Important protections absent from this contract type
-- contradictions: Clauses that conflict with each other
-- unusualTerms: Atypical provisions that warrant extra scrutiny
-- strengthsToKeep: Surprisingly favorable terms worth preserving
-
-REQUIRED OUTPUT FORMAT:
-Return your analysis as a JSON object with the following structure:
+REQUIRED OUTPUT FORMAT (return ONLY this JSON, no markdown, no extra text):
 {
-  "summary": "2-3 sentence executive summary",
-  "riskScore": 0-100,
+  "summary": "2 sentence summary under 200 chars",
+  "riskScore": 0,
   "clauses": [
     {
-      "id": "unique_id",
-      "title": "Clause Title",
-      "originalText": "exact text from contract",
-      "plainLanguage": "simple explanation",
+      "id": "c1",
+      "title": "Short Clause Title",
+      "originalText": "first 150 chars of clause...",
+      "plainLanguage": "plain explanation under 100 chars",
       "riskLevel": "low|medium|high|critical",
       "category": "payment|termination|liability|intellectual_property|confidentiality|dispute_resolution|warranties|indemnification|non_compete|general|other",
       "concerns": ["concern 1", "concern 2"],
@@ -199,13 +156,13 @@ Return your analysis as a JSON object with the following structure:
       "industryComparison": {
         "averageStrictness": 50,
         "percentile": 50,
-        "commonAlternatives": ["alternative 1", "alternative 2"],
-        "fairerVersion": "suggested balanced wording"
+        "commonAlternatives": ["alt 1", "alt 2"],
+        "fairerVersion": "brief fairer wording"
       },
       "negotiationStrategy": {
         "priority": "high|medium|low",
         "leverage": "strong|moderate|weak",
-        "suggestedApproach": "specific tactics",
+        "suggestedApproach": "brief tactic under 100 chars",
         "fallbackPositions": ["compromise 1", "compromise 2"],
         "marketPrecedents": ["example 1", "example 2"]
       }
@@ -213,35 +170,34 @@ Return your analysis as a JSON object with the following structure:
   ],
   "redFlags": [
     {
-      "id": "flag_id",
+      "id": "f1",
       "type": "ip_transfer|unlimited_liability|auto_renewal|restricted_termination|one_sided_amendment|venue_forum|waiver_of_rights|confidentiality_overreach|indemnification|non_compete|payment_terms|dispute_resolution|other",
       "severity": "warning|danger|critical",
-      "title": "Flag Title",
-      "description": "Detailed description",
-      "affectedClauses": ["clause_id_1"],
-      "recommendation": "What to do about it"
+      "title": "Short Flag Title",
+      "description": "brief description under 150 chars",
+      "affectedClauses": ["c1"],
+      "recommendation": "brief action under 100 chars"
     }
   ],
-  "recommendations": ["recommendation 1", "recommendation 2"],
+  "recommendations": ["rec 1", "rec 2", "rec 3"],
   "insights": {
-    "missingClauses": ["clause type 1", "clause type 2"],
-    "contradictions": [{"clause1": "id", "clause2": "id", "issue": "description"}],
-    "unusualTerms": [{"clauseId": "id", "reason": "why unusual"}],
-    "strengthsToKeep": ["favorable term 1", "favorable term 2"]
+    "missingClauses": ["clause type 1"],
+    "contradictions": [{"clause1": "c1", "clause2": "c2", "issue": "brief issue"}],
+    "unusualTerms": [{"clauseId": "c1", "reason": "brief reason"}],
+    "strengthsToKeep": ["favorable term 1"]
   },
   "metadata": {
-    "documentType": "employment|nda|service_agreement|lease|purchase_order|partnership|licensing|consulting|freelance|vendor|subscription|master_service_agreement|sow|other or null",
-    "parties": ["party 1", "party 2"] or null,
-    "effectiveDate": "date or null",
-    "expirationDate": "date or null",
-    "governingLaw": "jurisdiction or null",
-    "contractValue": "estimated value or null",
-    "autoRenewal": true or false or null
+    "documentType": "employment|nda|service_agreement|lease|purchase_order|partnership|licensing|consulting|freelance|vendor|subscription|master_service_agreement|sow|other",
+    "parties": ["party 1", "party 2"],
+    "effectiveDate": null,
+    "expirationDate": null,
+    "governingLaw": null,
+    "contractValue": null,
+    "autoRenewal": null
   }
-}
+}`;
+  }
 
-Return ONLY the JSON object, no additional text or markdown formatting.`;
-  }
 
   /**
    * Format AI response into ContractAnalysis type
