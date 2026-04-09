@@ -84,7 +84,7 @@ export class ContractAnalyzer {
   /**
    * Build comprehensive analysis prompt
    */
-  private static buildAnalysisPrompt(contractText: string, jurisdiction: string): string {
+  public static buildAnalysisPrompt(contractText: string, jurisdiction: string): string {
     // Parse jurisdiction format: "US-California" or "US" or "CA-Ontario"
     const getJurisdictionName = (code: string): string => {
       const countryNames: Record<string, string> = {
@@ -246,7 +246,7 @@ Return ONLY the JSON object, no additional text or markdown formatting.`;
   /**
    * Format AI response into ContractAnalysis type
    */
-  private static formatAnalysis(
+  public static formatAnalysis(
     data: Record<string, unknown>,
     fileName: string,
     fileSize: number
