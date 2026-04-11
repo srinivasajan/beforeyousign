@@ -1,7 +1,30 @@
-'use client';
-
+import type { Metadata } from 'next';
 import { ArrowRight, AlertTriangle, Scale, FileText, Shield, Zap, Eye, MessageSquare, Users, Lock, TrendingUp, Clock, BookOpen, Globe } from 'lucide-react';
 import Link from 'next/link';
+import { JsonLd, homepageFaqSchema } from '@/components/JsonLd';
+
+const BASE_URL = 'https://beforeyousign.vercel.app';
+
+export const metadata: Metadata = {
+  title: 'BeforeYouSign — Free AI Contract Analysis & Risk Detection',
+  description:
+    'Upload any contract and get instant AI-powered risk analysis. Identify hidden clauses, unlimited liability traps, auto-renewal tricks, and dangerous obligations — free, in under 30 seconds.',
+  alternates: { canonical: BASE_URL },
+  openGraph: {
+    title: 'BeforeYouSign — Free AI Contract Analysis',
+    description:
+      'Upload any contract and get instant AI risk analysis, hidden clause detection, and negotiation tips — free in under 30 seconds. No account required.',
+    url: BASE_URL,
+    type: 'website',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BeforeYouSign — Free AI Contract Analysis',
+    description: 'Instant AI contract risk analysis. Free, no account required.',
+    images: ['/opengraph-image'],
+  },
+};
 
 export default function Home() {
 
@@ -15,9 +38,9 @@ export default function Home() {
               <span className="mono text-xs text-stone-500 tracking-wider uppercase">Legal Intelligence Platform</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 mb-6 sm:mb-8 leading-[1.1] tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 mb-6 sm:mb-8 leading-[1.1] tracking-tight">
               From issues to answers, <span className="text-stone-600">your legal world made simple</span>
-            </h2>
+            </h1>
 
             <div className="border-l-4 border-stone-900 pl-4 sm:pl-6 mb-6 sm:mb-8">
               <p className="text-base text-stone-600 leading-relaxed font-light">
@@ -482,6 +505,51 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      {/* FAQ Section for rich results */}
+      <section className="bg-stone-50 py-12 sm:py-16 border-t border-stone-200" aria-label="Frequently Asked Questions">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
+          <div className="text-center mb-10">
+            <span className="mono text-xs text-stone-500 tracking-wider uppercase">FAQ</span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 mt-2">Frequently Asked Questions</h2>
+          </div>
+          <dl className="space-y-6">
+            {[
+              {
+                q: 'Is BeforeYouSign free to use?',
+                a: 'Yes, the core contract analysis is completely free with no account required. Upload your contract and get instant results.',
+              },
+              {
+                q: 'What types of contracts can I analyze?',
+                a: 'BeforeYouSign supports all common contract types including employment agreements, NDAs, lease agreements, SaaS contracts, freelance contracts, and more. Upload PDF or paste plain text.',
+              },
+              {
+                q: 'Is my contract data kept private?',
+                a: 'Your contracts are never stored on our servers. All analysis happens in real-time and the document is discarded immediately after processing.',
+              },
+              {
+                q: 'How accurate is the AI contract analysis?',
+                a: 'We use Llama 3.1 language models. Our dispute probability predictor achieves 82–95% accuracy on contract risk forecasting.',
+              },
+              {
+                q: 'How long does analysis take?',
+                a: 'Most contracts are fully analyzed in under 30 seconds. Streaming output means you see results as they are generated.',
+              },
+              {
+                q: 'Does BeforeYouSign support multiple languages?',
+                a: 'Yes — BeforeYouSign can analyze contracts in 50+ languages with full legal support.',
+              },
+            ].map(({ q, a }) => (
+              <div key={q} className="bg-white border border-stone-200 p-6">
+                <dt className="font-semibold text-stone-900 mb-2">{q}</dt>
+                <dd className="text-stone-600 text-sm leading-relaxed">{a}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* JSON-LD structured data */}
+      <JsonLd data={homepageFaqSchema()} />
     </div>
   );
 }

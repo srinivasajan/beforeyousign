@@ -1,7 +1,23 @@
-'use client';
-
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PenLine, BookTemplate, Brain, Users, Calendar, FileSignature, ArrowRight } from 'lucide-react';
+
+const BASE_URL = 'https://beforeyousign.vercel.app';
+
+export const metadata: Metadata = {
+  title: 'Features — The Most Advanced AI Contract Platform',
+  description:
+    'Explore BeforeYouSign features: AI contract drafting in 30 seconds, smart template builder, real-time collaboration, lifecycle automation, 50+ industry templates, and business intelligence — all AI-powered.',
+  alternates: { canonical: `${BASE_URL}/features` },
+  openGraph: {
+    title: 'Features — AI Contract Intelligence Platform | BeforeYouSign',
+    description:
+      'AI drafting, template builder, collaboration, obligation tracking, 50+ templates, and intelligence dashboards. The most advanced contract platform ever built.',
+    url: `${BASE_URL}/features`,
+    type: 'website',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
+  },
+};
 
 const features = [
   {
